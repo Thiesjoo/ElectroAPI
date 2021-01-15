@@ -1,17 +1,22 @@
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-
-const envPropsArr = ['NODE_ENV', 'API_PORT', 'LOG_LEVEL'];
+import { ApiConfigService } from './config/configuration';
 
 async function bootstrap() {
-  const env = Object.keys(process.env);
-  envPropsArr.forEach((x) => {
-    if (env.indexOf(x) === -1) {
-      throw new Error(`Property ${x} is not present in the .env file`);
-    }
-  });
-
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.API_PORT);
+  const config = app.get(ApiConfigService);
+
+  const swaggerBuilder = new DocumentBuilder()
+    .setTitle('ElectroAPI')
+    .setDescription('Currently WIP')
+    .setVersion('0.1')
+    .addTag('electro')
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerBuilder);
+  SwaggerModule.setup('api', app, document);
+
+  await app.listen(config.port);
 }
 bootstrap();
