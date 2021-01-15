@@ -10,6 +10,7 @@ export const configValidation = Joi.object({
     .valid('development', 'production')
     .default('development'),
   LOG_LEVEL: Joi.string().default('silly'),
+  npm_package_version: Joi.string(),
 });
 
 @Injectable()
@@ -29,5 +30,9 @@ export class ApiConfigService {
 
   get port(): number {
     return this.get('API_PORT');
+  }
+
+  get version(): string {
+    return this.get('npm_package_version');
   }
 }

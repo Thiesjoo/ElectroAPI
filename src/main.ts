@@ -1,4 +1,3 @@
-import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -11,7 +10,7 @@ async function bootstrap() {
   const swaggerBuilder = new DocumentBuilder()
     .setTitle('ElectroAPI')
     .setDescription('Currently WIP')
-    .setVersion('0.1')
+    .setVersion(config.version)
     .addTag('electro')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerBuilder);
