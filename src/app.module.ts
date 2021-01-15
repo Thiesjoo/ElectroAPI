@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ApiConfigService, configValidation } from './config/configuration';
+import { NotificationService, NotificationController } from './notification/';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -14,8 +16,9 @@ import { ApiConfigService, configValidation } from './config/configuration';
         abortEarly: true,
       },
     }),
+    UsersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, ApiConfigService],
+  controllers: [AppController, NotificationController],
+  providers: [AppService, ApiConfigService, NotificationService],
 })
 export class AppModule {}
