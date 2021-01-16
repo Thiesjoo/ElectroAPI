@@ -1,0 +1,21 @@
+{
+  "name": "ElectroAPI",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "api",
+  "workspaceFolder": "/workspace",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/zsh"
+  },
+  "extensions": [
+	"dbaeumer.vscode-eslint",
+	"esbenp.prettier-vscode",
+	"mongodb.mongodb-vscode",
+	"eamodio.gitlens",
+	"ms-azuretools.vscode-docker"
+],
+  "forwardPorts": [
+    3000
+  ],
+  "postCreateCommand": "npm ci",
+  "remoteUser": "vscode"
+}

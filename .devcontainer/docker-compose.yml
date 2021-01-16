@@ -1,0 +1,15 @@
+version: '3'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspace
+  db:
+    image: mongo:latest
+    restart: unless-stopped
+    volumes:
+      - db-data:/data/db
+volumes:
+  db-data:
