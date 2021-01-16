@@ -1,10 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from 'src/models';
+import { AuthProviders, AuthRole, User } from 'src/models';
 import { Logger } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UserDTO, UpdateUserDto } from './dto';
 
 @Injectable()
 export class UsersService {
@@ -15,26 +14,66 @@ export class UsersService {
     private readonly userModel: Model<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    // this.userModel.create({});
-    this.logger.log('dit is een test');
-
-    return 'This action adds a new user';
+  /**
+   * Find all Users
+   */
+  findAllUsers(): Promise<User[]> {
+    return this.userModel.find({}).exec();
   }
 
-  findAll() {
-    return `This action returns all users`;
+  /**
+   * Find a User with all details based on unique id
+   * @param {string} uid The unique identifier of the user
+   */
+  findUserByUid(uid: string): Promise<User> {
+    return this.userModel.findById(uid).exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  /**
+   * Find a User based on the provider's provided unique identifier
+   * @param {string} providerUid The unique identifier for the auth provider
+   * @param {AuthProvider} providerType The type of external provider
+   */
+  findUserByProviderUid(
+    providerUid: string,
+    providerType: AuthProviders,
+  ): Promise<User> {
+    return this.userModel
+      .findOne({ providers: { id: providerUid, name: providerType } })
+      .exec();
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  /**
+   * Find a User based on their name
+   * @param {string} name The name of the user
+   */
+  findUserByName(name: string): Promise<User> {
+    return this.userModel.findOne({ name }).exec();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  /**
+   * Create a new user
+   * @param {UserDTO} user Partial details of a user
+   */
+  async createUser(userInput: UserDTO): Promise<User> {
+    const user: User = new this.userModel({
+      ...userInput,
+      password: 'string',
+      providers: [],
+      role: AuthRole.User,
+    });
+    await user.save();
+    return user;
+  }
+
+  /**
+   * Update an existing user
+   * @param {string} uid The unique identifier of the user
+   * @param {UserDTO} user Partial details of the user
+   */
+  updateUser(uid: string, user: UpdateUserDto): Promise<User> {
+    return this.userModel
+      .findByIdAndUpdate(uid, user, { useFindAndModify: false })
+      .exec();
   }
 }

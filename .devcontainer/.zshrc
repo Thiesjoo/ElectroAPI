@@ -9,4 +9,6 @@ plugins=(zsh-autosuggestions zsh-syntax-highlighting git)
 export PROMPT_COMMAND='history -a'
 export HISTFILE=/commandhistory/.zsh_history
 
+PATH=$PATH:/workspace/node_modules/.bin 
+
 source $ZSH/oh-my-zsh.sh

@@ -8,10 +8,9 @@ export interface IUser {
   _id?: string;
   id?: string;
   name?: string;
-
-  providers: Provider[];
   role: AuthRole;
-  apiKey?: string;
+  providers: Provider[];
+  password: string;
 }
 
 @Schema()
@@ -22,8 +21,8 @@ export class User extends Document implements IUser {
   providers: Provider[];
   @Prop({ required: true, enum: enumValues(AuthRole) })
   role: AuthRole;
-  @Prop()
-  apiKey: string;
+  @Prop({ required: true })
+  password: string;
 }
 
 const schema = SchemaFactory.createForClass(User);

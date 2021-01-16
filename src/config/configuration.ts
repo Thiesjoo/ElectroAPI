@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
-import { Logger } from '@nestjs/common';
-import {
-  MongooseModuleOptions,
-  MongooseOptionsFactory,
-} from '@nestjs/mongoose';
+import * as path from 'path';
 
 export const configValidation = Joi.object({
   API_PORT: Joi.number().default(3000),
   DATABASE_HOST: Joi.string().required(),
   DATABASE_PORT: Joi.number().default(27017),
+  JWT_PATH: Joi.string().required(),
   NODE_ENV: Joi.string()
     .valid('development', 'production')
     .default('development'),
@@ -42,7 +39,21 @@ export class ApiConfigService {
   get version(): string {
     return this.get('npm_package_version');
   }
-  public test() {
-    return 'test';
+
+  private jwt(pub: boolean): string {
+    let jwtPath = this.get('JWT_PATH');
+    jwtPath = path.join(jwtPath, `jwt.key${pub ? '.pub' : ''}`);
+
+    if (!path.isAbsolute(jwtPath)) {
+      jwtPath = path.join(require.main.path, jwtPath);
+    }
+    return jwtPath;
+  }
+
+  get jwtPublic(): string {
+    return this.jwt(true);
+  }
+  get jwtPrivate(): string {
+    return this.jwt(false);
   }
 }
