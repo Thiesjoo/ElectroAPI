@@ -7,10 +7,10 @@ import { UsersModule } from './users/users.module';
 import { userSchema } from 'src/models';
 import { AuthModule } from './auth/auth.module';
 import { ConfigurationModule } from 'src/config/configuration.module';
+import { AuthUserModule } from './auth/auth.user.module';
 
 @Module({
   imports: [
-    UsersModule,
     ConfigurationModule,
     MongooseModule.forRootAsync({
       imports: [ConfigurationModule],
@@ -24,6 +24,7 @@ import { ConfigurationModule } from 'src/config/configuration.module';
     }),
     MongooseModule.forFeature([userSchema]),
     AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

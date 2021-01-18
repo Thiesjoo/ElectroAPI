@@ -5,6 +5,7 @@
 # ENV
 .env
 documentation/
+mongoPlaygrounds/
 
 # Logs
 logs

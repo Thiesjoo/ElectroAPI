@@ -1,32 +1,31 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { AuthProviders, AuthRole, User } from 'src/models';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { AuthProviders, User } from 'src/models';
 import { Logger } from '@nestjs/common';
-import { UserDTO, UpdateUserDto } from './user.dto';
+import { UserDTO, UpdateUserDto } from '../users/user.dto';
+import { AuthUserService } from '../auth/auth.user.service';
+import { ObjectId } from 'mongoose';
 
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
-  constructor(
-    @InjectModel(User.name)
-    private readonly userModel: Model<User>,
-  ) {}
+  constructor(private readonly authUserService: AuthUserService) {}
 
   /**
    * Find all Users
    */
   findAllUsers(): Promise<User[]> {
-    return this.userModel.find({}).exec();
+    return this.authUserService.findAllUsers();
   }
 
   /**
    * Find a User with all details based on unique id
    * @param {string} uid The unique identifier of the user
    */
-  findUserByUid(uid: string): Promise<User> {
-    return this.userModel.findById(uid).exec();
+  async findUserByUid(uid: string | ObjectId): Promise<User> {
+    const found = await this.authUserService.findUserByUid(uid);
+    if (!found) throw new NotFoundException('User not found');
+    return found;
   }
 
   /**
@@ -38,9 +37,10 @@ export class UsersService {
     providerUid: string,
     providerType: AuthProviders,
   ): Promise<User> {
-    return this.userModel
-      .findOne({ providers: { id: providerUid, name: providerType } })
-      .exec();
+    return this.authUserService.findUserByProviderUid(
+      providerUid,
+      providerType,
+    );
   }
 
   /**
@@ -48,22 +48,15 @@ export class UsersService {
    * @param {string} name The name of the user
    */
   findUserByName(name: string): Promise<User> {
-    return this.userModel.findOne({ name }).exec();
+    return this.authUserService.findUserByName(name);
   }
 
   /**
    * Create a new user
    * @param {UserDTO} user Partial details of a user
    */
-  async createUser(userInput: UserDTO): Promise<User> {
-    const user: User = new this.userModel({
-      ...userInput,
-      password: 'string',
-      providers: [],
-      role: AuthRole.User,
-    });
-    await user.save();
-    return user;
+  createUser(userInput: UserDTO): Promise<User> {
+    return this.authUserService.createUser(userInput);
   }
 
   /**
@@ -72,8 +65,10 @@ export class UsersService {
    * @param {UserDTO} user Partial details of the user
    */
   updateUser(uid: string, user: UpdateUserDto): Promise<User> {
-    return this.userModel
-      .findByIdAndUpdate(uid, user, { useFindAndModify: false })
-      .exec();
+    return this.authUserService.updateUser(uid, user);
+  }
+
+  deleteUser(uid: string): Promise<void> {
+    return this.authUserService.deleteUser(uid);
   }
 }

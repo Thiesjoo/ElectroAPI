@@ -12,9 +12,10 @@ import {
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
-import { AuthRole, AuthProviders, AuthTokenPayload } from '../../models/';
-
+import { AuthRole, AuthTokenPayload } from '../../models/';
 import { AuthService } from './auth.service';
+import { enumValues } from 'src/utils';
+const roleOrder = enumValues(AuthRole);
 
 @Injectable()
 export class JwtGuard implements CanActivate {
@@ -48,8 +49,16 @@ export class JwtGuard implements CanActivate {
 
     request.user = payload;
     // Check claims, but don't verify them yet
-    const roles = this.reflector.get<AuthRole[]>('roles', context.getHandler());
-    if (!!roles && !~roles.indexOf(payload?.rol)) {
+    //TOOD: Check is this works
+    const role = this.reflector.get<AuthRole>('roles', context.getHandler());
+    const roleIndex = roleOrder.indexOf(role);
+
+    if (
+      role &&
+      payload?.rol &&
+      roleIndex &&
+      roleIndex > roleOrder.indexOf(payload.rol)
+    ) {
       throw new ForbiddenException("You're not allowed to execute this");
     }
 

@@ -1,6 +1,8 @@
 import { HttpStatus, NotFoundException } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { of } from 'rxjs';
+import { SetMetadata } from '@nestjs/common';
+
 /**
  * Extract possible values of an enumeration as a array of strings
  * @param {T} type An enumeration type
@@ -41,4 +43,32 @@ export function checkUndefined(x) {
     throw new NotFoundException();
   }
   return x;
+}
+
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+} from '@nestjs/common';
+import { ValidationError } from 'joi';
+
+@Catch(ValidationError)
+export class ValidationFilter implements ExceptionFilter {
+  catch(exception: ValidationError, host: ArgumentsHost) {
+    console.log('):');
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+    // const status = exception.getStatus();
+
+    // response.status(status).json({
+    //   statusCode: status,
+    //   timestamp: new Date().toISOString(),
+    //   path: request.url,
+    // });
+    response.status(123).json({
+      message: ' Lmao',
+    });
+  }
 }

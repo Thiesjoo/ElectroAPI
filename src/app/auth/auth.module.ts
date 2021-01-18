@@ -1,16 +1,15 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from '../users/users.module';
 import { AuthService } from './auth.service';
 import { LocalController, LocalStrategy } from './strategies/local/';
-import { JwtModule, JwtSecretRequestType } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import * as fs from 'fs';
 import { ApiConfigService } from 'src/config/configuration';
 import { ConfigurationModule } from 'src/config/configuration.module';
+import { AuthUserModule } from './auth.user.module';
 
 @Module({
   imports: [
-    UsersModule,
-
+    AuthUserModule,
     JwtModule.registerAsync({
       imports: [ConfigurationModule],
       useFactory: async (configService: ApiConfigService) => ({
@@ -32,5 +31,6 @@ import { ConfigurationModule } from 'src/config/configuration.module';
   ],
   providers: [AuthService, LocalStrategy],
   controllers: [LocalController],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

@@ -2,16 +2,17 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { AuthTokenPayload, IUser, User } from 'src/models';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { AuthUserService } from './auth.user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
+    private authUsersService: AuthUserService,
     private readonly jwtService: JwtService,
   ) {}
 
   async validateUser(username: string, pass: string): Promise<string> {
-    const user = await this.usersService.findUserByName(username);
+    const user = await this.authUsersService.findUserByName(username);
     console.log(user);
     if (user && user.password === pass) {
       return this.createToken(user);
@@ -40,7 +41,7 @@ export class AuthService {
   private async verifyClaims(payload: AuthTokenPayload): Promise<User> {
     // try {
     if (!payload?.sub) return null;
-    const user = await this.usersService.findUserByUid(payload.sub);
+    const user = await this.authUsersService.findUserByUid(payload.sub);
 
     return !!user && user.id === payload.sub && user.role === payload.rol
       ? user
