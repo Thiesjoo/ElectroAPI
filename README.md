@@ -1,5 +1,11 @@
 # ElectroAPI
 
+## TODO
+
+- Mongoose name unique
+- On JWT Token creation, check if role is even a valid role
+- Added basic infrastructure to connect account with OAUTH Apps
+
 ## Description
 
 ElectroAPI is currently WIP

@@ -11,7 +11,7 @@ export const configValidation = Joi.object({
   NODE_ENV: Joi.string()
     .valid('development', 'production')
     .default('development'),
-  LOG_LEVEL: Joi.string().default('silly'),
+  LOG_LEVEL: Joi.string().required(),
   npm_package_version: Joi.string(),
 });
 

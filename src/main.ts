@@ -1,17 +1,18 @@
 import { LogLevel, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationError } from 'joi';
 import { AppModule } from './app/app.module';
 import { ApiConfigService } from './config/configuration';
 import { logLevels } from './models/enums/loglevels';
-import { enumKeys, ValidationFilter } from './utils';
+import { enumKeys } from './utils';
 const levels = enumKeys(logLevels);
 
 async function bootstrap() {
   const defaultLogLevel = process.env.LOG_LEVEL;
   if (!levels.includes(defaultLogLevel)) {
-    console.error('Log level is not present in ENV. App cannot start');
+    console.error(
+      'LOG_LEVEL is not present in ENV or loglevel is not a valid level. App cannot start',
+    );
     process.exit(1);
   }
 
@@ -20,7 +21,6 @@ async function bootstrap() {
       .slice(0, levels.findIndex((x) => x === defaultLogLevel) + 1)
       .map((x) => <LogLevel>x),
   });
-  app.useGlobalFilters(new ValidationFilter());
   app.useGlobalPipes(new ValidationPipe({}));
 
   const config = app.get(ApiConfigService);
