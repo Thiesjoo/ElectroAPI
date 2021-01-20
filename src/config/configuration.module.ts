@@ -1,16 +1,13 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ApiConfigService, configValidation } from '../config/configuration';
+import { ConfigModule } from '@nestjs/config';
+import { ApiConfigService, loadConfig } from '../config/configuration';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      load: [loadConfig],
       isGlobal: true,
       cache: true,
-      validationSchema: configValidation,
-      validationOptions: {
-        abortEarly: true,
-      },
     }),
   ],
   providers: [ApiConfigService],

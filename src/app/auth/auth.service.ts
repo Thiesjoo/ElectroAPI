@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { AuthTokenPayload, IUser, User } from 'src/models';
+import { AuthProviders, AuthTokenPayload, IUser, User } from 'src/models';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthUserService } from './auth.user.service';
@@ -11,13 +11,22 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<string> {
+  async validateLocalUser(email: string, pass: string): Promise<string> {
     const user = await this.authUsersService.findUserByEmail(email);
     if (user && user.password === pass) {
       return this.createToken(user);
     }
     return null;
   }
+
+  // async validateProvider(
+  //   providerInfo: {id: string, type: AuthProviders,},
+  //   user: IUser,
+  //   accessToken: string,
+  //   refreshToken: string,
+  // ) {
+  //   const user = this.authUsersService.findUserByProviderUid(,providerType, )
+  // }
 
   /**
    * Signs a new JWT token for the user provided

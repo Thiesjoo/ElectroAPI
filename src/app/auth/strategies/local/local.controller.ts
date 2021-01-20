@@ -1,6 +1,7 @@
 import { Controller, Request, Post, UseGuards, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiProperty } from '@nestjs/swagger';
+import { ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { AuthProviders } from 'src/models';
 
 class ValidationDTO {
   @ApiProperty({
@@ -15,12 +16,13 @@ class ValidationDTO {
   password: string;
 }
 
-@Controller()
+@Controller('auth/local')
+@ApiTags('Auth')
 export class LocalController {
-  @UseGuards(AuthGuard('local'))
+  @UseGuards(AuthGuard(AuthProviders.Local))
   @ApiBody({ type: ValidationDTO })
-  @Post('auth/login')
+  @Post('login')
   async login(@Request() req) {
-    return req.user;
+    return (req?.user as { token: string }).token;
   }
 }

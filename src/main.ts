@@ -9,13 +9,7 @@ import { ValidationFilter } from './app/errors';
 const levels = enumKeys(logLevels);
 
 async function bootstrap() {
-  const defaultLogLevel = process.env.LOG_LEVEL;
-  if (!levels.includes(defaultLogLevel)) {
-    console.error(
-      'LOG_LEVEL is not present in ENV or loglevel is not a valid level. App cannot start',
-    );
-    process.exit(1);
-  }
+  const defaultLogLevel = process.env.LOG_LEVEL || 'verbose';
 
   const app = await NestFactory.create(AppModule, {
     logger: levels

@@ -1,6 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalController, LocalStrategy } from './strategies/local/';
+import {
+  LocalController,
+  LocalStrategy,
+  DiscordStrategy,
+  DiscordController,
+} from './strategies';
 import { JwtModule } from '@nestjs/jwt';
 import * as fs from 'fs';
 import { ApiConfigService } from 'src/config/configuration';
@@ -9,12 +14,13 @@ import { AuthUserModule } from './auth.user.module';
 
 @Module({
   imports: [
+    ConfigurationModule,
     AuthUserModule,
     JwtModule.registerAsync({
       imports: [ConfigurationModule],
       useFactory: async (configService: ApiConfigService) => ({
-        publicKey: fs.readFileSync(configService.jwtPublic, 'utf8'),
-        privateKey: fs.readFileSync(configService.jwtPrivate, 'utf8'),
+        publicKey: fs.readFileSync(configService.jwtPublicPath, 'utf8'),
+        privateKey: fs.readFileSync(configService.jwtPrivatePath, 'utf8'),
         // TODO: Throw away tokens after version bump?
         signOptions: {
           expiresIn: 600, // 10 minutes
@@ -29,8 +35,8 @@ import { AuthUserModule } from './auth.user.module';
       inject: [ApiConfigService],
     }),
   ],
-  providers: [AuthService, LocalStrategy],
-  controllers: [LocalController],
+  providers: [AuthService, LocalStrategy, DiscordStrategy],
+  controllers: [LocalController, DiscordController],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

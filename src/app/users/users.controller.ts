@@ -8,13 +8,12 @@ import {
   Delete,
   UseGuards,
   HttpStatus,
-  SetMetadata,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto, UserDTO, userMapper } from './user.dto';
 import { JwtGuard } from '../auth/jwt.guard';
 import { ApiBearerAuth, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthedUser, AuthRole, DeveloperOnly } from 'src/models';
+import { DeveloperOnly } from 'src/models';
 import { ObjectId } from 'mongoose';
 
 @Controller('api/users')

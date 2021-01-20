@@ -5,11 +5,16 @@ import { IUser } from '../schemas';
 
 export enum AuthProviders {
   Discord = 'discord',
-  None = 'none',
   Local = 'local',
+  None = 'none',
 }
 export interface Provider {
-  name: AuthProviders;
+  providerName: AuthProviders;
   id: string;
-  refreshToken(httpService: HttpService, user: User): Promise<IUser>;
+  username: string;
+  avatar: string;
+
+  accessToken: string;
+  refreshToken: string;
+  refreshTokens(httpService: HttpService, user: User): Promise<IUser>;
 }

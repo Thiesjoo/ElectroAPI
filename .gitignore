@@ -4,6 +4,7 @@
 
 # ENV
 .env
+env.yml
 documentation/
 mongoPlaygrounds/
 
