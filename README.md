@@ -10,6 +10,17 @@
 
 ElectroAPI is currently WIP
 
+## Infrastructure
+
+Signup with email and password
+
+Several providers:
+
+- If unauthed: prompt to create new account
+- If authed: bind provider to user
+
+Add a route to transfer providers between accounts.
+
 ## Installation
 
 ```bash

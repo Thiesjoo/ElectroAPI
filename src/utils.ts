@@ -1,7 +1,6 @@
-import { HttpStatus, Logger, NotFoundException } from '@nestjs/common';
-import { Response, Request } from 'express';
+import { HttpStatus, NotFoundException } from '@nestjs/common';
+import { Response } from 'express';
 import { of } from 'rxjs';
-import { SetMetadata } from '@nestjs/common';
 
 /**
  * Extract possible values of an enumeration as a array of strings

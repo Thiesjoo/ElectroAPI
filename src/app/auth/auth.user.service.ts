@@ -46,11 +46,11 @@ export class AuthUserService {
   }
 
   /**
-   * Find a User based on their name
-   * @param {string} name The name of the user
+   * Find a User based on their email
+   * @param {string} email The email of the user
    */
-  findUserByName(name: string): Promise<User> {
-    return this.userModel.findOne({ name }).exec();
+  findUserByEmail(email: string): Promise<User> {
+    return this.userModel.findOne({ email }).exec();
   }
 
   /**
@@ -65,6 +65,7 @@ export class AuthUserService {
       role: AuthRole.User,
     });
     await user.save();
+
     return user;
   }
 

@@ -44,19 +44,16 @@ export class UsersService {
   }
 
   /**
-   * Find a User based on their name
-   * @param {string} name The name of the user
-   */
-  findUserByName(name: string): Promise<User> {
-    return this.authUserService.findUserByName(name);
-  }
-
-  /**
    * Create a new user
    * @param {UserDTO} user Partial details of a user
    */
   createUser(userInput: UserDTO): Promise<User> {
-    return this.authUserService.createUser(userInput);
+    try {
+      return this.authUserService.createUser(userInput);
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   }
 
   /**

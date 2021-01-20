@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IUser } from 'src/models';
-import { IsString } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
 
 export class UserDTO {
   @IsString()
@@ -14,12 +14,19 @@ export class UserDTO {
     type: String,
   })
   uid: string;
+  @IsEmail()
+  @ApiProperty({
+    description: 'The unique Email of the User',
+    type: String,
+  })
+  email: string;
 }
 
 export function userMapper(user: IUser): UserDTO {
   return {
     uid: user?.id || user?._id,
     name: user?.name,
+    email: user?.email,
   };
 }
 

@@ -11,9 +11,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<string> {
-    const user = await this.authUsersService.findUserByName(username);
-    console.log(user);
+  async validateUser(email: string, pass: string): Promise<string> {
+    const user = await this.authUsersService.findUserByEmail(email);
     if (user && user.password === pass) {
       return this.createToken(user);
     }
@@ -39,19 +38,19 @@ export class AuthService {
    * @param {AuthTokenPayload} payload The payload of the token provided by the user
    */
   private async verifyClaims(payload: AuthTokenPayload): Promise<User> {
-    // try {
-    if (!payload?.sub) return null;
-    const user = await this.authUsersService.findUserByUid(payload.sub);
+    try {
+      if (!payload?.sub) return null;
+      const user = await this.authUsersService.findUserByUid(payload.sub);
 
-    return !!user && user.id === payload.sub && user.role === payload.rol
-      ? user
-      : null;
-    // } catch (e) {
-    //   throw new ForbiddenException(
-    //     'An error occured while verifying your claims',
-    //     e?.message,
-    //   );
-    // }
+      return !!user && user.id === payload.sub && user.role === payload.rol
+        ? user
+        : null;
+    } catch (e) {
+      throw new ForbiddenException(
+        'An error occured while verifying your claims',
+        e?.message,
+      );
+    }
   }
 
   async verifyToken(payload: AuthTokenPayload): Promise<string | boolean> {
@@ -64,7 +63,7 @@ export class AuthService {
       return true;
     }
     let promises: Array<Promise<boolean>> = user.providers.map((x) => {
-      //refresh
+      //TODO: Refresh all providers
       return new Promise((done) => {
         done(true);
       });
