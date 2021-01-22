@@ -34,8 +34,8 @@ export class User extends Document implements IUser {
 }
 
 const schema = SchemaFactory.createForClass(User);
-schema.plugin(mongoosePaginate);
-schema.plugin(mongooseUnique);
+// schema.plugin(mongoosePaginate);
+// schema.plugin(mongooseUnique);
 
 export const userSchema = {
   name: User.name,

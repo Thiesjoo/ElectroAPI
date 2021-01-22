@@ -40,9 +40,12 @@ export class AuthUserService {
     providerUid: string,
     providerType: AuthProviders,
   ): Promise<User> {
-    return this.userModel
-      .findOne({ providers: { id: providerUid, name: providerType } })
-      .exec();
+    return (
+      this.userModel
+        // .findOne({ providers: { id: providerUid, providerName: providerType } })
+        .findOne({})
+        .exec()
+    );
   }
 
   /**

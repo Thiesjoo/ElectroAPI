@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
-import * as path from 'path';
-import { readFileSync } from 'fs';
+import { join as pathJoin, isAbsolute as pathAbsolute } from 'path';
+import { readFileSync, existsSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { AuthProviders } from 'src/models';
 
@@ -57,10 +57,10 @@ export class ApiConfigService {
 
   private jwt(pub: boolean): string {
     let jwtPath = this.get('app.jwtPath');
-    jwtPath = path.join(jwtPath, `jwt.key${pub ? '.pub' : ''}`);
+    jwtPath = pathJoin(jwtPath, `jwt.key${pub ? '.pub' : ''}`);
 
-    if (!path.isAbsolute(jwtPath)) {
-      jwtPath = path.join(require.main.path, jwtPath);
+    if (!pathAbsolute(jwtPath)) {
+      jwtPath = pathJoin(require.main.path, jwtPath);
     }
     return jwtPath;
   }
@@ -84,9 +84,18 @@ export class ApiConfigService {
 }
 
 export function loadConfig() {
-  let yamlLoaded = yaml.load(
-    readFileSync(path.join(require.main.path, '../env.yml'), 'utf8'),
-  ) as object;
+  let cfgPath = process.env.CONFIG_PATH || '../.env.yml';
+  if (!cfgPath) {
+    throw new Error('Config path not found in env: CONFIG_PATH');
+  }
+  if (!pathAbsolute(cfgPath)) {
+    cfgPath = pathJoin(require.main.path, cfgPath);
+  }
+  if (!existsSync(cfgPath)) {
+    throw new Error('Config file could not be found at path: ' + cfgPath);
+  }
+
+  let yamlLoaded = yaml.load(readFileSync(cfgPath, 'utf8')) as object;
   const allConfigs = { ...yamlLoaded, ...process.env };
 
   const { value, error } = configValidation.validate(allConfigs, {
