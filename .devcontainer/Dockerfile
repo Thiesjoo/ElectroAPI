@@ -2,13 +2,15 @@ FROM alpine:latest
 ARG USERNAME=vscode
 
 # Packages
-RUN apk add zsh git openssh gnupg nodejs libgcc libstdc++ npm sudo openssl --no-cache 
+RUN apk add zsh git openssh gnupg nodejs libgcc libstdc++ npm sudo openssl docker-cli --no-cache 
 
 # User
 RUN  adduser --shell /bin/zsh --uid 1000 --disabled-password $USERNAME  && \
      mkdir /commandhistory && \
      touch /commandhistory/.bash_history && \
-     chown -R $USERNAME /commandhistory 
+     chown -R $USERNAME /commandhistory && \
+     addgroup docker && \
+     addgroup ${USERNAME} docker 
 
 ## ZSH Setup
 USER $USERNAME

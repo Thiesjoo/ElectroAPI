@@ -22,23 +22,7 @@ Add a route to transfer providers between accounts.
 ## Configuration
 
 Main config is in a file called `env.yml` and additional configuration is in the env variables.
-LOG_LEVEL and version (npm_package_version) are in env and for the rest: see this sample
-
-```yaml
-mongodb:
-  host: db
-  port: 27017 (optional)
-
-providers:
-  discord:
-    clientID: '<discord client id>'
-    clientSecret: '<discord client secret>'
-    callbackURL: 'http://localhost:3000/auth/discord/callback'
-app:
-  port: 3000
-  jwtPath: '/home/vscode/.app/'
-  logLevel: 'verbose'
-```
+LOG_LEVEL and version (npm_package_version, automatically set by NPM) are in env and for the rest: see `sample.env.yml`
 
 ## Installation
 
