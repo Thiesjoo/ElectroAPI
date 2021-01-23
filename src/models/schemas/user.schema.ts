@@ -1,9 +1,7 @@
 import { Document } from 'mongoose';
-import * as mongoosePaginate from 'mongoose-paginate-v2';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { enumValues } from '../../utils';
 import { AuthRole, Provider } from '../enums';
-import * as mongooseUnique from 'mongoose-beautiful-unique-validation';
 
 export interface IUser {
   _id?: string;
@@ -34,9 +32,6 @@ export class User extends Document implements IUser {
 }
 
 const schema = SchemaFactory.createForClass(User);
-// schema.plugin(mongoosePaginate);
-// schema.plugin(mongooseUnique);
-//FIXME: Jest doesn't like this
 
 export const userSchema = {
   name: User.name,
