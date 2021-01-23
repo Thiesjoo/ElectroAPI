@@ -13,20 +13,14 @@ describe('AppController', () => {
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService, ApiConfigService],
-    })
-      .overrideProvider(ApiConfigService)
-      .useValue(sampleConfig)
-      .compile();
+      providers: [
+        AppService,
+        { provide: ApiConfigService, useValue: sampleConfig },
+      ],
+    }).compile();
 
     appController = app.get<AppController>(AppController);
   });
-
-  // describe('root', () => {
-  //   it('should redirect to api"', () => {
-  //     expect(appController.redirect()).toBe('Hello World!');
-  //   });
-  // });
 
   describe('hello', () => {
     it('should return "Hello World!"', () => {

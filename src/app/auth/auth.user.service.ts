@@ -60,10 +60,11 @@ export class AuthUserService {
    * Create a new user
    * @param {UserDTO} user Partial details of a user
    */
-  async createUser(userInput: UserDTO): Promise<User> {
-    const user: User = new this.userModel({
+  async createUser(userInput: UserDTO, password: string): Promise<User> {
+    //FIXME: Add bcrypt here
+    const user: User = await this.userModel.create({
       ...userInput,
-      password: 'string',
+      password,
       providers: [],
       role: AuthRole.User,
     });
@@ -83,6 +84,10 @@ export class AuthUserService {
       .exec();
   }
 
+  /**
+   * Delete a user with a given ID
+   * @param uid The unique identifier of the user
+   */
   deleteUser(uid: idType): Promise<void> {
     return this.userModel.deleteOne({ _id: uid }).exec();
   }

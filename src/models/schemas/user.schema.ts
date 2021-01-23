@@ -36,6 +36,7 @@ export class User extends Document implements IUser {
 const schema = SchemaFactory.createForClass(User);
 // schema.plugin(mongoosePaginate);
 // schema.plugin(mongooseUnique);
+//FIXME: Jest doesn't like this
 
 export const userSchema = {
   name: User.name,

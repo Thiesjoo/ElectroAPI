@@ -49,7 +49,7 @@ export class UsersService {
    */
   createUser(userInput: UserDTO): Promise<User> {
     try {
-      return this.authUserService.createUser(userInput);
+      return this.authUserService.createUser(userInput, 'string');
     } catch (e) {
       console.error(e);
       return null;
@@ -65,6 +65,10 @@ export class UsersService {
     return this.authUserService.updateUser(uid, user);
   }
 
+  /**
+   * Delete a user with a given ID
+   * @param uid The unique identifier of the user
+   */
   deleteUser(uid: string): Promise<void> {
     return this.authUserService.deleteUser(uid);
   }

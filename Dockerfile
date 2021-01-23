@@ -56,12 +56,12 @@ COPY --from=deps deps-lock.json ./package-lock.json
 
 RUN npm ci
 
+COPY package.json .
+
 COPY tsconfig.json .
 COPY tsconfig.build.json .
-COPY src/ src/
 COPY test/ test/
-
-COPY package.json .
+COPY src/ src/
 
 ENV NODE_ENV testing
 

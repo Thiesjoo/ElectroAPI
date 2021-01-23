@@ -1,6 +1,7 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IUser } from 'src/models';
 import { IsEmail, IsString } from 'class-validator';
+import { NotFoundException } from '@nestjs/common';
 
 export class UserDTO {
   @IsString()
@@ -13,7 +14,7 @@ export class UserDTO {
     description: 'The unique Id of the User',
     type: String,
   })
-  uid: string;
+  uid?: string;
   @IsEmail()
   @ApiProperty({
     description: 'The unique Email of the User',
@@ -23,6 +24,9 @@ export class UserDTO {
 }
 
 export function userMapper(user: IUser): UserDTO {
+  if (!user) {
+    throw new NotFoundException();
+  }
   return {
     uid: user?.id || user?._id,
     name: user?.name,

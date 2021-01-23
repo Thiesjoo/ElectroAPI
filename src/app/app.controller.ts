@@ -9,8 +9,6 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service';
 
 @Controller('')
-// @UseGuards(JwtGuard)
-// @ApiBearerAuth()
 @ApiResponse({
   status: HttpStatus.UNAUTHORIZED,
   description:
@@ -24,7 +22,6 @@ import { AppService } from './app.service';
   status: HttpStatus.INTERNAL_SERVER_ERROR,
   description: 'Something else went wrong',
 })
-@ApiTags('Testing')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 

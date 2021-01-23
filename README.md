@@ -21,8 +21,13 @@ Add a route to transfer providers between accounts.
 
 ## Configuration
 
-Main config is in a file called `env.yml` and additional configuration is in the env variables.
-LOG_LEVEL and version (npm_package_version, automatically set by NPM) are in env and for the rest: see `sample.env.yml`
+Main config is in a YAML file called `.env.yml` and additional configuration is in the env variables.
+
+### ENV
+
+- LOG_LEVEL = Log level of the entire application
+- CONFIG_PATH - The path of your `.env.yml`
+- npm_package_version = Automatically set by NPM. Used to detect version of application
 
 ## Installation
 

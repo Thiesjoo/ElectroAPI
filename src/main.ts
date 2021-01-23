@@ -5,7 +5,7 @@ import { AppModule } from './app/app.module';
 import { ApiConfigService } from './config/configuration';
 import { logLevels } from './models/enums/loglevels';
 import { enumKeys } from './utils';
-import { ValidationFilter } from './app/errors';
+import filters from './app/errors';
 const levels = enumKeys(logLevels);
 
 async function bootstrap() {
@@ -17,7 +17,7 @@ async function bootstrap() {
       .map((x) => <LogLevel>x),
   });
   app.useGlobalPipes(new ValidationPipe({}));
-  app.useGlobalFilters(new ValidationFilter());
+  app.useGlobalFilters(...filters);
 
   const config = app.get(ApiConfigService);
 

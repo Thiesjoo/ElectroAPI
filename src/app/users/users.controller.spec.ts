@@ -1,5 +1,14 @@
+import { JwtService } from '@nestjs/jwt';
+import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthUserModule } from '../auth/auth.user.module';
+import { User } from 'src/models';
+import { dbMock } from 'test/dbMock';
+import {
+  AuthModule,
+  AuthService,
+  AuthUserModule,
+  AuthUserService,
+} from '../auth';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -8,12 +17,21 @@ describe('UsersController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AuthUserModule],
       controllers: [UsersController],
-      providers: [UsersService],
+      providers: [
+        AuthUserService,
+        AuthService,
+        { provide: JwtService, useValue: {} },
+        { provide: getModelToken(User.name), useClass: dbMock },
+        UsersService,
+      ],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
   });
 
   it('should be defined', () => {
