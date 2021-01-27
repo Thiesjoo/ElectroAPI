@@ -5,6 +5,7 @@ import { join as pathJoin, isAbsolute as pathAbsolute } from 'path';
 import { readFileSync, existsSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { AuthProviders } from 'src/models';
+import { version } from '../../package.json';
 
 const OauthJoiScheme = Joi.object({
   clientID: Joi.string().required(),
@@ -28,7 +29,6 @@ const configValidation = Joi.object({
   NODE_ENV: Joi.string()
     .valid('development', 'production')
     .default('development'),
-  npm_package_version: Joi.string(),
 }).default();
 
 @Injectable()
@@ -52,7 +52,7 @@ export class ApiConfigService {
   }
 
   get version(): string {
-    return this.get('npm_package_version');
+    return version;
   }
 
   private jwt(pub: boolean): string {
@@ -84,7 +84,7 @@ export class ApiConfigService {
 }
 
 export function loadConfig() {
-  let cfgPath = process.env.CONFIG_PATH || '../.env.yml';
+  let cfgPath = process.env.CONFIG_PATH || '../../env.yml';
   if (!cfgPath) {
     throw new Error('Config path not found in env: CONFIG_PATH');
   }

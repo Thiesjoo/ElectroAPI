@@ -8,7 +8,7 @@
   },
   "remoteEnv": {
     // Pass in the host directory for Docker mount commands from inside the container
-    "HOST_PROJECT_PATH": "${localWorkspaceFolder}"
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
   },
   "extensions": [
     "dbaeumer.vscode-eslint",
@@ -20,5 +20,5 @@
   "forwardPorts": [3000],
   "postCreateCommand": "npm ci",
   "remoteUser": "vscode",
-  "runArgs": ["--init"],
+  "runArgs": ["--init"]
 }

@@ -10,11 +10,15 @@ const levels = enumKeys(logLevels);
 
 async function bootstrap() {
   const defaultLogLevel = process.env.LOG_LEVEL || 'verbose';
-
+  const foundLogLevel = levels.findIndex((x) => x === defaultLogLevel);
+  if (foundLogLevel === -1) {
+    console.error(
+      '[ERROR] Wrong log level provided, app cannot start like this!',
+    );
+    process.exit(1);
+  }
   const app = await NestFactory.create(AppModule, {
-    logger: levels
-      .slice(0, levels.findIndex((x) => x === defaultLogLevel) + 1)
-      .map((x) => <LogLevel>x),
+    logger: levels.slice(0, foundLogLevel + 1).map((x) => <LogLevel>x),
   });
   app.useGlobalPipes(new ValidationPipe({}));
   app.useGlobalFilters(...filters);

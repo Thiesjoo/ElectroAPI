@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  electroapi:
+    image: thiesjoo/electroapi:latest
+    build:
+      context: .
+      target: production
+      dockerfile: Dockerfile
+    ports:
+      - '8081:8081'
+    volumes:
+      - ${LOCAL_WORKSPACE_FOLDER}/env.prod.yml:/usr/src/env.yml
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=verbose
+  db:
+    image: mongo:latest
+    restart: unless-stopped
+    volumes:
+      - db-data:/data/db
+volumes:
+  db-data:

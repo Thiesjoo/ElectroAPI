@@ -1,8 +1,11 @@
-FROM alpine:latest
+FROM alpine:3.13
 ARG USERNAME=vscode
 
 # Packages
-RUN apk add zsh git openssh gnupg nodejs libgcc libstdc++ npm sudo openssl docker-cli --no-cache 
+RUN apk add zsh git openssh gnupg nodejs libgcc libstdc++ npm sudo openssl \
+     docker-cli=20.10.2-r0 \
+     docker-compose=1.27.4-r0 \
+     --no-cache
 
 # User
 RUN  adduser --shell /bin/zsh --uid 1000 --disabled-password $USERNAME  && \
