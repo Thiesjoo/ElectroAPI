@@ -5,7 +5,6 @@ import { join as pathJoin, isAbsolute as pathAbsolute } from 'path';
 import { readFileSync, existsSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { AuthProviders } from 'src/models';
-import { version } from '../../package.json';
 
 const OauthJoiScheme = Joi.object({
   clientID: Joi.string().required(),
@@ -52,7 +51,10 @@ export class ApiConfigService {
   }
 
   get version(): string {
-    return version;
+    const info = JSON.parse(
+      readFileSync(pathJoin(require.main.path, '../package.json'), 'utf-8'),
+    );
+    return info?.version || '0.0.0';
   }
 
   private jwt(pub: boolean): string {
@@ -84,7 +86,7 @@ export class ApiConfigService {
 }
 
 export function loadConfig() {
-  let cfgPath = process.env.CONFIG_PATH || '../../env.yml';
+  let cfgPath = process.env.CONFIG_PATH || '../env.yml';
   if (!cfgPath) {
     throw new Error('Config path not found in env: CONFIG_PATH');
   }
