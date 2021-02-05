@@ -1,4 +1,4 @@
-interface DiscordUser {
+export interface DiscordUser {
   id: string;
   username: string;
   avatar: string;
@@ -7,7 +7,7 @@ interface DiscordUser {
   connections: Connection[];
 }
 
-interface Connection {
+export interface Connection {
   type: string;
   id: string;
   name: string;

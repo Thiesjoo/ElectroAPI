@@ -1,11 +1,12 @@
+import { Request } from 'express';
 import { Strategy } from 'passport-discord';
-import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
-import { AuthService } from '../../auth.service';
+import { AuthService } from 'src/app/auth/auth.service';
 import { ApiConfigService } from 'src/config/configuration';
 import { AuthProviders, Provider } from 'src/models';
-import { Request } from 'express';
 import { extractUID } from 'src/utils';
+import { Injectable } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { DiscordUser } from './discord.enums';
 
 @Injectable()
 export class DiscordStrategy extends PassportStrategy(

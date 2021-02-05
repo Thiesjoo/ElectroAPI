@@ -1,10 +1,9 @@
-import { Req, Res } from '@nestjs/common';
-import { Controller, Post, UseGuards, Body, Get } from '@nestjs/common';
+import { Controller, UseGuards, Get, Req } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthedUser, AuthProviders } from 'src/models';
 import { JwtGuard } from '../../jwt.guard';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 
 @Controller('auth/discord')
 @ApiTags('Auth')
@@ -13,15 +12,12 @@ export class DiscordController {
   @AuthedUser()
   @ApiBearerAuth()
   @Get('login')
-  async login(@Req() req) {}
+  async login() {}
 
   @Get('callback')
   @UseGuards(JwtGuard, AuthGuard(AuthProviders.Discord))
   @AuthedUser()
-  async redirect(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async redirect(@Req() req: Request) {
     return (req?.user as any)?.jwt;
   }
 }
