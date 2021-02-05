@@ -1,7 +1,7 @@
 interface DiscordUser {
   id: string;
   username: string;
-  avater: string;
+  avatar: string;
   discriminator: string;
   locale: string;
   connections: Connection[];

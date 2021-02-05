@@ -37,13 +37,18 @@ export class AuthUserService {
    * @param {AuthProvider} providerType The type of external provider
    */
   findUserByProviderUid(
+    localUid: string,
     providerUid: string,
     providerType: AuthProviders,
   ): Promise<User> {
     return (
       this.userModel
-        // .findOne({ providers: { id: providerUid, providerName: providerType } })
-        .findOne({})
+        .findOne({
+          _id: localUid,
+          //@ts-ignore
+          providers: { id: providerUid, providerName: providerType },
+        })
+        // .findOne({})
         .exec()
     );
   }

@@ -1,11 +1,6 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Redirect,
-  Response,
-} from '@nestjs/common';
+import { Controller, Get, HttpStatus, Redirect, Res } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { AppService } from './app.service';
 
 @Controller('')
@@ -39,8 +34,9 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('')
-  test(): string {
-    return this.appService.getMongo();
+  @Get(['wipecookies', 'logout'])
+  wipeCookies(@Res({ passthrough: true }) res: Response): string {
+    res.cookie('jwt', '');
+    return 'OK!';
   }
 }

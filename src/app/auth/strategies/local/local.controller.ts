@@ -1,4 +1,12 @@
-import { Controller, Request, Post, UseGuards, Body } from '@nestjs/common';
+import {
+  Controller,
+  Request,
+  Post,
+  UseGuards,
+  Body,
+  Res,
+  Req,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { AuthProviders } from 'src/models';
@@ -22,7 +30,9 @@ export class LocalController {
   @UseGuards(AuthGuard(AuthProviders.Local))
   @ApiBody({ type: ValidationDTO })
   @Post('login')
-  async login(@Request() req) {
-    return (req?.user as { token: string }).token;
+  login(@Req() req, @Res({ passthrough: true }) res) {
+    const token = (req?.user as { token: string }).token;
+    res.cookie('jwt', token);
+    return token;
   }
 }

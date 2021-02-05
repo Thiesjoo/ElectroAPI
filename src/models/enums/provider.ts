@@ -11,4 +11,5 @@ export interface Provider {
 
   accessToken: string;
   refreshToken: string;
+  extra: any;
 }

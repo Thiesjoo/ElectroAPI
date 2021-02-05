@@ -6,6 +6,7 @@ import { ApiConfigService } from './config/configuration';
 import { logLevels } from './models/enums/loglevels';
 import { enumKeys } from './utils';
 import filters from './app/errors';
+import * as cookieParser from 'cookie-parser';
 const levels = enumKeys(logLevels);
 
 async function bootstrap() {
@@ -22,6 +23,7 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe({}));
   app.useGlobalFilters(...filters);
+  app.use(cookieParser());
 
   const config = app.get(ApiConfigService);
 
@@ -31,6 +33,7 @@ async function bootstrap() {
     .setVersion(config.version)
     .addTag('electro')
     .addBearerAuth({ in: 'header', type: 'http' })
+    .addCookieAuth('jwt')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerBuilder);
   SwaggerModule.setup('api', app, document);

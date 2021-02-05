@@ -44,8 +44,9 @@ export class JwtGuard implements CanActivate {
 
         case 'http':
           let httpToken =
+            ExtractJwt.fromUrlQueryParameter('auth')(request) ||
             ExtractJwt.fromAuthHeaderAsBearerToken()(request) ||
-            ExtractJwt.fromUrlQueryParameter('auth')(request);
+            request.cookies['jwt'];
 
           const processed = await this.processToken(
             httpToken,

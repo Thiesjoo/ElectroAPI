@@ -34,10 +34,12 @@ export class UsersService {
    * @param {AuthProvider} providerType The type of external provider
    */
   findUserByProviderUid(
+    userUid: string,
     providerUid: string,
     providerType: AuthProviders,
   ): Promise<User> {
     return this.authUserService.findUserByProviderUid(
+      userUid,
       providerUid,
       providerType,
     );

@@ -9,19 +9,19 @@ import { Request, Response } from 'express';
 @Controller('auth/discord')
 @ApiTags('Auth')
 export class DiscordController {
-  @UseGuards(AuthGuard(AuthProviders.Discord), JwtGuard)
+  @UseGuards(JwtGuard, AuthGuard(AuthProviders.Discord))
   @AuthedUser()
   @ApiBearerAuth()
   @Get('login')
-  async login(@Req() req) {
-    console.log(req);
-    return req.user;
-  }
+  async login(@Req() req) {}
 
   @Get('callback')
-  @UseGuards(AuthGuard(AuthProviders.Discord))
-  async redirect(@Req() req: Request, @Res() res: Response): Promise<void> {
-    const jwt: string = (req?.user as any)?.jwt;
-    console.log('idk?', req.user);
+  @UseGuards(JwtGuard, AuthGuard(AuthProviders.Discord))
+  @AuthedUser()
+  async redirect(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return (req?.user as any)?.jwt;
   }
 }
