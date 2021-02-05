@@ -1,12 +1,10 @@
-import { BadRequestException } from '@nestjs/common';
+import { Error } from 'mongoose';
+import { AuthRole, IUser, User } from 'src/models';
+import { dbMock } from 'test/dbMock';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthRole, IUser, User } from 'src/models';
 import { AuthUserService } from '../auth/auth.user.service';
 import { UsersService } from './users.service';
-import { Error } from 'mongoose';
-import { userMapper } from './user.dto';
-import { dbMock } from 'test/dbMock';
 
 describe('UsersService', () => {
   let userService: UsersService;

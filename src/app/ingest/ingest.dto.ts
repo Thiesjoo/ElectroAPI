@@ -1,4 +1,4 @@
-import { IsEnum, IsJWT, IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 import { AuthProviders } from 'src/models';
 
 export class IngestAuthDTO {

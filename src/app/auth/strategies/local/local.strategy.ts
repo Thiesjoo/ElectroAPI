@@ -1,13 +1,13 @@
+import { isEmail, isString } from 'class-validator';
 import { Strategy } from 'passport-local';
-import { PassportStrategy } from '@nestjs/passport';
+import { AuthProviders } from 'src/models';
 import {
   BadRequestException,
   Injectable,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
 import { AuthService } from '../../auth.service';
-import { isEmail, isString } from 'class-validator';
-import { AuthProviders } from 'src/models';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(

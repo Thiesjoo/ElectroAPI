@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
-import { ExtractJwt } from 'passport-jwt';
 import { JsonWebTokenError } from 'jsonwebtoken';
+import { ExtractJwt } from 'passport-jwt';
+import { Socket } from 'socket.io';
+import { enumValues } from 'src/utils';
 import {
   BadRequestException,
   CanActivate,
@@ -8,15 +10,14 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRole, AuthTokenPayload } from '../../models';
 import { AuthService } from './auth.service';
-import { enumValues } from 'src/utils';
-import { Socket } from 'socket.io';
+
 const roleOrder = enumValues(AuthRole);
 
 @Injectable()

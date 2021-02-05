@@ -1,12 +1,13 @@
+import * as cookieParser from 'cookie-parser';
 import { LogLevel, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
+import filters from './app/errors';
 import { ApiConfigService } from './config/configuration';
 import { logLevels } from './models/enums/loglevels';
 import { enumKeys } from './utils';
-import filters from './app/errors';
-import * as cookieParser from 'cookie-parser';
+
 const levels = enumKeys(logLevels);
 
 async function bootstrap() {

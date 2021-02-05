@@ -1,9 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { AuthProviders, AuthRole, User } from 'src/models';
-import { Logger } from '@nestjs/common';
-import { UserDTO, UpdateUserDto } from '../users/user.dto';
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { UpdateUserDto, UserDTO } from '../users/user.dto';
 
 type idType = ObjectId | string;
 

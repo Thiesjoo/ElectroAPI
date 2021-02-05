@@ -1,6 +1,6 @@
-import { HttpStatus, NotFoundException } from '@nestjs/common';
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 import { of } from 'rxjs';
+import { HttpStatus, NotFoundException } from '@nestjs/common';
 import { AuthTokenPayload } from './models';
 
 /**

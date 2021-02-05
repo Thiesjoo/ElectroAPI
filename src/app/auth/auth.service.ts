@@ -1,16 +1,9 @@
+import { AuthTokenPayload, IUser, Provider, User } from 'src/models';
 import {
   ForbiddenException,
   Injectable,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
-import {
-  AuthProviders,
-  AuthTokenPayload,
-  IUser,
-  Provider,
-  User,
-} from 'src/models';
-import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthUserService } from './auth.user.service';
 

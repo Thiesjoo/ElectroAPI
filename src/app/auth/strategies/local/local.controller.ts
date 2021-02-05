@@ -1,15 +1,7 @@
-import {
-  Controller,
-  Request,
-  Post,
-  UseGuards,
-  Body,
-  Res,
-  Req,
-} from '@nestjs/common';
+import { AuthProviders } from 'src/models';
+import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { AuthProviders } from 'src/models';
 
 class ValidationDTO {
   @ApiProperty({

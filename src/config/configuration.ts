@@ -1,10 +1,10 @@
+import { existsSync, readFileSync } from 'fs';
+import * as Joi from 'joi';
+import * as yaml from 'js-yaml';
+import { isAbsolute as pathAbsolute, join as pathJoin } from 'path';
+import { AuthProviders } from 'src/models';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as Joi from 'joi';
-import { join as pathJoin, isAbsolute as pathAbsolute } from 'path';
-import { readFileSync, existsSync } from 'fs';
-import * as yaml from 'js-yaml';
-import { AuthProviders } from 'src/models';
 
 const OauthJoiScheme = Joi.object({
   clientID: Joi.string().required(),

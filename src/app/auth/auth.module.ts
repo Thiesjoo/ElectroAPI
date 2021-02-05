@@ -1,16 +1,16 @@
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import {
-  LocalController,
-  LocalStrategy,
-  DiscordStrategy,
-  DiscordController,
-} from './strategies';
-import { JwtModule } from '@nestjs/jwt';
 import * as fs from 'fs';
 import { ApiConfigService } from 'src/config/configuration';
 import { ConfigurationModule } from 'src/config/configuration.module';
+import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthService } from './auth.service';
 import { AuthUserModule } from './auth.user.module';
+import {
+  DiscordController,
+  DiscordStrategy,
+  LocalController,
+  LocalStrategy
+} from './strategies';
 
 @Module({
   imports: [

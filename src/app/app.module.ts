@@ -1,15 +1,15 @@
+import * as mongooseUnique from 'mongoose-beautiful-unique-validation';
+import * as mongoosePaginate from 'mongoose-paginate-v2';
+import { ConfigurationModule } from 'src/config/configuration.module';
+import { userSchema } from 'src/models';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ApiConfigService } from '../config/configuration';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ApiConfigService } from '../config/configuration';
-import { UsersModule } from './users/users.module';
-import { userSchema } from 'src/models';
 import { AuthModule } from './auth/auth.module';
-import { ConfigurationModule } from 'src/config/configuration.module';
 import { IngestModule } from './ingest/ingest.module';
-import * as mongoosePaginate from 'mongoose-paginate-v2';
-import * as mongooseUnique from 'mongoose-beautiful-unique-validation';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [

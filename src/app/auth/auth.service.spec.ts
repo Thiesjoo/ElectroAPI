@@ -1,8 +1,8 @@
+import { User } from 'src/models';
+import { dbMock } from 'test/dbMock';
 import { JwtService } from '@nestjs/jwt';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from 'src/models';
-import { dbMock } from 'test/dbMock';
 import { AuthService } from './auth.service';
 import { AuthUserService } from './auth.user.service';
 

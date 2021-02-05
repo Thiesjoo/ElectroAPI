@@ -1,11 +1,6 @@
-import {
-  ArgumentsHost,
-  BadRequestException,
-  Catch,
-  ExceptionFilter,
-} from '@nestjs/common';
-import { Error } from 'mongoose';
 import { Response } from 'express';
+import { Error } from 'mongoose';
+import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 
 @Catch(Error.CastError)
 export class CastFilter implements ExceptionFilter {

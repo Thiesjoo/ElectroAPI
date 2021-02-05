@@ -1,3 +1,12 @@
+import { Request } from 'express';
+import { Server, Socket } from 'socket.io';
+import {
+  AuthedUser,
+  IngestClient,
+  IngestSocketRoutes,
+  Provider
+} from 'src/models';
+import { extractUID } from 'src/utils';
 import {
   BadRequestException,
   NotFoundException,
@@ -5,7 +14,7 @@ import {
   UnauthorizedException,
   UseGuards,
   UsePipes,
-  ValidationPipe,
+  ValidationPipe
 } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -13,20 +22,8 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsException,
-  WsResponse,
+  WsException
 } from '@nestjs/websockets';
-import { Request } from 'express';
-import { Server, Socket } from 'socket.io';
-import {
-  AuthedUser,
-  AuthProviders,
-  DeveloperOnly,
-  IngestClient,
-  IngestSocketRoutes,
-  Provider,
-} from 'src/models';
-import { extractUID } from 'src/utils';
 import { AuthUserService, JwtGuard } from '../auth';
 import { IngestAuthDTO } from './ingest.dto';
 

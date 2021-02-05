@@ -1,20 +1,20 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Put,
-  Param,
-  Delete,
-  UseGuards,
-  HttpStatus,
-} from '@nestjs/common';
-import { UsersService } from './users.service';
-import { UpdateUserDto, UserDTO, userMapper } from './user.dto';
-import { JwtGuard } from '../auth/jwt.guard';
-import { ApiBearerAuth, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { DeveloperOnly } from 'src/models';
 import { ObjectId } from 'mongoose';
+import { DeveloperOnly } from 'src/models';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  UseGuards
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtGuard } from '../auth/jwt.guard';
+import { UpdateUserDto, UserDTO, userMapper } from './user.dto';
+import { UsersService } from './users.service';
 
 @Controller('api/users')
 @UseGuards(JwtGuard)

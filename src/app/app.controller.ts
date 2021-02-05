@@ -1,6 +1,6 @@
-import { Controller, Get, HttpStatus, Redirect, Res } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { Controller, Get, HttpStatus, Redirect, Res } from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger';
 import { AppService } from './app.service';
 
 @Controller('')

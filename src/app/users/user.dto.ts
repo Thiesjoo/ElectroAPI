@@ -1,7 +1,7 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IUser } from 'src/models';
 import { IsEmail, IsString } from 'class-validator';
+import { IUser } from 'src/models';
 import { NotFoundException } from '@nestjs/common';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class UserDTO {
   @IsString()
