@@ -1,8 +1,3 @@
-import { HttpService } from '@nestjs/common';
-import { enumValues } from 'src/utils';
-import { User } from '..';
-import { IUser } from '../schemas';
-
 export enum AuthProviders {
   Discord = 'discord',
   Local = 'local',
@@ -16,5 +11,4 @@ export interface Provider {
 
   accessToken: string;
   refreshToken: string;
-  refreshTokens(httpService: HttpService, user: User): Promise<IUser>;
 }

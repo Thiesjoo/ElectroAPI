@@ -1,6 +1,7 @@
 import { HttpStatus, NotFoundException } from '@nestjs/common';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { of } from 'rxjs';
+import { AuthTokenPayload } from './models';
 
 /**
  * Extract possible values of an enumeration as a array of strings
@@ -42,4 +43,8 @@ export function checkUndefined(x) {
     throw new NotFoundException();
   }
   return x;
+}
+
+export function extractUID(req: Request): string {
+  return (req?.user as AuthTokenPayload)?.sub;
 }

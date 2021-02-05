@@ -5,7 +5,6 @@
 - Added basic infrastructure to connect account with OAUTH Apps
   - Refresh service
   - Provider response modeling
-  -
 - Added a basic ingest service to ingest data
 - Add a basic API to query the stored data
 - Add a basic socket gateway to get live updates

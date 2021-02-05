@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { userSchema } from 'src/models';
 import { AuthModule } from './auth/auth.module';
 import { ConfigurationModule } from 'src/config/configuration.module';
+import { IngestModule } from './ingest/ingest.module';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
 import * as mongooseUnique from 'mongoose-beautiful-unique-validation';
 
@@ -31,6 +32,7 @@ import * as mongooseUnique from 'mongoose-beautiful-unique-validation';
     MongooseModule.forFeature([userSchema]),
     AuthModule,
     UsersModule,
+    IngestModule,
   ],
   controllers: [AppController],
   providers: [AppService],
