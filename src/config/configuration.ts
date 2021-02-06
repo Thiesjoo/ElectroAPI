@@ -116,7 +116,7 @@ export class ApiConfigService {
         expires: new Date(Date.now() + this.expiry.accessExpiry),
         httpOnly: true,
         sameSite: this.production ? 'none' : false,
-        path: '/api/',
+        path: '/',
         secure: this.production,
       },
       refresh: {

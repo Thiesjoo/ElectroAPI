@@ -81,14 +81,13 @@ export class JwtGuard implements CanActivate {
       );
     }
 
+    // Verify token: WITH EXPIRY
     const payload: AuthTokenPayload = this.jwtService.verify(token);
     if (!payload) {
       throw new UnauthorizedException(
         'No authorization token has been provided',
       );
     }
-
-    //TODO: Check if this works
 
     // Check claims, but don't verify them yet
     const role = this.reflector.get<AuthRole>('roles', ctxHandler);
@@ -100,6 +99,7 @@ export class JwtGuard implements CanActivate {
       );
     }
 
+    // Check permissions
     if (
       role &&
       payload?.rol &&
@@ -109,12 +109,13 @@ export class JwtGuard implements CanActivate {
       throw new ForbiddenException("You're not allowed to execute this");
     }
 
-    const verifyResult = await this.authService.verifyToken(payload);
-    if (!verifyResult) {
-      throw new UnauthorizedException(
-        "User not found/Provider refreshing wasn't working",
-      );
-    }
+    // // Check user against database
+    // const verifyResult = await this.authService.verifyToken(payload);
+    // if (!verifyResult) {
+    //   throw new UnauthorizedException(
+    //     "User not found/Provider refreshing wasn't working",
+    //   );
+    // }
     return payload;
   }
 }

@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import { ApiConfigService } from 'src/config/configuration';
-import { ConfigurationModule } from 'src/config/configuration.module';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { AuthUserModule } from './auth.user.module';
@@ -10,7 +9,7 @@ import {
   DiscordStrategy,
   LocalController,
   LocalStrategy,
-  RefreshController,
+  RefreshModule,
 } from './strategies';
 
 @Module({
@@ -33,9 +32,10 @@ import {
       }),
       inject: [ApiConfigService],
     }),
+    forwardRef(() => RefreshModule),
   ],
+  controllers: [LocalController, DiscordController],
   providers: [AuthService, LocalStrategy, DiscordStrategy],
-  controllers: [LocalController, DiscordController, RefreshController],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

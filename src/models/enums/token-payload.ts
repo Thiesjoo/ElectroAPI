@@ -21,7 +21,7 @@ export interface AuthTokenPayload {
 
 export interface RefreshTokenPayload extends AuthTokenPayload {
   /**
-   * The actual token used for refreshing
+   * The actual token used for refreshing. (JWT-id)
    */
   jti: string;
 }

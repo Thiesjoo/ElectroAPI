@@ -2,6 +2,9 @@ import { Response } from 'express';
 import { Error } from 'mongoose';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 
+/**
+ * Catch mongoose casting errors: Wrong object id
+ */
 @Catch(Error.CastError)
 export class CastFilter implements ExceptionFilter {
   catch(exception: Error.ValidationError, host: ArgumentsHost) {

@@ -2,6 +2,9 @@ import { Response } from 'express';
 import { Error } from 'mongoose';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 
+/**
+ * Catch all Mongoose validation errors. (Unique validation)
+ */
 @Catch(Error.ValidationError)
 export class ValidationFilter implements ExceptionFilter {
   catch(exception: Error.ValidationError, host: ArgumentsHost) {

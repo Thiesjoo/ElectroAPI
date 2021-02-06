@@ -9,6 +9,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthUserService } from './auth.user.service';
@@ -67,7 +68,7 @@ export class AuthService {
    * Signs a new JWT token for the user provided
    * @param user User the token has to be created for
    */
-  private createAccessToken(user: IUser): Promise<string> {
+  createAccessToken(user: IUser): Promise<string> {
     if (!user) return null;
     const { id, role } = user;
     const payload: AuthTokenPayload = {
@@ -110,14 +111,18 @@ export class AuthService {
    * Check if the payload of the token provided matches with the database records
    * @param {AuthTokenPayload} payload The payload of the token provided by the user
    */
-  private async verifyClaims(payload: AuthTokenPayload): Promise<User> {
+  private async verifyPermissionClaims(
+    payload: RefreshTokenPayload,
+  ): Promise<User> {
     try {
       if (!payload?.sub) return null;
       const user = await this.authUsersService.findUserByUid(payload.sub);
 
-      return !!user && user.id === payload.sub && user.role === payload.rol
-        ? user
-        : null;
+      if (!(!!user && user.id === payload.sub && user.role === payload.rol)) {
+        throw new UnauthorizedException();
+      }
+
+      return user;
     } catch (e) {
       throw new ForbiddenException(
         'An error occured while verifying your claims',
@@ -126,18 +131,27 @@ export class AuthService {
     }
   }
 
-  async verifyToken(payload: AuthTokenPayload): Promise<string | boolean> {
-    const user = await this.verifyClaims(payload);
-    if (!user) return null;
+  async verifyRefreshToken(
+    payload: RefreshTokenPayload,
+    saveUser = true,
+  ): Promise<User> {
+    const user = await this.verifyPermissionClaims(payload);
+    user.tokens = user.tokens.filter(
+      (x) => !x.revoked && x.expires > Date.now(),
+    );
 
-    let promises: Array<Promise<boolean>> = user.providers.map((x) => {
-      //TODO: Refresh all providers
-      return new Promise((done) => {
-        done(true);
-      });
-    });
-    await Promise.all(promises);
+    const matchingToken = user.tokens.find((x) => x.jti === payload.jti);
+    if (!matchingToken) {
+      throw new UnauthorizedException();
+    }
 
-    return true;
+    if (saveUser) {
+      await user.save();
+    }
+    return user;
+  }
+
+  async getPayload(token: string): Promise<RefreshTokenPayload> {
+    return await this.jwtService.verifyAsync(token);
   }
 }
