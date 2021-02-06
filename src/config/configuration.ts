@@ -4,7 +4,16 @@ import * as yaml from 'js-yaml';
 import { isAbsolute as pathAbsolute, join as pathJoin } from 'path';
 import { AuthProviders } from 'src/models';
 import { Injectable } from '@nestjs/common';
+import * as ms from 'ms';
 import { ConfigService } from '@nestjs/config';
+
+interface Cookie {
+  sameSite: 'none' | false;
+  expires: Date;
+  httpOnly: boolean;
+  secure: boolean;
+  path: string;
+}
 
 const OauthJoiScheme = Joi.object({
   clientID: Joi.string().required(),
@@ -57,7 +66,7 @@ export class ApiConfigService {
     return info?.version || '0.0.0';
   }
 
-  private jwt(pub: boolean): string {
+  private getJWT(pub: boolean): string {
     let jwtPath = this.get('app.jwtPath');
     jwtPath = pathJoin(jwtPath, `jwt.key${pub ? '.pub' : ''}`);
 
@@ -68,13 +77,13 @@ export class ApiConfigService {
   }
 
   get jwtPublicPath(): string {
-    return this.jwt(true);
+    return this.getJWT(true);
   }
   get jwtPrivatePath(): string {
-    return this.jwt(false);
+    return this.getJWT(false);
   }
 
-  provider(
+  getProvider(
     providerType: AuthProviders,
   ): {
     clientID: string;
@@ -82,6 +91,42 @@ export class ApiConfigService {
     callbackURL: string;
   } {
     return this.get(`providers.${providerType}`);
+  }
+
+  get expiry() {
+    return {
+      accessExpiry: ms('15m'), //15 min
+      refreshExpiry: ms('7d'), // A week
+    };
+  }
+
+  get cookieNames() {
+    return {
+      access: 'accesstoken',
+      refresh: 'refreshtoken',
+    };
+  }
+
+  get cookieSettings(): {
+    access: Cookie;
+    refresh: Cookie;
+  } {
+    return {
+      access: {
+        expires: new Date(Date.now() + this.expiry.accessExpiry),
+        httpOnly: true,
+        sameSite: this.production ? 'none' : false,
+        path: '/api/',
+        secure: this.production,
+      },
+      refresh: {
+        expires: new Date(Date.now() + this.expiry.refreshExpiry),
+        httpOnly: true,
+        sameSite: this.production ? 'none' : false,
+        path: '/auth/refresh',
+        secure: this.production,
+      },
+    };
   }
 }
 

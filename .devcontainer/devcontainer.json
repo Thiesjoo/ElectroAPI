@@ -1,13 +1,14 @@
 {
   "name": "ElectroAPI",
   "dockerComposeFile": "docker-compose.yml",
+  "shutdownAction": "stopCompose",
   "service": "api",
+  "forwardPorts": [3000],
   "workspaceFolder": "/workspace",
   "settings": {
     "terminal.integrated.shell.linux": "/bin/zsh"
   },
   "remoteEnv": {
-    // Pass in the host directory for Docker mount commands from inside the container
     "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
   },
   "extensions": [
@@ -17,8 +18,6 @@
     "eamodio.gitlens",
     "ms-azuretools.vscode-docker"
   ],
-  "forwardPorts": [3000],
   "postCreateCommand": "npm ci",
-  "remoteUser": "vscode",
-  "runArgs": ["--init"]
+  "remoteUser": "vscode"
 }

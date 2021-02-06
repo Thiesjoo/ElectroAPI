@@ -18,7 +18,7 @@ export class DiscordStrategy extends PassportStrategy(
     configService: ApiConfigService,
   ) {
     super({
-      ...configService.provider(AuthProviders.Discord),
+      ...configService.getProvider(AuthProviders.Discord),
       scope: ['identify', 'connections', 'rpc', 'rpc.notifications.read'],
       passReqToCallback: true,
     });
@@ -30,7 +30,7 @@ export class DiscordStrategy extends PassportStrategy(
     refreshToken: string,
     profile: DiscordUser,
   ): Promise<void> {
-    const done: (err: any, profile: { jwt: string } | false) => void =
+    const done: (err: any, profile: {} | false) => void =
       arguments[arguments.length - 1];
     try {
       const prov: Provider = {
@@ -46,9 +46,8 @@ export class DiscordStrategy extends PassportStrategy(
         },
       };
 
-      done(null, {
-        jwt: await this.authService.validateProvider(prov, extractUID(req)),
-      });
+      await this.authService.validateProvider(prov, extractUID(req));
+      done(null, {});
     } catch (e) {
       done(e, null);
     }

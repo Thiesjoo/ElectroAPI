@@ -1,7 +1,9 @@
 import { AuthProviders } from 'src/models';
 import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiConfigService } from 'src/config/configuration';
+import { Response } from 'express';
 
 class ValidationDTO {
   @ApiProperty({
@@ -19,12 +21,29 @@ class ValidationDTO {
 @Controller('auth/local')
 @ApiTags('Auth')
 export class LocalController {
+  constructor(private configService: ApiConfigService) {}
+
   @UseGuards(AuthGuard(AuthProviders.Local))
   @ApiBody({ type: ValidationDTO })
+  @ApiResponse({
+    description:
+      'The accesstoken is returned, and all the required cookies are set',
+  })
   @Post('login')
-  login(@Req() req, @Res({ passthrough: true }) res) {
-    const token = (req?.user as { token: string }).token;
-    res.cookie('jwt', token);
-    return token;
+  login(@Req() req, @Res({ passthrough: true }) res: Response) {
+    const tokens = req?.user as { access: string; refresh: string };
+
+    res.cookie(
+      this.configService.cookieNames.access,
+      tokens.access,
+      this.configService.cookieSettings.access,
+    );
+    res.cookie(
+      this.configService.cookieNames.refresh,
+      tokens.refresh,
+      this.configService.cookieSettings.refresh,
+    );
+
+    return tokens.access;
   }
 }

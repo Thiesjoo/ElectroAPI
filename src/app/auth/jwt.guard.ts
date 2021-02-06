@@ -10,13 +10,14 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
-  UnauthorizedException
+  UnauthorizedException,
 } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRole, AuthTokenPayload } from '../../models';
 import { AuthService } from './auth.service';
+import { ApiConfigService } from 'src/config/configuration';
 
 const roleOrder = enumValues(AuthRole);
 
@@ -25,6 +26,7 @@ export class JwtGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly authService: AuthService,
+    private configService: ApiConfigService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -40,30 +42,21 @@ export class JwtGuard implements CanActivate {
             wsToken,
             context.getHandler(),
           );
-          request.user = processedWS.payload;
+          request.user = processedWS;
           return true;
 
         case 'http':
           let httpToken =
             ExtractJwt.fromUrlQueryParameter('auth')(request) ||
             ExtractJwt.fromAuthHeaderAsBearerToken()(request) ||
-            request.cookies['jwt'];
+            request.cookies[this.configService.cookieNames.access];
 
           const processed = await this.processToken(
             httpToken,
             context.getHandler(),
           );
 
-          request.user = processed.payload;
-
-          if (processed.newToken) {
-            const response: Response = httpctx.getResponse();
-            response.setHeader('X-Access-Token', processed.newToken);
-            response.setHeader(
-              'Access-Control-Expose-Headers',
-              'X-Access-Token',
-            );
-          }
+          request.user = processed;
           return true;
         default:
           return false;
@@ -81,16 +74,14 @@ export class JwtGuard implements CanActivate {
   async processToken(
     token: string,
     ctxHandler: Function,
-  ): Promise<{ payload: AuthTokenPayload; newToken?: string }> {
+  ): Promise<AuthTokenPayload> {
     if (!token) {
       throw new UnauthorizedException(
         'No authorization token has been provided',
       );
     }
 
-    const payload: AuthTokenPayload = this.jwtService.verify(token, {
-      ignoreExpiration: true,
-    });
+    const payload: AuthTokenPayload = this.jwtService.verify(token);
     if (!payload) {
       throw new UnauthorizedException(
         'No authorization token has been provided',
@@ -118,10 +109,12 @@ export class JwtGuard implements CanActivate {
       throw new ForbiddenException("You're not allowed to execute this");
     }
 
-    const newToken = await this.authService.verifyToken(payload);
-    if (typeof newToken === 'boolean' || newToken === null) {
-      return { payload };
+    const verifyResult = await this.authService.verifyToken(payload);
+    if (!verifyResult) {
+      throw new UnauthorizedException(
+        "User not found/Provider refreshing wasn't working",
+      );
     }
-    return { payload, newToken };
+    return payload;
   }
 }

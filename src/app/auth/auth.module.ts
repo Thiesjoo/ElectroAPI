@@ -9,21 +9,20 @@ import {
   DiscordController,
   DiscordStrategy,
   LocalController,
-  LocalStrategy
+  LocalStrategy,
+  RefreshController,
 } from './strategies';
 
 @Module({
   imports: [
-    ConfigurationModule,
     AuthUserModule,
     JwtModule.registerAsync({
-      imports: [ConfigurationModule],
       useFactory: async (configService: ApiConfigService) => ({
         publicKey: fs.readFileSync(configService.jwtPublicPath, 'utf8'),
         privateKey: fs.readFileSync(configService.jwtPrivatePath, 'utf8'),
         // TODO: Throw away tokens after version bump?
         signOptions: {
-          expiresIn: 600, // 10 minutes
+          expiresIn: configService.expiry.accessExpiry, // 10 minutes
           algorithm: 'RS256',
           issuer: `ElectroAPI-v${configService.version}`,
         },
@@ -36,7 +35,7 @@ import {
     }),
   ],
   providers: [AuthService, LocalStrategy, DiscordStrategy],
-  controllers: [LocalController, DiscordController],
+  controllers: [LocalController, DiscordController, RefreshController],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

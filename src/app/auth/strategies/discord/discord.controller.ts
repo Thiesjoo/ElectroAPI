@@ -1,6 +1,5 @@
-import { Request } from 'express';
 import { AuthedUser, AuthProviders } from 'src/models';
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../../jwt.guard';
@@ -17,7 +16,7 @@ export class DiscordController {
   @Get('callback')
   @UseGuards(JwtGuard, AuthGuard(AuthProviders.Discord))
   @AuthedUser()
-  async redirect(@Req() req: Request) {
-    return (req?.user as any)?.jwt;
+  async redirect() {
+    return 'OK!';
   }
 }

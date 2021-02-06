@@ -1,7 +1,7 @@
 import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { enumValues } from '../../utils';
-import { AuthRole, Provider } from '../enums';
+import { AuthRole, Provider, RefreshToken } from '../enums';
 
 export interface IUser {
   _id?: string;
@@ -13,6 +13,7 @@ export interface IUser {
 
   role?: AuthRole;
   providers?: Provider[];
+  tokens?: RefreshToken[];
 }
 
 @Schema()
@@ -29,6 +30,8 @@ export class User extends Document implements IUser {
   providers: Provider[];
   @Prop({ required: true, enum: enumValues(AuthRole) })
   role: AuthRole;
+  @Prop({ type: Array<RefreshToken>() })
+  tokens: RefreshToken[];
 }
 
 const schema = SchemaFactory.createForClass(User);

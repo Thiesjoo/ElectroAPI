@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { Controller, Get, HttpStatus, Redirect, Res } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { AppService } from './app.service';
+import { ApiConfigService } from 'src/config/configuration';
 
 @Controller('')
 @ApiResponse({
@@ -18,7 +19,10 @@ import { AppService } from './app.service';
   description: 'Something else went wrong',
 })
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly configService: ApiConfigService,
+  ) {}
 
   @Get('')
   @Redirect('/api', 301)
@@ -32,11 +36,5 @@ export class AppController {
   })
   getHello() {
     return this.appService.getHello();
-  }
-
-  @Get(['wipecookies', 'logout'])
-  wipeCookies(@Res({ passthrough: true }) res: Response): string {
-    res.cookie('jwt', '');
-    return 'OK!';
   }
 }

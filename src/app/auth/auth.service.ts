@@ -1,23 +1,38 @@
-import { AuthTokenPayload, IUser, Provider, User } from 'src/models';
+import {
+  AuthTokenPayload,
+  IUser,
+  Provider,
+  RefreshTokenPayload,
+  User,
+} from 'src/models';
 import {
   ForbiddenException,
   Injectable,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthUserService } from './auth.user.service';
+import { randomBytes } from 'crypto';
+import { ApiConfigService } from 'src/config/configuration';
 
 @Injectable()
 export class AuthService {
   constructor(
     private authUsersService: AuthUserService,
     private readonly jwtService: JwtService,
+    private configService: ApiConfigService,
   ) {}
 
-  async validateLocalUser(email: string, pass: string): Promise<string> {
+  async validateLocalUser(
+    email: string,
+    pass: string,
+  ): Promise<{ access: string; refresh: string }> {
     const user = await this.authUsersService.findUserByEmail(email);
     if (user && user.password === pass) {
-      return this.createToken(user);
+      return {
+        access: await this.createAccessToken(user),
+        refresh: await this.createRefreshToken(user),
+      };
     }
     return null;
   }
@@ -25,7 +40,7 @@ export class AuthService {
   async validateProvider(
     providerData: Provider,
     userUid: string,
-  ): Promise<string> {
+  ): Promise<void> {
     const user = await this.authUsersService.findUserByUid(userUid);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -45,21 +60,50 @@ export class AuthService {
     //TODO: Emit user update event (Also make sure refresh tokens work?)
 
     console.log('validate provider: ', user);
-    return await this.createToken(user);
+    return;
   }
 
   /**
    * Signs a new JWT token for the user provided
    * @param user User the token has to be created for
    */
-  private createToken(user: IUser): Promise<string> {
+  private createAccessToken(user: IUser): Promise<string> {
     if (!user) return null;
     const { id, role } = user;
     const payload: AuthTokenPayload = {
       sub: id,
       rol: role,
     };
-    return this.jwtService.signAsync(payload);
+    return this.jwtService.signAsync(payload, {
+      expiresIn: this.configService.expiry.accessExpiry,
+    });
+  }
+
+  /**
+   * Signs a new JWT token for the user provided
+   * @param user User the token has to be created for
+   */
+  private createRefreshToken(user: User): Promise<string> {
+    if (!user) return null;
+    const { id, role } = user;
+    const token = randomBytes(20).toString('hex');
+
+    user.tokens.push({
+      jti: token,
+      expires: Date.now() + this.configService.expiry.refreshExpiry,
+      revoked: false,
+    });
+    user.save();
+
+    const payload: RefreshTokenPayload = {
+      sub: id,
+      rol: role,
+      jti: token,
+    };
+
+    return this.jwtService.signAsync(payload, {
+      expiresIn: this.configService.expiry.refreshExpiry,
+    });
   }
 
   /**
@@ -86,11 +130,6 @@ export class AuthService {
     const user = await this.verifyClaims(payload);
     if (!user) return null;
 
-    const exp = payload?.exp;
-
-    if (Date.now() < exp * 1000) {
-      return true;
-    }
     let promises: Array<Promise<boolean>> = user.providers.map((x) => {
       //TODO: Refresh all providers
       return new Promise((done) => {
@@ -99,6 +138,6 @@ export class AuthService {
     });
     await Promise.all(promises);
 
-    return await this.createToken(user);
+    return true;
   }
 }
