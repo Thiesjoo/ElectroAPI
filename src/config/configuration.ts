@@ -1,10 +1,10 @@
 import { existsSync, readFileSync } from 'fs';
 import * as Joi from 'joi';
 import * as yaml from 'js-yaml';
+import * as ms from 'ms';
 import { isAbsolute as pathAbsolute, join as pathJoin } from 'path';
 import { AuthProviders } from 'src/models';
 import { Injectable } from '@nestjs/common';
-import * as ms from 'ms';
 import { ConfigService } from '@nestjs/config';
 
 interface Cookie {

@@ -1,5 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
 import { RefreshTokenPayload } from 'src/models';
+import { Injectable, Logger } from '@nestjs/common';
 import { AuthService, AuthUserService } from '../..';
 
 @Injectable()

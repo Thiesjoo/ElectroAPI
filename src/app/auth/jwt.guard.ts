@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { ExtractJwt } from 'passport-jwt';
 import { Socket } from 'socket.io';
+import { ApiConfigService } from 'src/config/configuration';
 import { enumValues } from 'src/utils';
 import {
   BadRequestException,
@@ -10,14 +11,14 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { WsException } from '@nestjs/websockets';
 import { AuthRole, AuthTokenPayload } from '../../models';
 import { AuthService } from './auth.service';
-import { ApiConfigService } from 'src/config/configuration';
 
 const roleOrder = enumValues(AuthRole);
 
@@ -63,9 +64,13 @@ export class JwtGuard implements CanActivate {
       }
     } catch (e) {
       if (e instanceof JsonWebTokenError) {
-        throw new BadRequestException(
+        let error = new BadRequestException(
           'No valid authorization token has been provided',
         );
+        if (context.getType() === 'ws') {
+          throw new WsException(error);
+        }
+        throw error;
       }
       throw e;
     }

@@ -1,20 +1,20 @@
+import { randomBytes } from 'crypto';
+import { ApiConfigService } from 'src/config/configuration';
 import {
   AuthTokenPayload,
   IUser,
   Provider,
   RefreshTokenPayload,
-  User,
+  User
 } from 'src/models';
 import {
   ForbiddenException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthUserService } from './auth.user.service';
-import { randomBytes } from 'crypto';
-import { ApiConfigService } from 'src/config/configuration';
 
 @Injectable()
 export class AuthService {

@@ -1,8 +1,8 @@
 import { Response } from 'express';
+import { ApiConfigService } from 'src/config/configuration';
 import { Controller, Get, HttpStatus, Redirect, Res } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { AppService } from './app.service';
-import { ApiConfigService } from 'src/config/configuration';
 
 @Controller('')
 @ApiResponse({

@@ -9,7 +9,8 @@ import {
   DiscordStrategy,
   LocalController,
   LocalStrategy,
-  RefreshModule,
+  RefreshController,
+  RefreshService
 } from './strategies';
 
 @Module({
@@ -32,10 +33,9 @@ import {
       }),
       inject: [ApiConfigService],
     }),
-    forwardRef(() => RefreshModule),
   ],
-  controllers: [LocalController, DiscordController],
-  providers: [AuthService, LocalStrategy, DiscordStrategy],
+  controllers: [LocalController, DiscordController, RefreshController],
+  providers: [AuthService, LocalStrategy, DiscordStrategy, RefreshService],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

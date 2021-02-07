@@ -1,9 +1,9 @@
+import { Response } from 'express';
+import { ApiConfigService } from 'src/config/configuration';
 import { AuthProviders } from 'src/models';
 import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiConfigService } from 'src/config/configuration';
-import { Response } from 'express';
 
 class ValidationDTO {
   @ApiProperty({

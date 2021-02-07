@@ -1,4 +1,4 @@
-import { AuthRole } from '.';
+import { AuthRole } from './';
 
 export interface AuthTokenPayload {
   /**
