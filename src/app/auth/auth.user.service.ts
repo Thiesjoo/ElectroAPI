@@ -1,8 +1,8 @@
-import { Model, ObjectId } from 'mongoose';
+import { Model, ObjectId, UpdateQuery } from 'mongoose';
 import { AuthProviders, AuthRole, User } from 'src/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { UpdateUserDto, UserDTO } from '../users/user.dto';
+import { UserDTO } from '../users/user.dto';
 
 type idType = ObjectId | string;
 
@@ -82,9 +82,26 @@ export class AuthUserService {
    * @param {string} uid The unique identifier of the user
    * @param {UserDTO} user Partial details of the user
    */
-  updateUser(uid: idType, user: UpdateUserDto): Promise<User> {
+  updateUser(uid: idType, user: UpdateQuery<User>): Promise<User> {
     return this.userModel
       .findByIdAndUpdate(uid, user, { useFindAndModify: false })
+      .exec();
+  }
+
+  revokeUserToken(userUid: string | ObjectId, jti: string) {
+    return this.userModel
+      .findOneAndUpdate(
+        {
+          _id: userUid,
+          tokens: { $elemMatch: { jti } },
+        },
+        {
+          $set: {
+            'tokens.$.revoked': true,
+          },
+        },
+        { useFindAndModify: false },
+      )
       .exec();
   }
 

@@ -131,10 +131,11 @@ export class AuthService {
     }
   }
 
-  async verifyRefreshToken(
-    payload: RefreshTokenPayload,
-    saveUser = true,
-  ): Promise<User> {
+  /**
+   * Verify the claims of the user and check if the refreshtoken is not revoked. (Also remove all tokens that were revoked)
+   * @param payload Refresh token payload
+   */
+  async verifyRefreshToken(payload: RefreshTokenPayload): Promise<User> {
     const user = await this.verifyPermissionClaims(payload);
     user.tokens = user.tokens.filter(
       (x) => !x.revoked && x.expires > Date.now(),
@@ -145,12 +146,15 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    if (saveUser) {
-      await user.save();
-    }
+    // Save the modified tokens
+    await user.save();
     return user;
   }
 
+  /**
+   * Get the JWT payload of a token
+   * @param token Refreshtoken from user
+   */
   async getPayload(token: string): Promise<RefreshTokenPayload> {
     return await this.jwtService.verifyAsync(token);
   }

@@ -6,7 +6,10 @@ import { AuthService, AuthUserService } from '../..';
 export class RefreshService {
   private readonly logger = new Logger(RefreshService.name);
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private authUsersService: AuthUserService,
+  ) {}
 
   async getAccessToken(refreshToken: string): Promise<string> {
     const result = await this.authService.verifyRefreshToken(
@@ -24,14 +27,9 @@ export class RefreshService {
     const payload: RefreshTokenPayload = await this.authService.getPayload(
       refreshToken,
     );
-    console.log(payload);
-    const user = await this.authService.verifyRefreshToken(payload, false);
-    console.log(payload, user);
+    const user = await this.authService.verifyRefreshToken(payload);
     if (user) {
-      const token = user.tokens.find((x) => payload.jti === x.jti);
-      console.log(token);
-      token.revoked = true;
-      await user.save();
+      await this.authUsersService.revokeUserToken(user._id, payload.jti);
     }
   }
 }
