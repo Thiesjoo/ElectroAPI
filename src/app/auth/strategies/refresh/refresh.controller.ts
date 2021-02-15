@@ -40,8 +40,6 @@ export class RefreshController {
       ...restRefresh
     } = this.configService.cookieSettings.refresh;
     res.clearCookie(this.configService.cookieNames.refresh, restRefresh);
-    //FIXME: Revoke refresh token
-
     await this.refreshService.revokeToken(token);
 
     res.json({ ok: true });

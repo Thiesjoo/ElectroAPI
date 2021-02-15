@@ -17,6 +17,6 @@ export class DiscordController {
   @UseGuards(JwtGuard, AuthGuard(AuthProviders.Discord))
   @AuthedUser()
   async redirect() {
-    return 'OK!';
+    return 'Discord profile connected with your profile!';
   }
 }

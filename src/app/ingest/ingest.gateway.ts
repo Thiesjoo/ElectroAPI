@@ -25,7 +25,7 @@ import {
   WsException
 } from '@nestjs/websockets';
 import { AuthUserService, JwtGuard } from '../auth';
-import { IngestAuthDTO } from './ingest.dto';
+import { DataPacket, IngestAuthDTO } from './ingest.dto';
 
 @UsePipes(new ValidationPipe())
 @WebSocketGateway()
@@ -50,6 +50,7 @@ export class IngestGateway {
       );
     }
     //FIXME: Check if authorized client application (Maybe a toggle to disable all)
+    //FIXME: Verify origin
 
     const user = await this.authUserService.findUserByUid(data.id);
     if (!user) {
@@ -64,9 +65,15 @@ export class IngestGateway {
         new BadRequestException('Provider not registerd on this users account'),
       );
     }
+    this.clients[client.id] = {
+      userUid: data.id,
+      dataProvider: data.provider,
+    };
+
     return foundProvider;
   }
 
+  @AuthedUser()
   @SubscribeMessage(IngestSocketRoutes.Identity)
   async identity(@ConnectedSocket() client: Socket): Promise<IngestClient> {
     if (!this.clients[client.id]) {
@@ -74,5 +81,15 @@ export class IngestGateway {
     }
 
     return this.clients[client.id];
+  }
+
+  @AuthedUser()
+  @SubscribeMessage(IngestSocketRoutes.Ingest)
+  async ingestData(
+    @ConnectedSocket() client: Socket,
+    @Req() req: Request,
+    @MessageBody() data: DataPacket,
+  ) {
+    console.log(data);
   }
 }

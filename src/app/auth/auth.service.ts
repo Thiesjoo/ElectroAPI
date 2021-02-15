@@ -57,8 +57,8 @@ export class AuthService {
     } else {
       user.providers.push(providerData);
     }
-    user.save();
-    //TODO: Emit user update event (Also make sure refresh tokens work?)
+    await user.save();
+    //TODO: Emit user update event(To get data from provider) (Also make sure refresh tokens work?)
 
     console.log('validate provider: ', user);
     return;
