@@ -26,7 +26,7 @@ export class LocalStrategy extends PassportStrategy(
       throw new BadRequestException();
     }
     const token = await this.authService.validateLocalUser(email, password);
-    if (!token.access || !token.refresh) {
+    if (!token?.access || !token?.refresh) {
       throw new UnauthorizedException();
     }
 

@@ -150,12 +150,4 @@ export class AuthService {
     await user.save();
     return user;
   }
-
-  /**
-   * Get the JWT payload of a token
-   * @param token Refreshtoken from user
-   */
-  async getPayload(token: string): Promise<RefreshTokenPayload> {
-    return await this.jwtService.verifyAsync(token);
-  }
 }

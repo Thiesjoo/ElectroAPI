@@ -24,7 +24,7 @@ import {
   WebSocketServer,
   WsException
 } from '@nestjs/websockets';
-import { AuthUserService, JwtGuard } from '../auth';
+import { AuthService, AuthUserService, JwtGuard } from '../auth';
 import { DataPacket, IngestAuthDTO } from './ingest.dto';
 
 @UsePipes(new ValidationPipe())
@@ -35,7 +35,10 @@ export class IngestGateway {
   server: Server;
   private readonly clients: Record<string, IngestClient> = {};
 
-  constructor(private readonly authUserService: AuthUserService) {}
+  constructor(
+    private readonly authUserService: AuthUserService,
+    private readonly authService: AuthService,
+  ) {}
 
   @AuthedUser()
   @SubscribeMessage(IngestSocketRoutes.Auth)
@@ -60,6 +63,7 @@ export class IngestGateway {
     const foundProvider = user.providers.find(
       (x) => x.providerName === data.provider,
     );
+
     if (!foundProvider) {
       throw new WsException(
         new BadRequestException('Provider not registerd on this users account'),
