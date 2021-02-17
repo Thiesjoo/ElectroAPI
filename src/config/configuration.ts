@@ -93,9 +93,12 @@ export class ApiConfigService {
     return this.get(`providers.${providerType}`);
   }
 
-  get expiry() {
+  get expiry(): {
+    accessExpiry: number;
+    refreshExpiry: number;
+  } {
     return {
-      accessExpiry: ms('15m'), //15 min
+      accessExpiry: this.production ? ms('15m') : ms('1d'), //15 min for production, 1 day for dev
       refreshExpiry: ms('7d'), // A week
     };
   }

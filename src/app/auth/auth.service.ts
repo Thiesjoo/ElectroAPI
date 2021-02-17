@@ -6,14 +6,14 @@ import {
   IUser,
   Provider,
   RefreshTokenPayload,
-  User
+  User,
 } from 'src/models';
 import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  UnauthorizedException
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Oauth2RefreshService } from './auth-refresh.service';
@@ -80,7 +80,7 @@ export class AuthService {
       rol: role,
     };
     return this.jwtService.signAsync(payload, {
-      expiresIn: this.configService.expiry.accessExpiry,
+      expiresIn: this.configService.expiry.accessExpiry / 1000,
     });
   }
 
@@ -158,7 +158,7 @@ export class AuthService {
     };
 
     return this.jwtService.signAsync(payload, {
-      expiresIn: this.configService.expiry.refreshExpiry,
+      expiresIn: this.configService.expiry.refreshExpiry / 1000,
     });
   }
 
