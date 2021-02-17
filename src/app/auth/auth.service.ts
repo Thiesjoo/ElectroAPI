@@ -63,7 +63,7 @@ export class AuthService {
     }
     user.markModified('providers');
     await user.save();
-    //TODO: Emit user update event(To get data from provider) (Also make sure refresh tokens work?)
+    //TODO: Emit user update event(To get extra data from provider)
 
     return;
   }

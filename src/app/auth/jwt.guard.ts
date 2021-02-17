@@ -26,7 +26,6 @@ const roleOrder = enumValues(AuthRole);
 export class JwtGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    private readonly authService: AuthService,
     private configService: ApiConfigService,
     private readonly jwtService: JwtService,
   ) {}
@@ -39,10 +38,7 @@ export class JwtGuard implements CanActivate {
         case 'ws':
           const client: Socket = context.switchToWs().getClient<Socket>();
           let wsToken: string = client.handshake?.query?.token as string;
-          const processedWS = await this.processToken(
-            wsToken,
-            context.getHandler(),
-          );
+          const processedWS = await this.processToken(wsToken, context);
           request.user = processedWS;
           return true;
 
@@ -52,10 +48,7 @@ export class JwtGuard implements CanActivate {
             ExtractJwt.fromAuthHeaderAsBearerToken()(request) ||
             request.cookies[this.configService.cookieNames.access];
 
-          const processed = await this.processToken(
-            httpToken,
-            context.getHandler(),
-          );
+          const processed = await this.processToken(httpToken, context);
 
           request.user = processed;
           return true;
@@ -78,7 +71,7 @@ export class JwtGuard implements CanActivate {
 
   async processToken(
     token: string,
-    ctxHandler: Function,
+    context: ExecutionContext,
   ): Promise<AuthTokenPayload> {
     if (!token) {
       throw new UnauthorizedException(
@@ -94,10 +87,12 @@ export class JwtGuard implements CanActivate {
       );
     }
 
-    // Check claims, but don't verify them yet
-    const role = this.reflector.get<AuthRole>('roles', ctxHandler);
-    const roleIndex = roleOrder.indexOf(role);
+    // Get role from the decorator of the route or the decorator of the class
+    const role =
+      this.reflector.get<AuthRole>('roles', context.getHandler()) ||
+      this.reflector.get('roles', context.getClass());
 
+    const roleIndex = roleOrder.indexOf(role);
     if (!(role && payload?.rol)) {
       throw new InternalServerErrorException(
         'Something went wrong with JWT role check',
@@ -114,13 +109,6 @@ export class JwtGuard implements CanActivate {
       throw new ForbiddenException("You're not allowed to execute this");
     }
 
-    // // Check user against database
-    // const verifyResult = await this.authService.verifyToken(payload);
-    // if (!verifyResult) {
-    //   throw new UnauthorizedException(
-    //     "User not found/Provider refreshing wasn't working",
-    //   );
-    // }
     return payload;
   }
 }

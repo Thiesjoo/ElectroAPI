@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongoose';
-import { DeveloperOnly } from 'src/models';
+import { AuthPrefixes, DeveloperOnly, ResponsePrefix } from 'src/models';
 import {
   Body,
   Controller,
@@ -17,21 +17,8 @@ import { UpdateUserDto, UserDTO, userMapper } from './user.dto';
 import { UsersService } from './users.service';
 
 @Controller('api/users')
-@UseGuards(JwtGuard)
-@ApiBearerAuth()
-@ApiResponse({
-  status: HttpStatus.UNAUTHORIZED,
-  description:
-    'Whenever the bearer token is missing, the request will be denied',
-})
-@ApiResponse({
-  status: HttpStatus.FORBIDDEN,
-  description: 'The roles of the user did not match any of the allowed roles',
-})
-@ApiResponse({
-  status: HttpStatus.INTERNAL_SERVER_ERROR,
-  description: 'Something else went wrong',
-})
+@AuthPrefixes(JwtGuard, [DeveloperOnly()])
+@ResponsePrefix()
 @ApiTags('User')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -41,7 +28,6 @@ export class UsersController {
    * @param createUserDto A new user
    */
   @Post()
-  @DeveloperOnly()
   async create(@Body() createUserDto: UserDTO) {
     return userMapper(await this.usersService.createUser(createUserDto));
   }
@@ -50,7 +36,6 @@ export class UsersController {
    * Get all users
    */
   @Get()
-  @DeveloperOnly()
   async findAll() {
     return (await this.usersService.findAllUsers()).map(userMapper);
   }
@@ -60,7 +45,6 @@ export class UsersController {
    * @param id UserID
    */
   @Get(':id')
-  @DeveloperOnly()
   @ApiParam({
     name: 'id',
     type: String,
@@ -84,13 +68,11 @@ export class UsersController {
    * @param updateUserDto Part of a user
    */
   @Put(':id')
-  @DeveloperOnly()
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return userMapper(await this.usersService.updateUser(id, updateUserDto));
   }
 
   @Delete(':id')
-  @DeveloperOnly()
   remove(@Param('id') id: string) {
     return this.usersService.deleteUser(id);
   }

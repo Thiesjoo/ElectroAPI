@@ -54,6 +54,7 @@ export class Oauth2RefreshService {
       }
 
       //TODO: Check if this works
+      //TODO: Maybe incorporate some cooldown, because spamming api's is not OK
       // Update all fields that are present on provider and on the new data
       Object.entries(resp.data).forEach((x) => {
         if (provider.hasOwnProperty(x[0])) {

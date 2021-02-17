@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { ApiConfigService } from 'src/config/configuration';
 import { forwardRef, HttpModule, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { AuthService, AuthUserModule } from './';
+import { AuthService } from './';
 import { Oauth2RefreshService } from './auth-refresh.service';
 import {
   DiscordController,
@@ -12,6 +12,7 @@ import {
   LocalStrategy,
   RefreshController
 } from './strategies';
+import { AuthUserModule } from './user/auth.user.module';
 
 @Module({
   imports: [

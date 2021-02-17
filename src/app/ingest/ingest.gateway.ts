@@ -2,6 +2,7 @@ import { Request } from 'express';
 import { Server, Socket } from 'socket.io';
 import {
   AuthedUser,
+  IMessageNotification,
   IngestClient,
   IngestSocketRoutes,
   Provider
@@ -25,7 +26,7 @@ import {
   WsException
 } from '@nestjs/websockets';
 import { AuthService, AuthUserService, JwtGuard } from '../auth';
-import { DataPacket, IngestAuthDTO } from './ingest.dto';
+import { IngestAuthDTO } from './ingest.dto';
 
 @UsePipes(new ValidationPipe())
 @WebSocketGateway()
@@ -104,7 +105,7 @@ export class IngestGateway {
   async ingestData(
     @ConnectedSocket() client: Socket,
     @Req() req: Request,
-    @MessageBody() data: DataPacket,
+    @MessageBody() data: IMessageNotification,
   ) {
     console.log(data);
   }
