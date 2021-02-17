@@ -4,8 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthService, AuthUserService } from '../..';
 
 @Injectable()
-export class RefreshService {
-  private readonly logger = new Logger(RefreshService.name);
+export class LocalRefreshService {
+  private readonly logger = new Logger(LocalRefreshService.name);
 
   constructor(
     private readonly authService: AuthService,

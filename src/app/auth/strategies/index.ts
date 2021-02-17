@@ -1,3 +1,3 @@
 export * from './discord';
 export * from './local';
-export * from './refresh';
+export * from './localRefresh';

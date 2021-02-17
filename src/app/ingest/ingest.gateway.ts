@@ -69,6 +69,18 @@ export class IngestGateway {
         new BadRequestException('Provider not registerd on this users account'),
       );
     }
+
+    try {
+      const updatedProvider: Provider = await this.authService.refreshProvider(
+        user._id,
+        foundProvider,
+      );
+      console.log(updatedProvider);
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+
     this.clients[client.id] = {
       userUid: data.id,
       dataProvider: data.provider,

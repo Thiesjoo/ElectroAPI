@@ -13,13 +13,13 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../../jwt.guard';
-import { RefreshService } from './refresh.service';
+import { LocalRefreshService } from './localRefresh.service';
 
 @Controller('auth/refresh')
 @ApiTags('Auth')
 export class RefreshController {
   constructor(
-    private readonly refreshService: RefreshService,
+    private readonly localRefreshService: LocalRefreshService,
     private readonly configService: ApiConfigService,
   ) {}
 
@@ -40,7 +40,7 @@ export class RefreshController {
       ...restRefresh
     } = this.configService.cookieSettings.refresh;
     res.clearCookie(this.configService.cookieNames.refresh, restRefresh);
-    await this.refreshService.revokeToken(token);
+    await this.localRefreshService.revokeToken(token);
 
     res.json({ ok: true });
   }
@@ -52,7 +52,7 @@ export class RefreshController {
     @Res({ passthrough: true }) res: Response,
   ) {
     console.log('req');
-    const newToken = await this.refreshService.getAccessToken(
+    const newToken = await this.localRefreshService.getAccessToken(
       req.cookies[this.configService.cookieNames.refresh],
     );
     res.cookie(

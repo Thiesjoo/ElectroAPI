@@ -1,4 +1,4 @@
-import { Model, ObjectId, UpdateQuery } from 'mongoose';
+import { FilterQuery, Model, ObjectId, UpdateQuery } from 'mongoose';
 import { AuthProviders, AuthRole, User } from 'src/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -80,11 +80,24 @@ export class AuthUserService {
   /**
    * Update an existing user
    * @param {string} uid The unique identifier of the user
-   * @param {UserDTO} user Partial details of the user
+   * @param {UpdateQuery<User>} user Partial details of the user
    */
   updateUser(uid: idType, user: UpdateQuery<User>): Promise<User> {
+    return this.update({ _id: uid }, user);
+
+    // this.userModel
+    //   .findByIdAndUpdate(uid, user, { useFindAndModify: false })
+    //   .exec();
+  }
+
+  /**
+   * Update user, used for nested array updates
+   * @param {FilterQuery<User>} filter The unique identifier of the user
+   * @param { UpdateQuery<User>} update Partial details of the user
+   */
+  update(filter: FilterQuery<User>, update: UpdateQuery<User>): Promise<User> {
     return this.userModel
-      .findByIdAndUpdate(uid, user, { useFindAndModify: false })
+      .updateOne(filter, update, { useFindAndModify: false })
       .exec();
   }
 

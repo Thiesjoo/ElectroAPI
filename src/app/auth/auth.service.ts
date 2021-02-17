@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto';
 import { ApiConfigService } from 'src/config/configuration';
 import {
+  AuthProviders,
   AuthTokenPayload,
   IUser,
   Provider,
@@ -80,6 +81,46 @@ export class AuthService {
     });
   }
 
+  async refreshProvider(userUid: string, provider: Provider) {
+    return new Promise<Provider>((resolve, reject) => {
+      // if (err || !accessToken) {
+      //   reject(err);
+      // }
+      // console.log(accessToken, refreshToken);
+      // this.authUsersService.update(
+      //   {
+      //     _id: userUid,
+      //     'providers.id': provider.id,
+      //     'providers.name': provider.providerName,
+      //   },
+      //   {
+      //     $set: {"providers.$.accessToken": accessToken},
+      //   },
+      // );
+      //Save access token to db
+    });
+  }
+
+  /**
+   * Verify the claims of the user and check if the refreshtoken is not revoked. (Also remove all tokens that were revoked)
+   * @param payload Refresh token payload
+   */
+  async verifyRefreshToken(payload: RefreshTokenPayload): Promise<User> {
+    const user = await this.verifyPermissionClaims(payload);
+    user.tokens = user.tokens.filter(
+      (x) => !x.revoked && x.expires > Date.now(),
+    );
+
+    const matchingToken = user.tokens.find((x) => x.jti === payload.jti);
+    if (!matchingToken) {
+      throw new UnauthorizedException();
+    }
+
+    // Save the modified tokens
+    await user.save();
+    return user;
+  }
+
   /**
    * Signs a new JWT token for the user provided
    * @param user User the token has to be created for
@@ -129,25 +170,5 @@ export class AuthService {
         e?.message,
       );
     }
-  }
-
-  /**
-   * Verify the claims of the user and check if the refreshtoken is not revoked. (Also remove all tokens that were revoked)
-   * @param payload Refresh token payload
-   */
-  async verifyRefreshToken(payload: RefreshTokenPayload): Promise<User> {
-    const user = await this.verifyPermissionClaims(payload);
-    user.tokens = user.tokens.filter(
-      (x) => !x.revoked && x.expires > Date.now(),
-    );
-
-    const matchingToken = user.tokens.find((x) => x.jti === payload.jti);
-    if (!matchingToken) {
-      throw new UnauthorizedException();
-    }
-
-    // Save the modified tokens
-    await user.save();
-    return user;
   }
 }
