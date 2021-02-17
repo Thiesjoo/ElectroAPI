@@ -11,5 +11,6 @@ export interface Provider {
 
   accessToken: string;
   refreshToken: string;
+  scopes: string[];
   extra: any;
 }

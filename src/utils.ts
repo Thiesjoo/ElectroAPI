@@ -1,3 +1,4 @@
+import axios, { AxiosInstance } from 'axios';
 import { Request, Response } from 'express';
 import { of } from 'rxjs';
 import { HttpStatus, NotFoundException } from '@nestjs/common';
@@ -45,6 +46,15 @@ export function checkUndefined(x) {
   return x;
 }
 
+/**
+ * Extract the UID from a user out of the request
+ * @param req request
+ */
 export function extractUID(req: Request): string {
   return (req?.user as AuthTokenPayload)?.sub;
 }
+
+/**
+ * Custom axios instance, so all settings can be applied in one place
+ */
+export const axiosInst: AxiosInstance = axios.create({});

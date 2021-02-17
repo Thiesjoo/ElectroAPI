@@ -11,11 +11,13 @@ import {
 import {
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthUserService } from './auth.user.service';
+import { Oauth2RefreshService } from './auth-refresh.service';
+import { AuthUserService } from './user/auth.user.service';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +25,7 @@ export class AuthService {
     private authUsersService: AuthUserService,
     private readonly jwtService: JwtService,
     private configService: ApiConfigService,
+    private refreshService: Oauth2RefreshService,
   ) {}
 
   async validateLocalUser(
@@ -47,21 +50,21 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    let prov = user.providers.find(
+    let prov = user.providers.findIndex(
       (x) =>
         providerData.id === x.id &&
         providerData.providerName === x.providerName,
     );
 
-    if (prov) {
-      prov = providerData;
+    if (prov > -1) {
+      user.providers[prov] = providerData;
     } else {
       user.providers.push(providerData);
     }
+    user.markModified('providers');
     await user.save();
     //TODO: Emit user update event(To get data from provider) (Also make sure refresh tokens work?)
 
-    console.log('validate provider: ', user);
     return;
   }
 
@@ -81,24 +84,35 @@ export class AuthService {
     });
   }
 
-  async refreshProvider(userUid: string, provider: Provider) {
-    return new Promise<Provider>((resolve, reject) => {
-      // if (err || !accessToken) {
-      //   reject(err);
-      // }
-      // console.log(accessToken, refreshToken);
-      // this.authUsersService.update(
-      //   {
-      //     _id: userUid,
-      //     'providers.id': provider.id,
-      //     'providers.name': provider.providerName,
-      //   },
-      //   {
-      //     $set: {"providers.$.accessToken": accessToken},
-      //   },
-      // );
-      //Save access token to db
-    });
+  async refreshProvider(
+    userUid: string,
+    provider: Provider,
+  ): Promise<Provider> {
+    console.log('Reffreshing provider');
+    const result = await this.refreshService.test(provider);
+    console.log(result);
+    if (!result) {
+      throw new InternalServerErrorException('Something went wrong ):');
+    }
+    //Save the new provider data
+    console.log('Saving new provider informatiojn');
+    await this.validateProvider(provider, userUid);
+    return result;
+    // if (err || !accessToken) {
+    //   reject(err);
+    // }
+    // console.log(accessToken, refreshToken);
+    // this.authUsersService.update(
+    //   {
+    //     _id: userUid,
+    //     'providers.id': provider.id,
+    //     'providers.name': provider.providerName,
+    //   },
+    //   {
+    //     $set: {"providers.$.accessToken": accessToken},
+    //   },
+    // );
+    //Save access token to db
   }
 
   /**

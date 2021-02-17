@@ -8,6 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { DiscordUser } from './discord.enums';
 
+const dcScopes = ['identify', 'connections', 'rpc', 'rpc.notifications.read'];
 @Injectable()
 export class DiscordStrategy extends PassportStrategy(
   Strategy,
@@ -19,7 +20,7 @@ export class DiscordStrategy extends PassportStrategy(
   ) {
     super({
       ...configService.getProvider(AuthProviders.Discord),
-      scope: ['identify', 'connections', 'rpc', 'rpc.notifications.read'],
+      scope: dcScopes,
       passReqToCallback: true,
     });
   }
@@ -44,6 +45,7 @@ export class DiscordStrategy extends PassportStrategy(
           discriminator: profile.discriminator,
           connections: profile.connections,
         },
+        scopes: dcScopes,
       };
 
       await this.authService.validateProvider(prov, extractUID(req));

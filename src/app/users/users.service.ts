@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongoose';
 import { AuthProviders, User } from 'src/models';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { AuthUserService } from '../auth/auth.user.service';
+import { AuthUserService } from '../auth/';
 import { UpdateUserDto, UserDTO } from '../users/user.dto';
 
 @Injectable()

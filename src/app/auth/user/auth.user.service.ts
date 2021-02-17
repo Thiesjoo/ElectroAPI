@@ -2,7 +2,7 @@ import { FilterQuery, Model, ObjectId, UpdateQuery } from 'mongoose';
 import { AuthProviders, AuthRole, User } from 'src/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserDTO } from '../users/user.dto';
+import { UserDTO } from '../../users/user.dto';
 
 type idType = ObjectId | string;
 

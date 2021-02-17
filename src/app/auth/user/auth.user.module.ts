@@ -1,5 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { AppModule } from '../app.module';
+import { AppModule } from '../../app.module';
 import { AuthUserService } from './auth.user.service';
 
 @Module({

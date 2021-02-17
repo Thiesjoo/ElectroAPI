@@ -36,6 +36,7 @@
     "@nestjs/platform-socket.io": "^7.6.11",
     "@nestjs/swagger": "^4.7.11",
     "@nestjs/websockets": "^7.6.11",
+    "axios": "^0.21.1",
     "class-transformer": "^0.3.2",
     "class-validator": "^0.13.1",
     "cookie-parser": "^1.4.5",
