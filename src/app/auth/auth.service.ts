@@ -6,14 +6,14 @@ import {
   IUser,
   Provider,
   RefreshTokenPayload,
-  User,
+  User
 } from 'src/models';
 import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Oauth2RefreshService } from './auth-refresh.service';
@@ -88,31 +88,14 @@ export class AuthService {
     userUid: string,
     provider: Provider,
   ): Promise<Provider> {
-    console.log('Reffreshing provider');
-    const result = await this.refreshService.test(provider);
-    console.log(result);
+    const result = await this.refreshService.refreshTokens(provider);
     if (!result) {
-      throw new InternalServerErrorException('Something went wrong ):');
+      throw new InternalServerErrorException(
+        'Something went wrong with refreshing user tokens',
+      );
     }
-    //Save the new provider data
-    console.log('Saving new provider informatiojn');
     await this.validateProvider(provider, userUid);
     return result;
-    // if (err || !accessToken) {
-    //   reject(err);
-    // }
-    // console.log(accessToken, refreshToken);
-    // this.authUsersService.update(
-    //   {
-    //     _id: userUid,
-    //     'providers.id': provider.id,
-    //     'providers.name': provider.providerName,
-    //   },
-    //   {
-    //     $set: {"providers.$.accessToken": accessToken},
-    //   },
-    // );
-    //Save access token to db
   }
 
   /**

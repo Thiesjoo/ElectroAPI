@@ -4,7 +4,7 @@ export interface DiscordUser {
   avatar: string;
   discriminator: string;
   locale: string;
-  connections: Connection[];
+  connections?: Connection[];
 }
 
 export interface Connection {

@@ -75,9 +75,9 @@ export class IngestGateway {
         user._id,
         foundProvider,
       );
-      console.log(updatedProvider);
+      console.log('INGEST:', updatedProvider);
     } catch (e) {
-      console.error(e);
+      console.error('INGEST:', e);
       return null;
     }
 

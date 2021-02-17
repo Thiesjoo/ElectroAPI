@@ -1,8 +1,8 @@
 import { ApiConfigService } from 'src/config/configuration';
 import { AuthProviders, Provider, User } from 'src/models';
-import { axiosInst, enumValues } from 'src/utils';
-import { HttpService, Injectable } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { axiosInst } from 'src/utils';
+import { Injectable, Logger } from '@nestjs/common';
+import { DiscordUser } from './';
 
 const oauthURLMap: {
   [key in AuthProviders]: {
@@ -18,11 +18,19 @@ const oauthURLMap: {
   [AuthProviders.None]: null,
 };
 
+type UserTypes = {
+  [AuthProviders.Discord]: DiscordUser;
+  [AuthProviders.Local]: {
+    test: string;
+  };
+  [AuthProviders.None]: null;
+};
 @Injectable()
 export class Oauth2RefreshService {
   constructor(private configService: ApiConfigService) {}
+  private readonly logger = new Logger(Oauth2RefreshService.name);
 
-  async test( provider: Provider): Promise<Provider> {
+  async refreshTokens(provider: Provider): Promise<Provider> {
     let tokens = this.configService.getProvider(provider.providerName);
     const val = {
       client_id: tokens.clientID,
@@ -32,7 +40,34 @@ export class Oauth2RefreshService {
       redirect_uri: tokens.callbackURL,
       scope: provider.scopes.join(' '),
     };
-    //FIXME: First check if accestoken is valid, then refresh
+
+    try {
+      const resp: {
+        data: UserTypes[typeof provider.providerName];
+      } = await axiosInst.get(oauthURLMap[provider.providerName].userURL, {
+        headers: {
+          authorization: `Bearer ${provider.accessToken}`,
+        },
+      });
+      if (!resp?.data) {
+        throw new Error('Refresh URL gave no response');
+      }
+
+      //TODO: Check if this works
+      // Update all fields that are present on provider and on the new data
+      Object.entries(resp.data).forEach((x) => {
+        if (provider.hasOwnProperty(x[0])) {
+          provider[x[0]] = x[1];
+        }
+      });
+      Logger.log('Updated user data.', 'auth-refresh.service');
+      return provider;
+    } catch (e) {
+      if (e?.response?.status !== 401) {
+        Logger.error(e);
+        return null;
+      }
+    }
 
     try {
       const resp: {
@@ -52,8 +87,8 @@ export class Oauth2RefreshService {
           },
         },
       );
-      if (!resp) {
-        throw new Error('Discord gave no response');
+      if (!resp?.data) {
+        throw new Error('Refresh URL gave no response');
       }
 
       provider.accessToken = resp.data.access_token;
@@ -61,7 +96,7 @@ export class Oauth2RefreshService {
 
       return provider;
     } catch (e) {
-      console.error(e);
+      Logger.error(e);
       return null;
     }
   }
