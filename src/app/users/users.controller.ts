@@ -8,10 +8,9 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put,
-  UseGuards
+  Put
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth/jwt.guard';
 import { UpdateUserDto, UserDTO, userMapper } from './user.dto';
 import { UsersService } from './users.service';

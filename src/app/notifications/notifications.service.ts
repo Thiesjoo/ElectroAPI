@@ -1,6 +1,9 @@
-import { FilterQuery, Model, PaginateModel } from 'mongoose';
-import { ApiConfigService } from 'src/config/configuration';
-import { AuthTokenPayload, MessageNotification, User } from 'src/models';
+import {
+  AuthTokenPayload,
+  IMessageNotification,
+  MessageNotification,
+  PaginateModel
+} from 'src/models';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -13,7 +16,8 @@ export class NotificationService {
 
   //Add, dismiss? (Do we want history), get (Paginated. By ID.  All is only for dev?)
 
-  add() {
+  add(token: AuthTokenPayload, notf: IMessageNotification) {
+    console.log(token, notf);
     return 'asd';
   }
 

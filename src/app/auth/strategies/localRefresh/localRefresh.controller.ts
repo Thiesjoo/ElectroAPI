@@ -1,17 +1,8 @@
 import { Request, Response } from 'express';
 import { ApiConfigService } from 'src/config/configuration';
-import { AuthedUser, AuthProviders } from 'src/models';
-import {
-  Controller,
-  Get,
-  Injectable,
-  Post,
-  Req,
-  Res,
-  UseGuards
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AuthedUser } from 'src/models';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../../jwt.guard';
 import { LocalRefreshService } from './localRefresh.service';
 

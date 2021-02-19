@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { ExtractJwt } from 'passport-jwt';
 import { Socket } from 'socket.io';
@@ -18,7 +18,6 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { WsException } from '@nestjs/websockets';
 import { AuthRole, AuthTokenPayload } from '../../models';
-import { AuthService } from './auth.service';
 
 const roleOrder = enumValues(AuthRole);
 

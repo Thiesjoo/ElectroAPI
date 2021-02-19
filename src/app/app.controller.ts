@@ -1,6 +1,5 @@
-import { ApiConfigService } from 'src/config/configuration';
 import { ResponsePrefix } from 'src/models';
-import { Controller, Get, HttpStatus, Redirect, Res } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Redirect } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { AppService } from './app.service';
 

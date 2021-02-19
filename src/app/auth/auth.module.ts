@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { ApiConfigService } from 'src/config/configuration';
-import { forwardRef, HttpModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './';
 import { Oauth2RefreshService } from './auth-refresh.service';

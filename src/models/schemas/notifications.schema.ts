@@ -1,30 +1,43 @@
 import { Type } from 'class-transformer';
-import { IsObject, IsString, ValidateNested } from 'class-validator';
-import { Document, PaginateModel, Schema as MongooseSchema } from 'mongoose';
+import { IsEnum, IsObject, IsString, ValidateNested } from 'class-validator';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
+import { AuthProviders } from '../enums';
 
 export class MessageAuthor {
+  @ApiProperty()
   @IsString()
   name: string;
+  @ApiProperty()
   @IsString()
   image: string;
 }
 
 export class IMessageNotification {
   user: string;
+  @ApiProperty()
+  @IsEnum(AuthProviders)
+  providerType: AuthProviders;
+  @ApiProperty()
   @IsString()
   image: string;
+  @ApiProperty()
   @IsString()
   title: string;
+  @ApiProperty()
   @IsString()
   message: string;
+  @ApiProperty()
   @IsString()
   time: string;
+  @ApiProperty()
   @IsObject()
   @ValidateNested()
   @Type(() => MessageAuthor)
   author: MessageAuthor;
   @IsObject()
+  @ApiProperty()
   extra: {};
 }
 
@@ -38,6 +51,8 @@ export class MessageNotification
   implements IMessageNotification {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   user: string;
+  @Prop({ enum: AuthProviders })
+  providerType: AuthProviders;
   @Prop({ required: true })
   image: string;
   @Prop({ required: true })

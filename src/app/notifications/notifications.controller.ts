@@ -1,23 +1,15 @@
-import { Request, Response } from 'express';
 import { ApiConfigService } from 'src/config/configuration';
 import {
   AuthedUser,
   AuthPrefixes,
   AuthTokenPayload,
   DeveloperOnly,
+  IMessageNotification,
   ResponsePrefix
 } from 'src/models';
 import { UserToken } from 'src/models/decorators/user';
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Param,
-  Redirect,
-  Req,
-  Res
-} from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth';
 import { NotificationService } from './notifications.service';
 
@@ -45,10 +37,22 @@ export class NotificationController {
   @DeveloperOnly()
   @ApiResponse({
     status: HttpStatus.OK,
-    type: String,
-    description: 'Hello world!',
+    type: [IMessageNotification],
+    description: 'A list of notifications',
   })
   getAll(@UserToken() token: AuthTokenPayload) {
     return this.notificationService.getAll(token);
+  }
+
+  @Post('')
+  @ApiBody({
+    type: IMessageNotification,
+    description: 'A complete notification object',
+  })
+  createNotification(
+    @UserToken() token: AuthTokenPayload,
+    @Body() notf: IMessageNotification,
+  ) {
+    return this.notificationService.add(token, notf);
   }
 }

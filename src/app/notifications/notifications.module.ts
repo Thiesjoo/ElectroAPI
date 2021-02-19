@@ -1,5 +1,4 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthModule, AuthUserModule } from '../';
 import { AppModule } from '../app.module';
 import { NotificationController } from './notifications.controller';
