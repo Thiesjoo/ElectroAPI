@@ -23,6 +23,6 @@ export class NotificationController {
     description: 'Hello world!',
   })
   getHello() {
-    return this.notificationService.add();
+    return this.notificationService.getAll();
   }
 }

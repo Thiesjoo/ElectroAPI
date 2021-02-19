@@ -33,7 +33,9 @@ class Extra {
 }
 
 @Schema()
-export class Notification extends Document implements IMessageNotification {
+export class MessageNotification
+  extends Document
+  implements IMessageNotification {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   user: string;
   @Prop({ required: true })
@@ -52,9 +54,9 @@ export class Notification extends Document implements IMessageNotification {
   };
 }
 
-const schema = SchemaFactory.createForClass(Notification);
+const schema = SchemaFactory.createForClass(MessageNotification);
 
 export const notificationSchema = {
-  name: Notification.name,
+  name: MessageNotification.name,
   schema,
 };
