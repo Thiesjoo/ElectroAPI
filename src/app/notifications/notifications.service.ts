@@ -1,6 +1,6 @@
-import { Model } from 'mongoose';
+import { FilterQuery, Model, PaginateModel } from 'mongoose';
 import { ApiConfigService } from 'src/config/configuration';
-import { MessageNotification, User } from 'src/models';
+import { AuthTokenPayload, MessageNotification, User } from 'src/models';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -8,10 +8,10 @@ import { InjectModel } from '@nestjs/mongoose';
 export class NotificationService {
   constructor(
     @InjectModel(MessageNotification.name)
-    private readonly userModel: Model<User>,
+    private readonly notfModel: PaginateModel<MessageNotification>,
   ) {}
 
-  //Add, dismiss? (Do we want history), get (In batches, so paginated)
+  //Add, dismiss? (Do we want history), get (Paginated. By ID.  All is only for dev?)
 
   add() {
     return 'asd';
@@ -19,9 +19,32 @@ export class NotificationService {
 
   dismiss() {}
 
-  getAll() {
-    return this.userModel.find({});
+  getAll(token: AuthTokenPayload) {
+    return this.notfModel.find({ user: token.sub });
   }
 
-  getPaginated() {}
+  getWithID(token: AuthTokenPayload, id: string) {
+    return this.notfModel.find({ _id: id, user: token.sub });
+  }
+
+  getPaginated(
+    token: AuthTokenPayload,
+    query: string,
+    // Search in:
+    // - Title
+    // - Body
+    // - Author
+    page: number,
+    limit: number,
+  ) {
+    return this.notfModel.paginate(
+      {
+        user: token.sub,
+      },
+      {
+        page,
+        limit,
+      },
+    );
+  }
 }

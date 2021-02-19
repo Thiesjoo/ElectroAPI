@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsObject, IsString, ValidateNested } from 'class-validator';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, PaginateModel, Schema as MongooseSchema } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export class MessageAuthor {
