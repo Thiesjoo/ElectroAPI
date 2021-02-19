@@ -47,7 +47,7 @@ export function checkUndefined(x) {
 }
 
 /**
- * Extract the UID from a user out of the request
+ * Extract the UID from a user out of a barebones request
  * @param req request
  */
 export function extractUID(req: Request): string {

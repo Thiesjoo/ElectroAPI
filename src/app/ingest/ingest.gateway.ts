@@ -2,12 +2,13 @@ import { Request } from 'express';
 import { Server, Socket } from 'socket.io';
 import {
   AuthedUser,
+  AuthTokenPayload,
   IMessageNotification,
   IngestClient,
   IngestSocketRoutes,
   Provider
 } from 'src/models';
-import { extractUID } from 'src/utils';
+import { UserToken } from 'src/models/decorators/user';
 import {
   BadRequestException,
   NotFoundException,
@@ -45,10 +46,10 @@ export class IngestGateway {
   @SubscribeMessage(IngestSocketRoutes.Auth)
   async auth(
     @ConnectedSocket() client: Socket,
-    @Req() req: Request,
+    @UserToken() token: AuthTokenPayload,
     @MessageBody() data: IngestAuthDTO,
   ): Promise<Provider> {
-    if (extractUID(req) !== data.id) {
+    if (token.sub !== data.id) {
       throw new WsException(
         new UnauthorizedException('JWT And user ID do not match'),
       );
