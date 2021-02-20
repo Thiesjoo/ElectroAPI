@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { ApiConfigService } from 'src/config/configuration';
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './';
 import { Oauth2RefreshService } from './auth-refresh.service';
@@ -14,6 +14,7 @@ import {
 } from './strategies';
 import { AuthUserModule } from './user/auth.user.module';
 
+@Global()
 @Module({
   imports: [
     AuthUserModule,

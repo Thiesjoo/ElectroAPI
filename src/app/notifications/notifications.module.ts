@@ -1,11 +1,11 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { AuthModule, AuthUserModule } from '../';
-import { AppModule } from '../app.module';
+import { notificationSchema } from 'src/models';
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { NotificationController } from './notifications.controller';
 import { NotificationService } from './notifications.service';
 
 @Module({
-  imports: [forwardRef(() => AppModule), AuthModule, AuthUserModule],
+  imports: [MongooseModule.forFeature([notificationSchema])],
   controllers: [NotificationController],
   providers: [NotificationService],
 })
