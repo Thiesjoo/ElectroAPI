@@ -19,20 +19,29 @@ import { AuthUserModule } from './user/auth.user.module';
   imports: [
     AuthUserModule,
     JwtModule.registerAsync({
-      useFactory: async (configService: ApiConfigService) => ({
-        publicKey: fs.readFileSync(configService.jwtPublicPath, 'utf8'),
-        privateKey: fs.readFileSync(configService.jwtPrivatePath, 'utf8'),
+      useFactory: async (configService: ApiConfigService) => {
         // TODO: Throw away tokens after version bump?
-        signOptions: {
-          expiresIn: configService.expiry.accessExpiry, // 10 minutes
-          algorithm: 'RS256',
-          issuer: `ElectroAPI-v${configService.version}`,
-        },
-        verifyOptions: {
-          algorithms: ['RS256'],
-          issuer: `ElectroAPI-v${configService.version}`,
-        },
-      }),
+        const issuer = `ElectroAPI-v${configService.version}`;
+        const algorithm = 'RS256';
+        const fileEncoding = 'utf8';
+
+        return {
+          publicKey: fs.readFileSync(configService.jwtPublicPath, fileEncoding),
+          privateKey: fs.readFileSync(
+            configService.jwtPrivatePath,
+            fileEncoding,
+          ),
+          signOptions: {
+            expiresIn: configService.expiry.accessExpiry,
+            algorithm,
+            issuer,
+          },
+          verifyOptions: {
+            algorithms: [algorithm],
+            issuer,
+          },
+        };
+      },
       inject: [ApiConfigService],
     }),
   ],
