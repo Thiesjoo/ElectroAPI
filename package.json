@@ -23,7 +23,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "gendocs": "npx @compodoc/compodoc -p tsconfig.json -s "
+    "gendocs": "npx @compodoc/compodoc -p tsconfig.json -n 'ElectroAPI docs' -s --includes docs --includesName 'Api flow'"
   },
   "dependencies": {
     "@nestjs/common": "^7.6.12",

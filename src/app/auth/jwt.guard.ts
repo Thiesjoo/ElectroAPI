@@ -23,7 +23,11 @@ import { AuthRole, AuthTokenPayload } from '../../models';
 const roleOrder = enumValues(AuthRole);
 
 /**
- * JwtGuard grabs the auth token from URL query parameter: auth, from the Auth header or from the cookie. It then checks it validity and sets the payload as request.user
+ * JwtGuard grabs the auth token from:
+ * - URL query parameter: auth
+ * - The Authorization header
+ * - From 'accesstoken' cookie.
+ * It then checks it validity and sets the payload as request.user
  */
 @Injectable()
 export class JwtGuard implements CanActivate {

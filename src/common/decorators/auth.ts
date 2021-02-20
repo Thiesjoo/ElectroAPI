@@ -14,11 +14,11 @@ import { AuthRole } from '../../models/enums';
  */
 const Role = (roles: AuthRole) => SetMetadata('roles', roles);
 
-/** Developer only */
+/** Developer only access */
 export const DeveloperOnly = () => Role(AuthRole.Developer);
-/** Authed user or higher */
+/** Authed user or higher access */
 export const AuthedUser = () => Role(AuthRole.User);
-/** Banned user or higher */
+/** Banned user or higher access */
 export const BannedUsers = () => Role(AuthRole.Banned);
 
 /**

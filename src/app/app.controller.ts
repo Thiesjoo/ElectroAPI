@@ -3,12 +3,12 @@ import { Controller, Get, HttpStatus, Redirect } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 
 /** Simple app controller */
-@Controller('')
+@Controller('/')
 @ResponsePrefix()
 export class AppController {
   /** Redirect main page to API */
   @Get('')
-  @Redirect('/api', 301)
+  @Redirect('api', 301)
   redirect() {}
 
   /** Simple hello world route */
