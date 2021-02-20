@@ -38,7 +38,7 @@ export class DiscordStrategy extends PassportStrategy(
         providerName: AuthProviders.Discord,
         id: profile.id,
         username: profile.username,
-        avatar: profile.avatar,
+        avatar: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.gif`,
         accessToken,
         refreshToken,
         extra: {
