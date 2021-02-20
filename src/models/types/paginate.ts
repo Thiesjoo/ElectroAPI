@@ -1,5 +1,6 @@
 import { Document, FilterQuery, Model } from 'mongoose';
 
+/** @ignore */
 interface CustomLabels {
   totalDocs?: string;
   limit?: string;
@@ -10,11 +11,13 @@ interface CustomLabels {
   prevPage?: string;
 }
 
+/** @ignore */
 interface ReadOptions {
   pref: string;
   tags?: any[];
 }
 
+/** @ignore */
 interface PaginateOptions {
   select?: object | string;
   sort?: object | string;
@@ -32,6 +35,7 @@ interface PaginateOptions {
   options?: QueryFindOptions;
 }
 
+/** @ignore */
 interface QueryFindOptions {
   batchSize?: number;
   comment?: any;
@@ -44,6 +48,7 @@ interface QueryFindOptions {
   tailable?: any;
 }
 
+/** @ignore */
 interface QueryPopulateOptions {
   /** space delimited path(s) to populate */
   path: string;
@@ -59,6 +64,7 @@ interface QueryPopulateOptions {
   populate?: QueryPopulateOptions | QueryPopulateOptions[];
 }
 
+/** @ignore */
 export interface PaginateResult<T> {
   docs: T[];
   totalDocs: number;
@@ -78,6 +84,7 @@ export interface PaginateResult<T> {
  * Paginate model typing
  */
 export interface PaginateModel<T extends Document> extends Model<T> {
+  /** Paginate function */
   paginate(
     query?: FilterQuery<T>,
     options?: PaginateOptions,
