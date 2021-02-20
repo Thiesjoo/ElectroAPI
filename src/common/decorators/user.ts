@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { AuthTokenPayload } from '../enums';
+import { AuthTokenPayload } from '../../models/enums';
 
 export const UserToken = createParamDecorator(
   (_, ctx: ExecutionContext): AuthTokenPayload => {

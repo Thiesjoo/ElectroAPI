@@ -15,6 +15,9 @@ export class MessageAuthor {
 }
 
 export class IMessageNotification {
+  @ApiProperty({
+    description: 'The unique ID of the user',
+  })
   user: string;
   @ApiProperty()
   @IsEnum(AuthProviders)

@@ -3,7 +3,8 @@ import { LogLevel, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
-import filters from './app/errors';
+import filters from './common/errors';
+import interceptors from './common/interceptors';
 import { ApiConfigService } from './config/configuration';
 import { logLevels } from './models/enums/loglevels';
 import { enumKeys } from './utils';
@@ -11,6 +12,7 @@ import { enumKeys } from './utils';
 const levels = enumKeys(logLevels);
 
 async function bootstrap() {
+  //Config
   const defaultLogLevel = process.env.LOG_LEVEL || 'verbose';
   const foundLogLevel = levels.findIndex((x) => x === defaultLogLevel);
   if (foundLogLevel === -1) {
@@ -19,15 +21,23 @@ async function bootstrap() {
     );
     process.exit(1);
   }
+
+  //Creation
   const app = await NestFactory.create(AppModule, {
     logger: levels.slice(0, foundLogLevel + 1).map((x) => <LogLevel>x),
   });
+
+  //Global pipes
   app.useGlobalPipes(new ValidationPipe({}));
   app.useGlobalFilters(...filters);
+  app.useGlobalInterceptors(...interceptors);
+
+  //Express stuff
   app.use(cookieParser());
 
   const config = app.get(ApiConfigService);
 
+  //OpenAPI setup
   const swaggerBuilder = new DocumentBuilder()
     .setTitle('ElectroAPI')
     .setDescription('Currently WIP')
@@ -41,4 +51,5 @@ async function bootstrap() {
 
   await app.listen(config.port);
 }
+
 bootstrap();

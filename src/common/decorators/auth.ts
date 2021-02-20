@@ -6,7 +6,7 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
-import { AuthRole } from '../enums';
+import { AuthRole } from '../../models/enums';
 
 /**
  * Custom decorater for JWT Guard

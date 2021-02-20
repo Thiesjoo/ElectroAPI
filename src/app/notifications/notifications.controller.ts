@@ -1,15 +1,24 @@
+import { UserToken } from 'src/common/decorators/user';
 import { ApiConfigService } from 'src/config/configuration';
 import {
+  ApiPaginatedResponse,
   AuthedUser,
   AuthPrefixes,
   AuthTokenPayload,
-  DeveloperOnly,
   IMessageNotification,
+  PaginatedDto,
   ResponsePrefix
 } from 'src/models';
-import { UserToken } from 'src/models/decorators/user';
-import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Query
+} from '@nestjs/common';
+import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth';
 import { NotificationService } from './notifications.service';
 
@@ -26,22 +35,57 @@ export class NotificationController {
   @Get(':id/')
   @ApiResponse({
     status: HttpStatus.OK,
-    type: String,
-    description: 'Hello world!',
+    type: IMessageNotification,
+    description: 'The requested notification',
   })
-  getWithId(@Param('id') id: string, @UserToken() token: AuthTokenPayload) {
-    return this.notificationService.getWithID(token, id);
+  async getWithId(
+    @Param('id') id: string,
+    @UserToken() token: AuthTokenPayload,
+  ) {
+    const res = await this.notificationService.getWithID(token, id);
+    return res.length > 0 ? res[0] : null;
   }
 
   @Get('')
-  @DeveloperOnly()
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: [IMessageNotification],
-    description: 'A list of notifications',
+  @ApiQuery({
+    name: 'query',
+    type: String,
+    description: "The string you are searching for. Default: ' '",
+    required: false,
   })
-  getAll(@UserToken() token: AuthTokenPayload) {
-    return this.notificationService.getAll(token);
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+    description: "The page you are looking for. Default: '1'",
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: Number,
+    description:
+      "Maximum number of documents returned. Default: '1'. Max: '100'",
+    required: false,
+  })
+  @ApiPaginatedResponse(IMessageNotification)
+  async getAll(
+    @UserToken() token: AuthTokenPayload,
+    @Query('query') query: string = '',
+    @Query('limit') limit: number = 10,
+    @Query('page') page: number = 1,
+  ): Promise<PaginatedDto<IMessageNotification>> {
+    const res = await this.notificationService.getPaginated(
+      token,
+      query,
+      page,
+      limit,
+    );
+
+    return {
+      docs: res.docs,
+      page: res.page,
+      limit: res.limit,
+      total: res.totalDocs,
+    };
   }
 
   @Post('')

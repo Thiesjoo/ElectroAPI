@@ -17,8 +17,10 @@ export class NotificationService {
   //Add, dismiss? (Do we want history), get (Paginated. By ID.  All is only for dev?)
 
   add(token: AuthTokenPayload, notf: IMessageNotification) {
-    console.log(token, notf);
-    return 'asd';
+    return this.notfModel.create({
+      ...notf,
+      user: token.sub,
+    });
   }
 
   dismiss() {}
@@ -47,7 +49,7 @@ export class NotificationService {
       },
       {
         page,
-        limit,
+        limit: limit > 100 ? 100 : limit,
       },
     );
   }

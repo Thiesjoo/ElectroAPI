@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import { Server, Socket } from 'socket.io';
+import { UserToken } from 'src/common/decorators/user';
 import {
   AuthedUser,
   AuthTokenPayload,
@@ -8,7 +9,6 @@ import {
   IngestSocketRoutes,
   Provider
 } from 'src/models';
-import { UserToken } from 'src/models/decorators/user';
 import {
   BadRequestException,
   NotFoundException,
