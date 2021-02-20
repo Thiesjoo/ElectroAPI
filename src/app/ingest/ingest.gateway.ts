@@ -34,8 +34,10 @@ import { IngestAuthDTO } from './ingest.dto';
 @WebSocketGateway()
 @UseGuards(JwtGuard)
 export class IngestGateway {
+  /** The websocket server */
   @WebSocketServer()
   server: Server;
+  /** Map of every client, mapped to the data about client */
   private readonly clients: Record<string, IngestClient> = {};
   private readonly logger: Logger = new Logger(IngestGateway.name);
 
@@ -44,6 +46,12 @@ export class IngestGateway {
     private readonly authService: AuthService,
   ) {}
 
+  /**
+   * Check if client can authenticate and act on that
+   * @param client Client socket
+   * @param token Client processed token
+   * @param data Data from request
+   */
   @AuthedUser()
   @SubscribeMessage(IngestSocketRoutes.Auth)
   async auth(

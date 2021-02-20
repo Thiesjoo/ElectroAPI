@@ -7,9 +7,13 @@ import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
  */
 @Catch(Error.ValidationError)
 export class ValidationFilter implements ExceptionFilter {
+  /**
+   * Catches the error
+   * @param exception The error thrown
+   * @param host The request
+   */
   catch(exception: Error.ValidationError, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
+    const response = host.switchToHttp().getResponse<Response>();
 
     const allErrors = Object.values(exception.errors);
     if (allErrors.length === 0) {

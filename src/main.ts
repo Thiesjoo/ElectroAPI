@@ -11,6 +11,9 @@ import { enumKeys } from './utils';
 
 const levels = enumKeys(logLevels);
 
+/**
+ * Bootstrap the NestJS application
+ */
 async function bootstrap() {
   //Config
   const defaultLogLevel = process.env.LOG_LEVEL || 'verbose';
@@ -27,7 +30,7 @@ async function bootstrap() {
     logger: levels.slice(0, foundLogLevel + 1).map((x) => <LogLevel>x),
   });
 
-  //Global pipes
+  //Global stuff
   app.useGlobalPipes(new ValidationPipe({}));
   app.useGlobalFilters(...filters);
   app.useGlobalInterceptors(...interceptors);

@@ -1,18 +1,19 @@
 import { Response } from 'express';
 import { Error } from 'mongoose';
-import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 
 /**
  * Catch mongoose casting errors: Wrong object id
  */
 @Catch(Error.CastError)
 export class CastFilter implements ExceptionFilter {
-  private readonly logger = new Logger(CastFilter.name);
-
+  /**
+   * Catches the error
+   * @param exception The error thrown
+   * @param host The request
+   */
   catch(exception: Error.CastError, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    this.logger.error(exception);
+    const response = host.switchToHttp().getResponse<Response>();
 
     return response.status(400).json({
       statusCode: 400,

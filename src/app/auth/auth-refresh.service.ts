@@ -4,6 +4,9 @@ import { axiosInst } from 'src/utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { DiscordUser } from './';
 
+/**
+ * The URL's of the oauth refresh routes
+ */
 const oauthURLMap: {
   [key in AuthProviders]: {
     userURL: string;
@@ -25,11 +28,21 @@ type UserTypes = {
   };
   [AuthProviders.None]: null;
 };
+
+/**
+ * Class to refresh tokens
+ */
 @Injectable()
 export class Oauth2RefreshService {
+  /** Constructor */
   constructor(private configService: ApiConfigService) {}
+  /** Logger */
   private readonly logger = new Logger(Oauth2RefreshService.name);
 
+  /**
+   * Refresh the tokens of a specific user of a specific provider
+   * @param provider The provider
+   */
   async refreshTokens(provider: Provider): Promise<Provider> {
     let tokens = this.configService.getProvider(provider.providerName);
     const val = {

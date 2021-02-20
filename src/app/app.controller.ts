@@ -18,7 +18,7 @@ export class AppController {
     type: String,
     description: 'Hello world!',
   })
-  getHello() {
+  getHello(): string {
     return this.appService.getHello();
   }
 }

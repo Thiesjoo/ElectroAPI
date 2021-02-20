@@ -74,6 +74,9 @@ export interface PaginateResult<T> {
   [customLabel: string]: T[] | number | boolean | null | undefined;
 }
 
+/**
+ * Paginate model typing
+ */
 export interface PaginateModel<T extends Document> extends Model<T> {
   paginate(
     query?: FilterQuery<T>,

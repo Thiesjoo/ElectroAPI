@@ -1,5 +1,8 @@
 import { AuthRole } from './';
 
+/**
+ * The JWT encoded auth token payload
+ */
 export interface AuthTokenPayload {
   /**
    * The unique ID of the user provided by this application
@@ -19,6 +22,9 @@ export interface AuthTokenPayload {
   exp?: number;
 }
 
+/**
+ * The JWT encoded refresh token payload
+ */
 export interface RefreshTokenPayload extends AuthTokenPayload {
   /**
    * The actual token used for refreshing. (JWT-id)
@@ -26,6 +32,9 @@ export interface RefreshTokenPayload extends AuthTokenPayload {
   jti: string;
 }
 
+/**
+ * The token that is stored in the DB
+ */
 export interface RefreshToken {
   jti: string;
   expires: number;

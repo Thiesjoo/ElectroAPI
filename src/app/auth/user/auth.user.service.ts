@@ -6,9 +6,12 @@ import { UserDTO } from '../../users/user.dto';
 
 type idType = ObjectId | string;
 
+/**
+ * The class that handles everything to do with users in the db
+ */
 @Injectable()
 export class AuthUserService {
-  private readonly logger = new Logger(AuthUserService.name);
+  private logger = new Logger(AuthUserService.name);
 
   constructor(
     @InjectModel(User.name)
@@ -84,10 +87,6 @@ export class AuthUserService {
    */
   updateUser(uid: idType, user: UpdateQuery<User>): Promise<User> {
     return this.update({ _id: uid }, user);
-
-    // this.userModel
-    //   .findByIdAndUpdate(uid, user, { useFindAndModify: false })
-    //   .exec();
   }
 
   /**
@@ -101,6 +100,11 @@ export class AuthUserService {
       .exec();
   }
 
+  /**
+   * Revoke a specific JWT refresh token
+   * @param userUid The UID of the user
+   * @param jti The UID of the token
+   */
   revokeUserToken(userUid: string | ObjectId, jti: string) {
     return this.userModel
       .findOneAndUpdate(

@@ -21,6 +21,9 @@ import { AuthRole, AuthTokenPayload } from '../../models';
 
 const roleOrder = enumValues(AuthRole);
 
+/**
+ * JwtGuard grabs the auth token from URL query parameter: auth, from the Auth header or from the cookie. It then checks it validity and sets the payload as request.user
+ */
 @Injectable()
 export class JwtGuard implements CanActivate {
   constructor(
@@ -29,6 +32,10 @@ export class JwtGuard implements CanActivate {
     private readonly jwtService: JwtService,
   ) {}
 
+  /**
+   * Executed on every request
+   * @param context Context of every request
+   */
   async canActivate(context: ExecutionContext): Promise<boolean | any> {
     try {
       const httpctx: HttpArgumentsHost = context.switchToHttp();
@@ -68,6 +75,11 @@ export class JwtGuard implements CanActivate {
     }
   }
 
+  /**
+   * Process a JWT token by checking if token is valid and if role is valid
+   * @param token the JWT token
+   * @param context The context of the request
+   */
   async processToken(
     token: string,
     context: ExecutionContext,

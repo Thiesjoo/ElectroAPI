@@ -3,7 +3,6 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
-  Logger,
   PayloadTooLargeException
 } from '@nestjs/common';
 
@@ -13,11 +12,13 @@ import {
  */
 @Catch(PayloadTooLargeException)
 export class PayloadFilter implements ExceptionFilter {
-  private readonly logger = new Logger(PayloadFilter.name);
-
+  /**
+   * Catches the error
+   * @param exception The error thrown
+   * @param host The request
+   */
   catch(exception: PayloadTooLargeException, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
+    const response = host.switchToHttp().getResponse<Response>();
 
     return response.status(413).json({
       statusCode: 413,

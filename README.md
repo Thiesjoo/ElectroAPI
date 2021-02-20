@@ -9,6 +9,7 @@
 - [] Add a basic API to query the stored data
 - [] Add a basic socket gateway to get live updates
 - [] Add github CI
+- [] Fix compodoc: Documentation coverage includes every constructor
 
 ## Description
 
