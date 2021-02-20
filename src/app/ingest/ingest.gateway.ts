@@ -11,6 +11,7 @@ import {
 } from 'src/models';
 import {
   BadRequestException,
+  Logger,
   NotFoundException,
   Req,
   UnauthorizedException,
@@ -36,6 +37,7 @@ export class IngestGateway {
   @WebSocketServer()
   server: Server;
   private readonly clients: Record<string, IngestClient> = {};
+  private readonly logger: Logger = new Logger(IngestGateway.name);
 
   constructor(
     private readonly authUserService: AuthUserService,
@@ -77,9 +79,9 @@ export class IngestGateway {
         user._id,
         foundProvider,
       );
-      console.log('INGEST:', updatedProvider);
+      this.logger.log(updatedProvider);
     } catch (e) {
-      console.error('INGEST:', e);
+      this.logger.error(e);
       return null;
     }
 
