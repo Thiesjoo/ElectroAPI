@@ -5,9 +5,9 @@ import { AuthRole, Provider, RefreshToken } from '../enums';
 
 /** Intermediate schema of User */
 export interface IUser {
-  /** The DB UID */
+  /** The DB Uid */
   _id?: string;
-  /** The DB UID */
+  /** The DB Uid */
   id?: string;
 
   /** Name of User */

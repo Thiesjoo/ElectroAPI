@@ -20,7 +20,7 @@ import { UsersService } from './users.service';
 @ResponsePrefix()
 @ApiTags('User')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private usersService: UsersService) {}
 
   /**
    * Create a new user

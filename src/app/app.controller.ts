@@ -6,7 +6,7 @@ import { AppService } from './app.service';
 @Controller('')
 @ResponsePrefix()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private appService: AppService) {}
 
   @Get('')
   @Redirect('/api', 301)

@@ -37,7 +37,7 @@ export class Oauth2RefreshService {
   /** Constructor */
   constructor(private configService: ApiConfigService) {}
   /** Logger */
-  private readonly logger = new Logger(Oauth2RefreshService.name);
+  private logger = new Logger(Oauth2RefreshService.name);
 
   /**
    * Refresh the tokens of a specific user of a specific provider

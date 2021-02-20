@@ -38,12 +38,12 @@ export class IngestGateway {
   @WebSocketServer()
   server: Server;
   /** Map of every client, mapped to the data about client */
-  private readonly clients: Record<string, IngestClient> = {};
-  private readonly logger: Logger = new Logger(IngestGateway.name);
+  private clients: Record<string, IngestClient> = {};
+  private logger: Logger = new Logger(IngestGateway.name);
 
   constructor(
-    private readonly authUserService: AuthUserService,
-    private readonly authService: AuthService,
+    private authUserService: AuthUserService,
+    private authService: AuthService,
   ) {}
 
   /**

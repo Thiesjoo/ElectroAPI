@@ -5,12 +5,15 @@ import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+/** DTO to validate users request */
 class ValidationDTO {
+  /** Their email */
   @ApiProperty({
     description: 'The email of the user',
     type: String,
   })
   email: string;
+  /** Their password */
   @ApiProperty({
     description: 'The password of the user',
     type: String,
@@ -23,6 +26,7 @@ class ValidationDTO {
 export class LocalController {
   constructor(private configService: ApiConfigService) {}
 
+  /** Setup cookies for users login request */
   @UseGuards(AuthGuard(AuthProviders.Local))
   @ApiBody({ type: ValidationDTO })
   @ApiResponse({

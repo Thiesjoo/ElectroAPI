@@ -9,6 +9,7 @@ import { ApiConfigService } from './config/configuration';
 import { logLevels } from './models/enums/loglevels';
 import { enumKeys } from './utils';
 
+/** Log levels in order */
 const levels = enumKeys(logLevels);
 
 /**

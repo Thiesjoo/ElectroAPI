@@ -47,10 +47,10 @@ export function checkUndefined(x) {
 }
 
 /**
- * Extract the UID from a user out of a barebones request
+ * Extract the Uid from a user out of a barebones request
  * @param req request
  */
-export function extractUID(req: Request): string {
+export function extractUid(req: Request): string {
   return (req?.user as AuthTokenPayload)?.sub;
 }
 

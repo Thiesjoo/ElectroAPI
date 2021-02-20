@@ -1,3 +1,3 @@
-import { EmptyReponseInterceptor } from './empty';
+import { EmptyResponseInterceptor } from './empty';
 
-export default [new EmptyReponseInterceptor()];
+export default [new EmptyResponseInterceptor()];

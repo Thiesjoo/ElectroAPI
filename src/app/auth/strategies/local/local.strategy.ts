@@ -9,15 +9,18 @@ import {
 import { PassportStrategy } from '@nestjs/passport';
 import { AuthService } from '../../auth.service';
 
+/** The local Strat */
 @Injectable()
 export class LocalStrategy extends PassportStrategy(
   Strategy,
   AuthProviders.Local,
 ) {
+  /** Edit username field */
   constructor(private authService: AuthService) {
     super({ usernameField: 'email' });
   }
 
+  /** Validate request */
   async validate(
     email,
     password,

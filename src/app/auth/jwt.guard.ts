@@ -19,6 +19,7 @@ import { JwtService } from '@nestjs/jwt';
 import { WsException } from '@nestjs/websockets';
 import { AuthRole, AuthTokenPayload } from '../../models';
 
+/** Order of roles in our application */
 const roleOrder = enumValues(AuthRole);
 
 /**
@@ -26,10 +27,11 @@ const roleOrder = enumValues(AuthRole);
  */
 @Injectable()
 export class JwtGuard implements CanActivate {
+  /** Setup routes and config service */
   constructor(
-    private readonly reflector: Reflector,
+    private reflector: Reflector,
     private configService: ApiConfigService,
-    private readonly jwtService: JwtService,
+    private jwtService: JwtService,
   ) {}
 
   /**

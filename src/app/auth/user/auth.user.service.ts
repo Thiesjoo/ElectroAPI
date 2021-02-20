@@ -15,7 +15,7 @@ export class AuthUserService {
 
   constructor(
     @InjectModel(User.name)
-    private readonly userModel: Model<User>,
+    private userModel: Model<User>,
   ) {}
 
   /**
@@ -102,8 +102,8 @@ export class AuthUserService {
 
   /**
    * Revoke a specific JWT refresh token
-   * @param userUid The UID of the user
-   * @param jti The UID of the token
+   * @param userUid The Uid of the user
+   * @param jti The Uid of the token
    */
   revokeUserToken(userUid: string | ObjectId, jti: string) {
     return this.userModel

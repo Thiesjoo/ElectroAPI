@@ -7,8 +7,10 @@ import {
   NotFoundException
 } from '@nestjs/common';
 
+/** Empty response handler */
 @Injectable()
-export class EmptyReponseInterceptor implements NestInterceptor {
+export class EmptyResponseInterceptor implements NestInterceptor {
+  /** Throw http 404 error on empty array or on value undefined */
   intercept(_, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((val) => {

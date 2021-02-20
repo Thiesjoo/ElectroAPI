@@ -7,20 +7,28 @@ import { AuthProviders } from 'src/models';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-interface Cookie {
-  sameSite: 'none' | false;
+/** All cookie settings */
+interface CookieSettings {
+  /** Same site Settings. Should be strict on production */
+  sameSite: 'none' | 'strict' | false;
+  /** Expiry date in unix time */
   expires: Date;
+  /** Wether the cookie should be accessible by JS */
   httpOnly: boolean;
+  /** Wether the cookie should only be served with https */
   secure: boolean;
+  /** The path the cookie applies to */
   path: string;
 }
 
+/** Nested validation */
 const OauthJoiScheme = Joi.object({
   clientID: Joi.string().required(),
   clientSecret: Joi.string().required(),
   callbackURL: Joi.string().required(),
 });
 
+/** Validation for .yml file */
 const configValidation = Joi.object({
   mongodb: Joi.object({
     host: Joi.string().required(),
@@ -39,26 +47,33 @@ const configValidation = Joi.object({
     .default('development'),
 }).default();
 
+/** Configuration service for entire API */
 @Injectable()
 export class ApiConfigService {
   constructor(private configService: ConfigService) {}
-  get(val) {
+
+  /** Get value with string */
+  get(val: string): any {
     return this.configService.get(val);
   }
 
+  /** Boolean if app is in production */
   get production(): boolean {
     return this.configService.get('NODE_ENV') === 'production';
   }
 
+  /** MongoDatabase url. */
   get mongoURL(): string {
     const db = this.configService.get('mongodb');
     return `mongodb://${db.host}:${db.port}/${this.get('NODE_ENV')}`;
   }
 
+  /** Port application should run on */
   get port(): number {
     return this.get('app.port');
   }
 
+  /** Actual version of the application */
   get version(): string {
     const info = JSON.parse(
       readFileSync(pathJoin(require.main.path, '../package.json'), 'utf-8'),
@@ -66,6 +81,7 @@ export class ApiConfigService {
     return info?.version || '0.0.0';
   }
 
+  /** Get JWT key from file system */
   private getJWT(pub: boolean): string {
     let jwtPath = this.get('app.jwtPath');
     jwtPath = pathJoin(jwtPath, `jwt.key${pub ? '.pub' : ''}`);
@@ -76,13 +92,16 @@ export class ApiConfigService {
     return jwtPath;
   }
 
+  /** JWT path for public key */
   get jwtPublicPath(): string {
     return this.getJWT(true);
   }
+  /** JWT path for private key */
   get jwtPrivatePath(): string {
     return this.getJWT(false);
   }
 
+  /** Get information about provider */
   getProvider(
     providerType: AuthProviders,
   ): {
@@ -93,6 +112,7 @@ export class ApiConfigService {
     return this.get(`providers.${providerType}`);
   }
 
+  /** Get expiry of access and refresh token */
   get expiry(): {
     accessExpiry: number;
     refreshExpiry: number;
@@ -103,6 +123,7 @@ export class ApiConfigService {
     };
   }
 
+  /** Get cookie names of tokens */
   get cookieNames() {
     return {
       access: 'accesstoken',
@@ -110,22 +131,25 @@ export class ApiConfigService {
     };
   }
 
+  /** Get cookie settings */
   get cookieSettings(): {
-    access: Cookie;
-    refresh: Cookie;
+    access: CookieSettings;
+    refresh: CookieSettings;
   } {
     return {
       access: {
         expires: new Date(Date.now() + this.expiry.accessExpiry),
         httpOnly: true,
-        sameSite: this.production ? 'none' : false,
+        sameSite: 'strict',
+        // sameSite: this.production ? 'Strict' : false,
         path: '/',
         secure: this.production,
       },
       refresh: {
         expires: new Date(Date.now() + this.expiry.refreshExpiry),
         httpOnly: true,
-        sameSite: this.production ? 'none' : false,
+        sameSite: 'strict',
+        // sameSite: this.production ? 'Strict' : false,
         path: '/auth/refresh',
         secure: this.production,
       },
@@ -133,6 +157,7 @@ export class ApiConfigService {
   }
 }
 
+/** Load config from yaml file and validate it */
 export function loadConfig() {
   let cfgPath = process.env.CONFIG_PATH || '../env.yml';
   if (!cfgPath) {

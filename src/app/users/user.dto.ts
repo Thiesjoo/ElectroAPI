@@ -4,25 +4,29 @@ import { NotFoundException } from '@nestjs/common';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class UserDTO {
+  /** The display name of the user */
   @IsString()
   @ApiProperty({
     description: 'The display name of the user',
     type: String,
   })
   name: string;
-  @ApiProperty({
-    description: 'The unique Id of the User',
-    type: String,
-  })
-  uid?: string;
+  /** Unique Uid of the user */
+  /** The unique email of the user */
   @IsEmail()
   @ApiProperty({
-    description: 'The unique Email of the User',
+    description: 'The unique email of the user',
     type: String,
   })
   email: string;
+  @ApiProperty({
+    description: 'The unique Uid of the user',
+    type: String,
+  })
+  uid?: string;
 }
 
+/** Map the user to the DTO user */
 export function userMapper(user: IUser): UserDTO {
   if (!user) {
     throw new NotFoundException();
@@ -34,4 +38,5 @@ export function userMapper(user: IUser): UserDTO {
   };
 }
 
+/** Update DTO is a partial of the DTO */
 export class UpdateUserDto extends PartialType(UserDTO) {}

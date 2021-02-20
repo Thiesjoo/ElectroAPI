@@ -3,17 +3,21 @@ import { Strategy } from 'passport-discord';
 import { AuthService } from 'src/app/auth/auth.service';
 import { ApiConfigService } from 'src/config/configuration';
 import { AuthProviders, Provider } from 'src/models';
-import { extractUID } from 'src/utils';
+import { extractUid } from 'src/utils';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { DiscordUser } from './discord.enums';
 
+/** Scopes needed for discord API */
 const dcScopes = ['identify', 'connections', 'rpc', 'rpc.notifications.read'];
+
+/** The discord strat */
 @Injectable()
 export class DiscordStrategy extends PassportStrategy(
   Strategy,
   AuthProviders.Discord,
 ) {
+  /** Discord Strat setup */
   constructor(
     private authService: AuthService,
     configService: ApiConfigService,
@@ -25,6 +29,7 @@ export class DiscordStrategy extends PassportStrategy(
     });
   }
 
+  /** Validate a login request */
   async validate(
     req: Request,
     accessToken: string,
@@ -48,7 +53,7 @@ export class DiscordStrategy extends PassportStrategy(
         scopes: dcScopes,
       };
 
-      await this.authService.validateProvider(prov, extractUID(req));
+      await this.authService.validateProvider(prov, extractUid(req));
       done(null, {});
     } catch (e) {
       done(e, null);

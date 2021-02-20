@@ -5,10 +5,10 @@ import { AuthService, AuthUserService } from '../..';
 
 @Injectable()
 export class LocalRefreshService {
-  private readonly logger = new Logger(LocalRefreshService.name);
+  private logger = new Logger(LocalRefreshService.name);
 
   constructor(
-    private readonly authService: AuthService,
+    private authService: AuthService,
     private authUsersService: AuthUserService,
     private jwtService: JwtService,
   ) {}

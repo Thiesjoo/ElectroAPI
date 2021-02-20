@@ -8,9 +8,9 @@ import {
   DiscordController,
   DiscordStrategy,
   LocalController,
+  LocalRefreshController,
   LocalRefreshService,
-  LocalStrategy,
-  RefreshController
+  LocalStrategy
 } from './strategies';
 import { AuthUserModule } from './user/auth.user.module';
 
@@ -45,7 +45,7 @@ import { AuthUserModule } from './user/auth.user.module';
       inject: [ApiConfigService],
     }),
   ],
-  controllers: [LocalController, DiscordController, RefreshController],
+  controllers: [LocalController, DiscordController, LocalRefreshController],
   providers: [
     AuthService,
     LocalStrategy,

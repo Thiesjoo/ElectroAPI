@@ -6,9 +6,9 @@ import { UpdateUserDto, UserDTO } from '../users/user.dto';
 
 @Injectable()
 export class UsersService {
-  private readonly logger = new Logger(UsersService.name);
+  private logger = new Logger(UsersService.name);
 
-  constructor(private readonly authUserService: AuthUserService) {}
+  constructor(private authUserService: AuthUserService) {}
 
   /**
    * Find all Users

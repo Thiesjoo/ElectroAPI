@@ -9,13 +9,16 @@ import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { AuthRole } from '../../models/enums';
 
 /**
- * Custom decorater for JWT Guard
+ * Custom decorator for JWT Guard
  * @param roles The roles to set
  */
 const Role = (roles: AuthRole) => SetMetadata('roles', roles);
 
+/** Developer only */
 export const DeveloperOnly = () => Role(AuthRole.Developer);
+/** Authed user or higher */
 export const AuthedUser = () => Role(AuthRole.User);
+/** Banned user or higher */
 export const BannedUsers = () => Role(AuthRole.Banned);
 
 /**

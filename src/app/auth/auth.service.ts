@@ -22,7 +22,7 @@ import { AuthUserService } from './user/auth.user.service';
 export class AuthService {
   constructor(
     private authUsersService: AuthUserService,
-    private readonly jwtService: JwtService,
+    private jwtService: JwtService,
     private configService: ApiConfigService,
     private refreshService: Oauth2RefreshService,
   ) {}
@@ -83,6 +83,7 @@ export class AuthService {
     });
   }
 
+  /** Refresh the accesstoken from a provider */
   async refreshProvider(
     userUid: string,
     provider: Provider,

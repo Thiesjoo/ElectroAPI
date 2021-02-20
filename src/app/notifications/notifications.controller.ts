@@ -28,8 +28,8 @@ import { NotificationService } from './notifications.service';
 @ApiTags('Notification')
 export class NotificationController {
   constructor(
-    private readonly notificationService: NotificationService,
-    private readonly configService: ApiConfigService,
+    private notificationService: NotificationService,
+    private configService: ApiConfigService,
   ) {}
 
   @Get(':id/')

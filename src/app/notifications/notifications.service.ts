@@ -11,7 +11,7 @@ import { InjectModel } from '@nestjs/mongoose';
 export class NotificationService {
   constructor(
     @InjectModel(MessageNotification.name)
-    private readonly notfModel: PaginateModel<MessageNotification>,
+    private notfModel: PaginateModel<MessageNotification>,
   ) {}
 
   //Add, dismiss? (Do we want history), get (Paginated. By ID.  All is only for dev?)
