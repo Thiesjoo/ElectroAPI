@@ -6,7 +6,6 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ApiConfigService } from '../config/configuration';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { IngestModule } from './ingest/ingest.module';
 import { NotificationModule } from './notifications/notifications.module';
@@ -37,7 +36,6 @@ import { UsersModule } from './users/users.module';
     IngestModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
   exports: [MongooseModule],
 })
 export class AppModule {}

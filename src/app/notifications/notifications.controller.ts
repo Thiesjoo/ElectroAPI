@@ -22,6 +22,7 @@ import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth';
 import { NotificationService } from './notifications.service';
 
+/** Service to handle REST for notifications */
 @Controller('api/notifications')
 @ResponsePrefix()
 @AuthPrefixes(JwtGuard, [AuthedUser()])
@@ -32,6 +33,7 @@ export class NotificationController {
     private configService: ApiConfigService,
   ) {}
 
+  /** Get notification with ID */
   @Get(':id/')
   @ApiResponse({
     status: HttpStatus.OK,
@@ -46,6 +48,7 @@ export class NotificationController {
     return res.length > 0 ? res[0] : null;
   }
 
+  /** Get notifications paginated */
   @Get('')
   @ApiQuery({
     name: 'query',
@@ -67,7 +70,7 @@ export class NotificationController {
     required: false,
   })
   @ApiPaginatedResponse(IMessageNotification)
-  async getAll(
+  async getPaginated(
     @UserToken() token: AuthTokenPayload,
     @Query('query') query: string = '',
     @Query('limit') limit: number = 10,
@@ -88,6 +91,7 @@ export class NotificationController {
     };
   }
 
+  /** Add a notification to the database */
   @Post('')
   @ApiBody({
     type: IMessageNotification,

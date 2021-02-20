@@ -3,6 +3,7 @@ import { IUser } from 'src/models';
 import { NotFoundException } from '@nestjs/common';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 
+/** The user DTO */
 export class UserDTO {
   /** The display name of the user */
   @IsString()
@@ -11,7 +12,6 @@ export class UserDTO {
     type: String,
   })
   name: string;
-  /** Unique Uid of the user */
   /** The unique email of the user */
   @IsEmail()
   @ApiProperty({
@@ -19,6 +19,7 @@ export class UserDTO {
     type: String,
   })
   email: string;
+  /** Unique Uid of the user */
   @ApiProperty({
     description: 'The unique Uid of the user',
     type: String,

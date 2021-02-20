@@ -18,8 +18,10 @@ import { JwtService } from '@nestjs/jwt';
 import { Oauth2RefreshService } from './auth-refresh.service';
 import { AuthUserService } from './user/auth.user.service';
 
+/** Service too handle everything to do with Auth */
 @Injectable()
 export class AuthService {
+  /** Constructor */
   constructor(
     private authUsersService: AuthUserService,
     private jwtService: JwtService,
@@ -27,10 +29,16 @@ export class AuthService {
     private refreshService: Oauth2RefreshService,
   ) {}
 
+  /**
+   * Authenticate a local user
+   * @param email Email of the user
+   * @param pass Pass of the user
+   */
   async validateLocalUser(
     email: string,
     pass: string,
   ): Promise<{ access: string; refresh: string }> {
+    //TODO: Bcrypt hashing
     const user = await this.authUsersService.findUserByEmail(email);
     if (user && user.password === pass) {
       return {
@@ -41,6 +49,11 @@ export class AuthService {
     return null;
   }
 
+  /**
+   * Validate a provider and push it to a user
+   * @param providerData Data about provider
+   * @param userUid User Uid
+   */
   async validateProvider(
     providerData: Provider,
     userUid: string,
@@ -83,7 +96,10 @@ export class AuthService {
     });
   }
 
-  /** Refresh the accesstoken from a provider */
+  /** Refresh the accesstoken from a provider
+   * @param userUid Id of user
+   * @param provider Provider in question
+   */
   async refreshProvider(
     userUid: string,
     provider: Provider,

@@ -30,6 +30,7 @@ import {
 import { AuthService, AuthUserService, JwtGuard } from '../auth';
 import { IngestAuthDTO } from './ingest.dto';
 
+/** Main gateway for notification injection */
 @UsePipes(new ValidationPipe())
 @WebSocketGateway()
 @UseGuards(JwtGuard)
@@ -39,8 +40,10 @@ export class IngestGateway {
   server: Server;
   /** Map of every client, mapped to the data about client */
   private clients: Record<string, IngestClient> = {};
+  /** Logger of this service */
   private logger: Logger = new Logger(IngestGateway.name);
 
+  /** Setup auth related things */
   constructor(
     private authUserService: AuthUserService,
     private authService: AuthService,
@@ -101,6 +104,7 @@ export class IngestGateway {
     return foundProvider;
   }
 
+  /** Get the identity of a authed socket */
   @AuthedUser()
   @SubscribeMessage(IngestSocketRoutes.Identity)
   async identity(@ConnectedSocket() client: Socket): Promise<IngestClient> {
@@ -111,6 +115,9 @@ export class IngestGateway {
     return this.clients[client.id];
   }
 
+  /** TODO: Make this
+   * Simple ingest function
+   */
   @AuthedUser()
   @SubscribeMessage(IngestSocketRoutes.Ingest)
   async ingestData(

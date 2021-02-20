@@ -21,6 +21,7 @@ class ValidationDTO {
   password: string;
 }
 
+/** Controller for authenticating with this API */
 @Controller('auth/local')
 @ApiTags('Auth')
 export class LocalController {

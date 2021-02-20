@@ -4,6 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserDTO } from '../../users/user.dto';
 
+/** Type of user */
 type idType = ObjectId | string;
 
 /**
@@ -11,8 +12,10 @@ type idType = ObjectId | string;
  */
 @Injectable()
 export class AuthUserService {
+  /** The logger of this service */
   private logger = new Logger(AuthUserService.name);
 
+  /** Constructor */
   constructor(
     @InjectModel(User.name)
     private userModel: Model<User>,

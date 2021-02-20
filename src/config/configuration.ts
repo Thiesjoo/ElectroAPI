@@ -50,6 +50,7 @@ const configValidation = Joi.object({
 /** Configuration service for entire API */
 @Injectable()
 export class ApiConfigService {
+  /** Constructor */
   constructor(private configService: ConfigService) {}
 
   /** Get value with string */

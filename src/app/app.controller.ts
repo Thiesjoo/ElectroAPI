@@ -1,17 +1,17 @@
 import { ResponsePrefix } from 'src/models';
 import { Controller, Get, HttpStatus, Redirect } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { AppService } from './app.service';
 
+/** Simple app controller */
 @Controller('')
 @ResponsePrefix()
 export class AppController {
-  constructor(private appService: AppService) {}
-
+  /** Redirect main page to API */
   @Get('')
   @Redirect('/api', 301)
   redirect() {}
 
+  /** Simple hello world route */
   @Get('hello')
   @ApiResponse({
     status: HttpStatus.OK,
@@ -19,6 +19,6 @@ export class AppController {
     description: 'Hello world!',
   })
   getHello(): string {
-    return this.appService.getHello();
+    return 'Hello world!';
   }
 }

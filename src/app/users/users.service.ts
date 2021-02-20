@@ -4,10 +4,13 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AuthUserService } from '../auth/';
 import { UpdateUserDto, UserDTO } from '../users/user.dto';
 
+/** The service for the user controller */
 @Injectable()
 export class UsersService {
+  /** The logger of this service */
   private logger = new Logger(UsersService.name);
 
+  /** Constructor */
   constructor(private authUserService: AuthUserService) {}
 
   /**

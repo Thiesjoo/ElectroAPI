@@ -1,3 +1,4 @@
+/** User as returned from discord API */
 export interface DiscordUser {
   /** The user's id */
   id: string;

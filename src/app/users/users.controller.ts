@@ -15,6 +15,7 @@ import { JwtGuard } from '../auth/jwt.guard';
 import { UpdateUserDto, UserDTO, userMapper } from './user.dto';
 import { UsersService } from './users.service';
 
+/** Controller only for developers. Used to edit DB users */
 @Controller('api/users')
 @AuthPrefixes(JwtGuard, [DeveloperOnly()])
 @ResponsePrefix()
@@ -71,6 +72,10 @@ export class UsersController {
     return userMapper(await this.usersService.updateUser(id, updateUserDto));
   }
 
+  /**
+   * Delete a user from the DB
+   * @param id Id of user
+   */
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.deleteUser(id);
