@@ -5,11 +5,15 @@ import { ApiOkResponse, ApiProperty, getSchemaPath } from '@nestjs/swagger';
  * DTO for paginated response
  */
 export class PaginatedDto<T> {
+  /** The docs that are provided */
   docs: T[];
+  /** Current page */
   @ApiProperty()
   page: number;
+  /** Amount of docs per page */
   @ApiProperty()
   limit: number;
+  /** Total number of docs */
   @ApiProperty()
   total: number;
 }
