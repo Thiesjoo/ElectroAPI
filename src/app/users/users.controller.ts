@@ -5,7 +5,12 @@ import {
   ResponsePrefix,
   UserToken
 } from 'src/common';
-import { AuthTokenPayload } from 'src/models';
+import {
+  AuthTokenPayload,
+  UpdateUserDto,
+  UserDTO,
+  userMapper
+} from 'src/models';
 import {
   Body,
   Controller,
@@ -18,7 +23,6 @@ import {
 } from '@nestjs/common';
 import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth/jwt.guard';
-import { UpdateUserDto, UserDTO, userMapper } from './user.dto';
 import { UsersService } from './users.service';
 
 /** Controller only for developers. Used to edit DB users */

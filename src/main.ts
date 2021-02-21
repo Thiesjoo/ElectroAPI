@@ -53,7 +53,9 @@ async function bootstrap() {
     .addCookieAuth('jwt')
     .setBasePath('')
     .build();
-  const document = SwaggerModule.createDocument(app, swaggerBuilder);
+  const document = SwaggerModule.createDocument(app, swaggerBuilder, {
+    // operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+  });
   SwaggerModule.setup('api', app, document);
 
   await app.listen(config.port);

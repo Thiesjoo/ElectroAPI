@@ -39,8 +39,11 @@ export class NotificationService {
   }
 
   /** Get specific notification from DB */
-  getWithID(token: AuthTokenPayload, id: string) {
-    return this.notfModel.find({ _id: id, user: token.sub });
+  async getWithID(
+    token: AuthTokenPayload,
+    id: string,
+  ): Promise<MessageNotification> {
+    return this.notfModel.findOne({ _id: id, user: token.sub }).exec();
   }
 
   /**

@@ -42,8 +42,7 @@ export class NotificationController {
     @Param('id') id: string,
     @UserToken() token: AuthTokenPayload,
   ) {
-    const res = await this.notificationService.getWithID(token, id);
-    return res.length > 0 ? res[0] : null;
+    return this.notificationService.getWithID(token, id);
   }
 
   /** Get notifications paginated */

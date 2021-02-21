@@ -1,7 +1,7 @@
 import { IsEmail, IsString } from 'class-validator';
-import { IUser } from 'src/models';
 import { NotFoundException } from '@nestjs/common';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IUser } from '../';
 
 /** The user DTO */
 export class UserDTO {

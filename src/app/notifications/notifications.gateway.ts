@@ -4,10 +4,11 @@ import { AuthedUser, UserToken } from 'src/common';
 import { corsSettings } from 'src/config/configuration';
 import {
   AuthTokenPayload,
-  IMessageNotification,
   IngestClient,
-  NotificationSocketRoutes,
-  Provider
+  NotificationSocketRequests as Requ,
+  NotificationSocketRoutes as Rout,
+  Provider,
+  ReturnTypeOfMethod
 } from 'src/models';
 import {
   BadRequestException,
@@ -29,7 +30,6 @@ import {
 } from '@nestjs/websockets';
 import { AuthService, AuthUserService, JwtGuard } from '../auth';
 import { NotificationService } from '../notifications/notifications.service';
-import { NotificationAuthDTO } from './notification.dto';
 
 /** Service to handle WebSockets for notifications. */
 @UsePipes(new ValidationPipe())
@@ -61,12 +61,13 @@ export class NotificationGateway {
    * @param data Data from request
    */
   @AuthedUser()
-  @SubscribeMessage(NotificationSocketRoutes.Auth)
+  @SubscribeMessage(Rout.Auth)
   async auth(
     @ConnectedSocket() client: Socket,
     @UserToken() token: AuthTokenPayload,
-    @MessageBody() data: NotificationAuthDTO,
-  ): Promise<Provider> {
+    @MessageBody()
+    ...[data]: Parameters<Requ[Rout.Auth]>
+  ): Promise<ReturnTypeOfMethod<Requ[Rout.Auth]>> {
     if (token.sub !== data.id) {
       throw new WsException(
         new UnauthorizedException('JWT And user ID do not match'),
@@ -118,8 +119,12 @@ export class NotificationGateway {
 
   /** Get the identity of a authed socket */
   @AuthedUser()
-  @SubscribeMessage(NotificationSocketRoutes.Identity)
-  async identity(@ConnectedSocket() client: Socket): Promise<IngestClient> {
+  @SubscribeMessage(Rout.Identity)
+  async identity(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    ...[]: Parameters<Requ[Rout.Identity]>
+  ): Promise<ReturnTypeOfMethod<Requ[Rout.Identity]>> {
     if (!this.clients[client.id]) {
       throw new WsException(new UnauthorizedException());
     }
@@ -131,23 +136,28 @@ export class NotificationGateway {
    * Simple ingest function
    */
   @AuthedUser()
-  @SubscribeMessage(NotificationSocketRoutes.Ingest)
+  @SubscribeMessage(Rout.Ingest)
   async ingestData(
     @ConnectedSocket() client: Socket,
     @Req() req: Request,
-    @MessageBody() data: IMessageNotification,
-  ) {
+    @MessageBody()
+    ...[data]: Parameters<Requ[Rout.Ingest]>
+  ): Promise<ReturnTypeOfMethod<Requ[Rout.Ingest]>> {
     console.log(data);
+    return true;
   }
 
   /** Get data */
   @AuthedUser()
-  @SubscribeMessage(NotificationSocketRoutes.Ingest)
+  @SubscribeMessage(Rout.GetSample)
   async getData(
     @ConnectedSocket() client: Socket,
     @Req() req: Request,
-    @MessageBody() data: IMessageNotification,
-  ) {
+    @UserToken() token: AuthTokenPayload,
+    @MessageBody()
+    ...[data]: Parameters<Requ[Rout.GetSample]>
+  ): Promise<ReturnTypeOfMethod<Requ[Rout.GetSample]>> {
     console.log(data);
+    return this.notificationService.getWithID(token, data);
   }
 }

@@ -6,6 +6,7 @@
   "importSorter.sortConfiguration.customOrderingRules.defaultNumberOfEmptyLinesAfterGroup": 0,
   "cSpell.enabled": true,
   "cSpell.words": [
+    "Authed",
     "nestjs"
   ]
 }
