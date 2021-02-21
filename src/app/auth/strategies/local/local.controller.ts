@@ -1,7 +1,14 @@
 import { Response } from 'express';
 import { ApiConfigService } from 'src/config/configuration';
 import { AuthProviders } from 'src/models';
-import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UseGuards
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -33,6 +40,7 @@ export class LocalController {
   @ApiResponse({
     description:
       'The accesstoken is returned, and all the required cookies are set',
+    status: HttpStatus.OK,
   })
   @Post('login')
   login(@Req() req, @Res({ passthrough: true }) res: Response) {

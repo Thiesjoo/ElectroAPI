@@ -73,7 +73,7 @@ export class NotificationGateway {
       );
     }
 
-    this.logger.log('lmao');
+    this.logger.log('Received AUTH request on socket gateway');
 
     //FIXME: Check if authorized client application (Maybe a toggle to disable all)
     //FIXME: Verify origin
@@ -100,7 +100,9 @@ export class NotificationGateway {
         user._id,
         foundProvider,
       );
-      this.logger.log(updatedProvider);
+      this.logger.log(
+        `Successfully got provider for user ${updatedProvider.username}`,
+      );
     } catch (e) {
       this.logger.error(e);
       return null;

@@ -1,10 +1,12 @@
 import { ResponsePrefix } from 'src/common';
+import { PaginatedDto } from 'src/models';
 import { Controller, Get, HttpStatus, Redirect } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';
 
 /** Simple app controller */
 @Controller('/')
 @ResponsePrefix()
+@ApiExtraModels(PaginatedDto)
 export class AppController {
   /** Redirect main page to API */
   @Get('')

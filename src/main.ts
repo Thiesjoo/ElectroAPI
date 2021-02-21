@@ -51,6 +51,7 @@ async function bootstrap() {
     .addTag('electro')
     .addBearerAuth({ in: 'header', type: 'http' })
     .addCookieAuth('jwt')
+    .setBasePath('')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerBuilder);
   SwaggerModule.setup('api', app, document);

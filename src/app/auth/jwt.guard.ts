@@ -5,7 +5,6 @@ import { Socket } from 'socket.io';
 import { ApiConfigService } from 'src/config/configuration';
 import { enumValues } from 'src/utils';
 import {
-  BadRequestException,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
@@ -49,7 +48,23 @@ export class JwtGuard implements CanActivate {
       switch (context.getType()) {
         case 'ws':
           const client: Socket = context.switchToWs().getClient<Socket>();
-          let wsToken: string = client.handshake?.query?.token as string;
+
+          let wsToken = client.handshake?.query?.token as string;
+          if (!wsToken) {
+            const params = client.handshake?.headers?.cookie
+              .split(';')
+              .reduce((res, c) => {
+                const [key, val] = c.trim().split('=').map(decodeURIComponent);
+                try {
+                  return Object.assign(res, { [key]: JSON.parse(val) });
+                } catch (e) {
+                  return Object.assign(res, { [key]: val });
+                }
+              }, {});
+
+            wsToken = params[this.configService.cookieNames.access];
+          }
+
           const processedWS = await this.processToken(wsToken, context);
           request.user = processedWS;
           return true;
@@ -69,7 +84,7 @@ export class JwtGuard implements CanActivate {
       }
     } catch (e) {
       if (e instanceof JsonWebTokenError) {
-        let error = new BadRequestException(
+        let error = new UnauthorizedException(
           'No valid authorization token has been provided',
         );
         if (context.getType() === 'ws') {
@@ -100,7 +115,7 @@ export class JwtGuard implements CanActivate {
     const payload: AuthTokenPayload = this.jwtService.verify(token);
     if (!payload) {
       throw new UnauthorizedException(
-        'No authorization token has been provided',
+        'No valid authorization token has been provided',
       );
     }
 
