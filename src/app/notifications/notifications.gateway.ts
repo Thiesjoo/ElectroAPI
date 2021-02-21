@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { Server, Socket } from 'socket.io';
 import { AuthedUser, UserToken } from 'src/common';
+import { corsSettings } from 'src/config/configuration';
 import {
   AuthTokenPayload,
   IMessageNotification,
@@ -32,7 +33,10 @@ import { NotificationAuthDTO } from './notification.dto';
 
 /** Service to handle WebSockets for notifications. */
 @UsePipes(new ValidationPipe())
-@WebSocketGateway()
+//TODO: THis doesnt' work in socket.io v3.
+@WebSocketGateway(null, {
+  cors: corsSettings,
+})
 @UseGuards(JwtGuard)
 export class NotificationGateway {
   /** The websocket server */
@@ -68,6 +72,9 @@ export class NotificationGateway {
         new UnauthorizedException('JWT And user ID do not match'),
       );
     }
+
+    this.logger.log('lmao');
+
     //FIXME: Check if authorized client application (Maybe a toggle to disable all)
     //FIXME: Verify origin
 
@@ -82,7 +89,9 @@ export class NotificationGateway {
 
     if (!foundProvider) {
       throw new WsException(
-        new BadRequestException('Provider not registerd on this users account'),
+        new BadRequestException(
+          'Provider not registered on this users account',
+        ),
       );
     }
 

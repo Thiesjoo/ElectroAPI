@@ -1,5 +1,11 @@
 import { ObjectId } from 'mongoose';
-import { AuthPrefixes, DeveloperOnly, ResponsePrefix } from 'src/common';
+import {
+  AuthPrefixes,
+  DeveloperOnly,
+  ResponsePrefix,
+  UserToken
+} from 'src/common';
+import { AuthTokenPayload } from 'src/models';
 import {
   Body,
   Controller,
@@ -38,6 +44,21 @@ export class UsersController {
   @Get()
   async findAll() {
     return (await this.usersService.findAllUsers()).map(userMapper);
+  }
+
+  /** Get yousrself as a user */
+  @Get('/me')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: UserDTO,
+    description: 'The single user requested',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'User with given ID was not found',
+  })
+  async getMe(@UserToken('id') token: AuthTokenPayload) {
+    return userMapper(await this.usersService.findUserByUid(token.sub));
   }
 
   /**

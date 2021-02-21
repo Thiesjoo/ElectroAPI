@@ -183,3 +183,15 @@ export function loadConfig() {
   }
   return value;
 }
+
+export const corsSettings = {
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  origin: (org, cb) => {
+    // if (['http://localhost:8080'].includes(org)) {
+    cb(null, true);
+    // } else {
+    //   cb(new Error(`Origin: ${org} is not whitelisted`));
+    // }
+  },
+  credentials: true,
+};

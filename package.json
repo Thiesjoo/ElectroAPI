@@ -1,6 +1,6 @@
 {
   "name": "electroapi",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "author": "",
   "private": true,
@@ -23,7 +23,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "gendocs": "npx @compodoc/compodoc -p tsconfig.json -n 'ElectroAPI docs' -s --includes docs --includesName 'Api flow'"
+    "gendocs": "npx @compodoc/compodoc -p tsconfig.json -n 'ElectroAPI docs' -s --includes docs --includesName 'Api flow' --port 3001"
   },
   "dependencies": {
     "@nestjs/common": "^7.6.12",
@@ -33,7 +33,7 @@
     "@nestjs/mongoose": "^7.2.3",
     "@nestjs/passport": "^7.1.5",
     "@nestjs/platform-express": "^7.6.12",
-    "@nestjs/platform-socket.io": "^8.0.0-alpha.1",
+    "@nestjs/platform-socket.io": "^7.6.12",
     "@nestjs/swagger": "^4.7.13",
     "@nestjs/websockets": "^7.6.12",
     "axios": "^0.21.1",

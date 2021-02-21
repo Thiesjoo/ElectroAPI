@@ -1,11 +1,6 @@
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import {
-  CallHandler,
-  Injectable,
-  NestInterceptor,
-  NotFoundException
-} from '@nestjs/common';
+import { CallHandler, Injectable, NestInterceptor } from '@nestjs/common';
 
 /** Empty response handler */
 @Injectable()
@@ -14,9 +9,10 @@ export class EmptyResponseInterceptor implements NestInterceptor {
   intercept(_, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((val) => {
-        if (!val || val?.length === 0) {
-          throw new NotFoundException();
-        }
+        // console.log(val);
+        // if (!val || val?.length === 0) {
+        //   throw new NotFoundException();
+        // }
         return val;
       }),
     );

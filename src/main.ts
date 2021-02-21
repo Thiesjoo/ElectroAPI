@@ -5,7 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import filters from './common/errors';
 import interceptors from './common/interceptors';
-import { ApiConfigService } from './config/configuration';
+import { ApiConfigService, corsSettings } from './config/configuration';
 import { logLevels } from './models/enums/loglevels';
 import { enumKeys } from './utils';
 
@@ -31,6 +31,10 @@ async function bootstrap() {
     logger: levels.slice(0, foundLogLevel + 1).map((x) => <LogLevel>x),
   });
 
+  const config = app.get(ApiConfigService);
+
+  app.enableCors(corsSettings);
+
   //Global stuff
   app.useGlobalPipes(new ValidationPipe({}));
   app.useGlobalFilters(...filters);
@@ -38,8 +42,6 @@ async function bootstrap() {
 
   //Express stuff
   app.use(cookieParser());
-
-  const config = app.get(ApiConfigService);
 
   //OpenAPI setup
   const swaggerBuilder = new DocumentBuilder()
