@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
+import { AuthedUser } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
-import { AuthedUser } from 'src/models';
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../../jwt.guard';

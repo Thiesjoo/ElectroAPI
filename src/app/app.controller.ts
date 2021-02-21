@@ -1,4 +1,4 @@
-import { ResponsePrefix } from 'src/models';
+import { ResponsePrefix } from 'src/common';
 import { Controller, Get, HttpStatus, Redirect } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 

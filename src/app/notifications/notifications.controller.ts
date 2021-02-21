@@ -1,13 +1,11 @@
+import { AuthedUser, AuthPrefixes, ResponsePrefix } from 'src/common';
 import { UserToken } from 'src/common/decorators/user';
 import { ApiConfigService } from 'src/config/configuration';
 import {
   ApiPaginatedResponse,
-  AuthedUser,
-  AuthPrefixes,
   AuthTokenPayload,
   IMessageNotification,
-  PaginatedDto,
-  ResponsePrefix
+  PaginatedDto
 } from 'src/models';
 import {
   Body,

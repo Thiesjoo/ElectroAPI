@@ -1,12 +1,11 @@
 import { Request } from 'express';
 import { Server, Socket } from 'socket.io';
-import { UserToken } from 'src/common/decorators/user';
+import { AuthedUser, UserToken } from 'src/common';
 import {
-  AuthedUser,
   AuthTokenPayload,
   IMessageNotification,
   IngestClient,
-  IngestSocketRoutes,
+  NotificationSocketRoutes,
   Provider
 } from 'src/models';
 import {
@@ -28,25 +27,27 @@ import {
   WsException
 } from '@nestjs/websockets';
 import { AuthService, AuthUserService, JwtGuard } from '../auth';
-import { IngestAuthDTO } from './ingest.dto';
+import { NotificationService } from '../notifications/notifications.service';
+import { NotificationAuthDTO } from './notification.dto';
 
-/** Main gateway for notification injection */
+/** Service to handle WebSockets for notifications. */
 @UsePipes(new ValidationPipe())
 @WebSocketGateway()
 @UseGuards(JwtGuard)
-export class IngestGateway {
+export class NotificationGateway {
   /** The websocket server */
   @WebSocketServer()
   server: Server;
   /** Map of every client, mapped to the data about client */
   private clients: Record<string, IngestClient> = {};
   /** Logger of this service */
-  private logger: Logger = new Logger(IngestGateway.name);
+  private logger: Logger = new Logger(NotificationGateway.name);
 
   /** Setup auth related things */
   constructor(
     private authUserService: AuthUserService,
     private authService: AuthService,
+    private notificationService: NotificationService,
   ) {}
 
   /**
@@ -56,11 +57,11 @@ export class IngestGateway {
    * @param data Data from request
    */
   @AuthedUser()
-  @SubscribeMessage(IngestSocketRoutes.Auth)
+  @SubscribeMessage(NotificationSocketRoutes.Auth)
   async auth(
     @ConnectedSocket() client: Socket,
     @UserToken() token: AuthTokenPayload,
-    @MessageBody() data: IngestAuthDTO,
+    @MessageBody() data: NotificationAuthDTO,
   ): Promise<Provider> {
     if (token.sub !== data.id) {
       throw new WsException(
@@ -106,7 +107,7 @@ export class IngestGateway {
 
   /** Get the identity of a authed socket */
   @AuthedUser()
-  @SubscribeMessage(IngestSocketRoutes.Identity)
+  @SubscribeMessage(NotificationSocketRoutes.Identity)
   async identity(@ConnectedSocket() client: Socket): Promise<IngestClient> {
     if (!this.clients[client.id]) {
       throw new WsException(new UnauthorizedException());
@@ -119,8 +120,19 @@ export class IngestGateway {
    * Simple ingest function
    */
   @AuthedUser()
-  @SubscribeMessage(IngestSocketRoutes.Ingest)
+  @SubscribeMessage(NotificationSocketRoutes.Ingest)
   async ingestData(
+    @ConnectedSocket() client: Socket,
+    @Req() req: Request,
+    @MessageBody() data: IMessageNotification,
+  ) {
+    console.log(data);
+  }
+
+  /** Get data */
+  @AuthedUser()
+  @SubscribeMessage(NotificationSocketRoutes.Ingest)
+  async getData(
     @ConnectedSocket() client: Socket,
     @Req() req: Request,
     @MessageBody() data: IMessageNotification,

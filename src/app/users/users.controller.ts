@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongoose';
-import { AuthPrefixes, DeveloperOnly, ResponsePrefix } from 'src/models';
+import { AuthPrefixes, DeveloperOnly, ResponsePrefix } from 'src/common';
 import {
   Body,
   Controller,

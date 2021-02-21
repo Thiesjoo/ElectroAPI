@@ -1,4 +1,5 @@
-import { AuthedUser, AuthProviders } from 'src/models';
+import { AuthedUser } from 'src/common';
+import { AuthProviders } from 'src/models';
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';

@@ -33,7 +33,7 @@
     "@nestjs/mongoose": "^7.2.3",
     "@nestjs/passport": "^7.1.5",
     "@nestjs/platform-express": "^7.6.12",
-    "@nestjs/platform-socket.io": "^7.6.12",
+    "@nestjs/platform-socket.io": "^8.0.0-alpha.1",
     "@nestjs/swagger": "^4.7.13",
     "@nestjs/websockets": "^7.6.12",
     "axios": "^0.21.1",
