@@ -9,7 +9,7 @@ import {
 import { PassportStrategy } from '@nestjs/passport';
 import { AuthService } from '../../auth.service';
 
-/** The local Strat */
+/** The local Strategy */
 @Injectable()
 export class LocalStrategy extends PassportStrategy(
   Strategy,
