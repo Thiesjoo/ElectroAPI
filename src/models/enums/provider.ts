@@ -3,9 +3,15 @@ import { ApiProperty } from '@nestjs/swagger';
 /** Provider Types */
 export enum AuthProviders {
   Discord = 'discord',
-  Local = 'local',
-  None = 'none',
 }
+
+/** Extra types that are local and do not have refresh services */
+enum ExtraAuthProviders {
+  Local = 'local',
+}
+
+/** Combination of all names */
+export const AuthNames = { ...AuthProviders, ...ExtraAuthProviders };
 
 /** Information about a provider */
 export class Provider {

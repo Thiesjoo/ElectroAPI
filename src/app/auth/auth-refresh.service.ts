@@ -3,6 +3,11 @@ import { AuthProviders, Provider } from 'src/models';
 import { axiosInst } from 'src/utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { DiscordUser } from './';
+import discordMapper from './strategies/discord/discord.mapper';
+
+type UserTypes = {
+  [AuthProviders.Discord]: DiscordUser;
+};
 
 /**
  * The URL's of the oauth refresh routes
@@ -11,22 +16,19 @@ const oauthURLMap: {
   [key in AuthProviders]: {
     userURL: string;
     tokenURL: string;
+    mapper: (
+      accessToken: string,
+      refreshToken: string,
+      profile: UserTypes[key],
+      scopes: string[],
+    ) => Provider;
   };
 } = {
   [AuthProviders.Discord]: {
     userURL: 'https://discord.com/api/v8/users/@me',
     tokenURL: 'https://discord.com/api/v8/oauth2/token',
+    mapper: discordMapper,
   },
-  [AuthProviders.Local]: null,
-  [AuthProviders.None]: null,
-};
-
-type UserTypes = {
-  [AuthProviders.Discord]: DiscordUser;
-  [AuthProviders.Local]: {
-    test: string;
-  };
-  [AuthProviders.None]: null;
 };
 
 /**
@@ -44,6 +46,9 @@ export class Oauth2RefreshService {
    * @param provider The provider
    */
   async refreshTokens(provider: Provider): Promise<Provider> {
+    const clientName = provider.providerName;
+    const client = oauthURLMap[clientName];
+
     let tokens = this.configService.getProvider(provider.providerName);
     const val = {
       client_id: tokens.clientID,
@@ -56,8 +61,8 @@ export class Oauth2RefreshService {
 
     try {
       const resp: {
-        data: UserTypes[typeof provider.providerName];
-      } = await axiosInst.get(oauthURLMap[provider.providerName].userURL, {
+        data: UserTypes[typeof clientName];
+      } = await axiosInst.get(client.userURL, {
         headers: {
           authorization: `Bearer ${provider.accessToken}`,
         },
@@ -66,16 +71,17 @@ export class Oauth2RefreshService {
         throw new Error('Refresh URL gave no response');
       }
 
-      //TODO: Check if this works
       //TODO: Maybe incorporate some cooldown, because spamming api's is not OK
       // Update all fields that are present on provider and on the new data
-      Object.entries(resp.data).forEach((x) => {
-        if (provider.hasOwnProperty(x[0])) {
-          provider[x[0]] = x[1];
-        }
-      });
-      Logger.log('Updated user data.', 'auth-refresh.service');
-      return provider;
+      const newProvider = client.mapper(
+        provider.accessToken,
+        provider.refreshToken,
+        resp.data,
+        provider.scopes,
+      );
+
+      Logger.log('Updated user data.');
+      return newProvider;
     } catch (e) {
       if (e?.response?.status !== 401) {
         Logger.error(e);

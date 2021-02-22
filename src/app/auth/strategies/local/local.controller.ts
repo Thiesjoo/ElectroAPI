@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { ApiConfigService } from 'src/config/configuration';
-import { AuthProviders } from 'src/models';
+import { AuthNames } from 'src/models';
 import {
   Controller,
   HttpStatus,
@@ -35,7 +35,7 @@ export class LocalController {
   constructor(private configService: ApiConfigService) {}
 
   /** Setup cookies for users login request */
-  @UseGuards(AuthGuard(AuthProviders.Local))
+  @UseGuards(AuthGuard(AuthNames.Local))
   @ApiBody({ type: ValidationDTO })
   @ApiResponse({
     description:

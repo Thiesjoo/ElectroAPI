@@ -2,11 +2,12 @@ import { Request } from 'express';
 import { Strategy } from 'passport-discord';
 import { AuthService } from 'src/app/auth/auth.service';
 import { ApiConfigService } from 'src/config/configuration';
-import { AuthProviders, Provider } from 'src/models';
+import { AuthNames, AuthProviders } from 'src/models';
 import { extractUid } from 'src/utils';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { DiscordUser } from './discord.enums';
+import discordMapper from './discord.mapper';
 
 /** Scopes needed for discord API */
 const dcScopes = ['identify', 'connections', 'rpc', 'rpc.notifications.read'];
@@ -15,8 +16,11 @@ const dcScopes = ['identify', 'connections', 'rpc', 'rpc.notifications.read'];
 @Injectable()
 export class DiscordStrategy extends PassportStrategy(
   Strategy,
-  AuthProviders.Discord,
+  AuthNames.Discord,
 ) {
+  /** Logger for this service */
+  private logger: Logger = new Logger(DiscordStrategy.name);
+
   /** Discord Strat setup */
   constructor(
     private authService: AuthService,
@@ -39,20 +43,10 @@ export class DiscordStrategy extends PassportStrategy(
     const done: (err: any, profile: {} | false) => void =
       arguments[arguments.length - 1];
     try {
-      const prov: Provider = {
-        providerName: AuthProviders.Discord,
-        id: profile.id,
-        username: profile.username,
-        avatar: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`,
-        accessToken,
-        refreshToken,
-        extra: {
-          discriminator: profile.discriminator,
-          connections: profile.connections,
-        },
-        scopes: dcScopes,
-      };
+      this.logger.debug(`Discord login from user: ${profile.username}`);
 
+      const prov = discordMapper(accessToken, refreshToken, profile, dcScopes);
+      console.log('Login: ', prov);
       await this.authService.validateProvider(prov, extractUid(req));
       done(null, {});
     } catch (e) {

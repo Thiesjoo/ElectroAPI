@@ -69,12 +69,20 @@ export class AuthService {
     );
 
     if (prov > -1) {
+      console.log('Found existing provider: ', prov, providerData);
       user.providers[prov] = providerData;
+      user.providers[prov].username = 'cringe';
     } else {
       user.providers.push(providerData);
     }
     user.markModified('providers');
     await user.save();
+
+    console.log(
+      'User pre: ',
+      await this.authUsersService.findUserByUid(user._id),
+    );
+    console.log('User post: ', user);
     //TODO: Emit user update event(To get extra data from provider)
 
     return;
@@ -141,6 +149,7 @@ export class AuthService {
   private createRefreshToken(user: User): Promise<string> {
     if (!user) return null;
     const { id, role } = user;
+    //TODO: Is 20 enough? Maybe saltrounds + 10?
     const token = randomBytes(20).toString('hex');
 
     user.tokens.push({

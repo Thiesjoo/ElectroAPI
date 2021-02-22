@@ -17,7 +17,7 @@ const levels = enumKeys(logLevels);
  */
 async function bootstrap() {
   //Config
-  const defaultLogLevel = process.env.LOG_LEVEL || 'verbose';
+  const defaultLogLevel = process.env.LOG_LEVEL || 'debug';
   const foundLogLevel = levels.findIndex((x) => x === defaultLogLevel);
   if (foundLogLevel === -1) {
     console.error(
