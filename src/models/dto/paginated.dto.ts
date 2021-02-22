@@ -25,7 +25,6 @@ export class PaginatedDto<T> {
 export const ApiPaginatedResponse = <TModel extends Type<any>>(
   model: TModel,
 ) => {
-  console.log(model, getSchemaPath(model));
   return applyDecorators(
     ApiOkResponse({
       schema: {

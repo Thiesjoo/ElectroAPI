@@ -143,7 +143,7 @@ export class NotificationGateway {
     @MessageBody()
     ...[data]: Parameters<Requ[Rout.Ingest]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.Ingest]>> {
-    console.log(data);
+    this.logger.debug(`Ingest: received data`);
     return true;
   }
 
@@ -157,7 +157,7 @@ export class NotificationGateway {
     @MessageBody()
     ...[data]: Parameters<Requ[Rout.GetSample]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.GetSample]>> {
-    console.log(data);
+    this.logger.debug(`Ingest: requested data`);
     return this.notificationService.getWithID(token, data);
   }
 }

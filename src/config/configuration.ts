@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 /** All cookie settings */
 interface CookieSettings {
   /** Same site Settings. Should be strict on production */
-  sameSite: 'none' | 'strict' | false;
+  sameSite: 'none' | 'strict' | 'lax';
   /** Expiry date in unix time */
   expires: Date;
   /** Wether the cookie should be accessible by JS */
@@ -141,7 +141,7 @@ export class ApiConfigService {
       access: {
         expires: new Date(Date.now() + this.expiry.accessExpiry),
         httpOnly: true,
-        sameSite: 'strict',
+        sameSite: 'lax',
         // sameSite: this.production ? 'Strict' : false,
         path: '/',
         secure: this.production,
