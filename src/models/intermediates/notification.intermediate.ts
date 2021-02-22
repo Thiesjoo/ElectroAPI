@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
+  IsHexColor,
   IsObject,
   IsString,
   ValidateNested
@@ -56,6 +57,10 @@ export class IMessageNotification {
   @ApiProperty()
   @IsDateString()
   time: string;
+  /** The date as a string */
+  @ApiProperty()
+  @IsHexColor()
+  color: string;
   /** The author of the message */
   @ApiProperty()
   @IsObject()

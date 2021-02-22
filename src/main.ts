@@ -6,6 +6,7 @@ import { AppModule } from './app/app.module';
 import filters from './common/errors';
 import interceptors from './common/interceptors';
 import { ApiConfigService, corsSettings } from './config/configuration';
+import { IoAdapter } from './config/gateway.config';
 import { logLevels } from './models/enums/loglevels';
 import { enumKeys } from './utils';
 
@@ -33,6 +34,7 @@ async function bootstrap() {
 
   const config = app.get(ApiConfigService);
 
+  app.useWebSocketAdapter(new IoAdapter(app));
   app.enableCors(corsSettings);
 
   //Global stuff

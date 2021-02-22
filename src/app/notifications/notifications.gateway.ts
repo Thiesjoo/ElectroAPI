@@ -1,20 +1,19 @@
-import { Request } from 'express';
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 import { AuthedUser, UserToken } from 'src/common';
-import { corsSettings } from 'src/config/configuration';
 import {
   AuthTokenPayload,
   IngestClient,
+  NotificationSocketEvents as Eve,
   NotificationSocketRequests as Requ,
   NotificationSocketRoutes as Rout,
   Provider,
-  ReturnTypeOfMethod
+  ReturnTypeOfMethod,
+  ServerEmitter
 } from 'src/models';
 import {
   BadRequestException,
   Logger,
   NotFoundException,
-  Req,
   UnauthorizedException,
   UseGuards,
   UsePipes,
@@ -25,7 +24,6 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer,
   WsException
 } from '@nestjs/websockets';
 import { AuthService, AuthUserService, JwtGuard } from '../auth';
@@ -33,17 +31,15 @@ import { NotificationService } from '../notifications/notifications.service';
 
 /** Service to handle WebSockets for notifications. */
 @UsePipes(new ValidationPipe())
-//TODO: THis doesnt' work in socket.io v3.
-@WebSocketGateway(null, {
-  cors: corsSettings,
-})
+@WebSocketGateway()
 @UseGuards(JwtGuard)
 export class NotificationGateway {
   /** The websocket server */
-  @WebSocketServer()
-  server: Server;
+  // @WebSocketServer()
+  // server: Server;
   /** Map of every client, mapped to the data about client */
-  private clients: Record<string, IngestClient> = {};
+  private sendClients: Record<string, IngestClient> = {};
+  private receiveClients: Record<string, ServerEmitter<Eve>> = {};
   /** Logger of this service */
   private logger: Logger = new Logger(NotificationGateway.name);
 
@@ -61,20 +57,20 @@ export class NotificationGateway {
    * @param data Data from request
    */
   @AuthedUser()
-  @SubscribeMessage(Rout.Auth)
-  async auth(
+  @SubscribeMessage(Rout.AuthSend)
+  async authSend(
     @ConnectedSocket() client: Socket,
     @UserToken() token: AuthTokenPayload,
     @MessageBody()
-    ...[data]: Parameters<Requ[Rout.Auth]>
-  ): Promise<ReturnTypeOfMethod<Requ[Rout.Auth]>> {
+    ...[data]: Parameters<Requ[Rout.AuthSend]>
+  ): Promise<ReturnTypeOfMethod<Requ[Rout.AuthSend]>> {
     if (token.sub !== data.id) {
       throw new WsException(
         new UnauthorizedException('JWT And user ID do not match'),
       );
     }
 
-    this.logger.log('Received AUTH request on socket gateway');
+    this.logger.log('Received AUTH SEND request on socket gateway');
 
     //FIXME: Check if authorized client application (Maybe a toggle to disable all)
     //FIXME: Verify origin
@@ -101,7 +97,7 @@ export class NotificationGateway {
         user._id,
         foundProvider,
       );
-      this.logger.log(
+      this.logger.debug(
         `Successfully got provider for user ${updatedProvider.username}`,
       );
     } catch (e) {
@@ -109,12 +105,37 @@ export class NotificationGateway {
       return null;
     }
 
-    this.clients[client.id] = {
+    this.sendClients[client.id] = {
       userUid: data.id,
       dataProvider: data.provider,
     };
 
     return foundProvider;
+  }
+
+  @AuthedUser()
+  @SubscribeMessage(Rout.AuthReceive)
+  async authReceive(
+    @ConnectedSocket() client: Socket,
+    @UserToken() token: AuthTokenPayload,
+    @MessageBody()
+    ...[data]: Parameters<Requ[Rout.AuthReceive]>
+  ): Promise<ReturnTypeOfMethod<Requ[Rout.AuthReceive]>> {
+    if (token.sub !== data) {
+      throw new WsException(
+        new UnauthorizedException('JWT And user ID do not match'),
+      );
+    }
+
+    this.logger.debug('Received AUTH RECEIVE request on socket gateway');
+    const user = await this.authUserService.findUserByUid(data);
+    if (!user) {
+      throw new WsException(new NotFoundException('User was not found'));
+    }
+
+    this.receiveClients[user._id] = client;
+
+    return true;
   }
 
   /** Get the identity of a authed socket */
@@ -125,11 +146,11 @@ export class NotificationGateway {
     @MessageBody()
     ...[]: Parameters<Requ[Rout.Identity]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.Identity]>> {
-    if (!this.clients[client.id]) {
+    if (!this.sendClients[client.id]) {
       throw new WsException(new UnauthorizedException());
     }
 
-    return this.clients[client.id];
+    return this.sendClients[client.id];
   }
 
   /** TODO: Make this
@@ -139,12 +160,23 @@ export class NotificationGateway {
   @SubscribeMessage(Rout.Ingest)
   async ingestData(
     @ConnectedSocket() client: Socket,
-    @Req() req: Request,
+    @UserToken() token: AuthTokenPayload,
     @MessageBody()
     ...[data]: Parameters<Requ[Rout.Ingest]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.Ingest]>> {
+    //FIXME: Move this to a decorator?
+    if (!this.sendClients[client.id]) {
+      throw new WsException(new UnauthorizedException());
+    }
+
     this.logger.debug(`Ingest: received data`);
-    return true;
+
+    return Boolean(
+      await this.notificationService.add(token, {
+        ...data,
+        providerType: this.sendClients[client.id].dataProvider,
+      }),
+    );
   }
 
   /** Get data. Client doesn't have to be authed with this.client, because notifications can be accessed via API also */
@@ -152,12 +184,17 @@ export class NotificationGateway {
   @SubscribeMessage(Rout.GetSample)
   async getData(
     @ConnectedSocket() client: Socket,
-    @Req() req: Request,
     @UserToken() token: AuthTokenPayload,
     @MessageBody()
     ...[data]: Parameters<Requ[Rout.GetSample]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.GetSample]>> {
     this.logger.debug(`Ingest: requested data`);
+
+    this.broadcast(token.sub, 'connect', 'asd');
     return this.notificationService.getWithID(token, data);
+  }
+
+  broadcast(user: string, channel: keyof Eve, message: any) {
+    this.receiveClients[user].emit(channel);
   }
 }

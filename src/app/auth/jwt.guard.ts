@@ -49,11 +49,11 @@ export class JwtGuard implements CanActivate {
         case 'ws':
           const client: Socket = context.switchToWs().getClient<Socket>();
 
-          let wsToken = client.handshake?.query?.token as string;
+          let wsToken = client.handshake?.auth?.token as string;
           if (!wsToken) {
             const params = client.handshake?.headers?.cookie
-              .split(';')
-              .reduce((res, c) => {
+              ?.split(';')
+              ?.reduce((res, c) => {
                 const [key, val] = c.trim().split('=').map(decodeURIComponent);
                 try {
                   return Object.assign(res, { [key]: JSON.parse(val) });
@@ -61,8 +61,9 @@ export class JwtGuard implements CanActivate {
                   return Object.assign(res, { [key]: val });
                 }
               }, {});
+            console.log(client.handshake.headers);
 
-            wsToken = params[this.configService.cookieNames.access];
+            wsToken = params?.[this.configService.cookieNames.access];
           }
 
           const processedWS = await this.processToken(wsToken, context);
@@ -83,16 +84,16 @@ export class JwtGuard implements CanActivate {
           return false;
       }
     } catch (e) {
+      let error = e;
       if (e instanceof JsonWebTokenError) {
-        let error = new UnauthorizedException(
+        error = new UnauthorizedException(
           'No valid authorization token has been provided',
         );
-        if (context.getType() === 'ws') {
-          throw new WsException(error);
-        }
-        throw error;
       }
-      throw e;
+      if (context.getType() === 'ws') {
+        throw new WsException(error);
+      }
+      throw error;
     }
   }
 

@@ -64,3 +64,11 @@ export declare type StrictEventEmitter<
     NeededMethods
   >;
 export default StrictEventEmitter;
+
+export declare type ServerEmitter<TEventRecord> = {
+  emit<P extends keyof TEventRecord, T>(
+    this: T,
+    event: P,
+    args: ListenerType<TEventRecord[P]>,
+  ): boolean;
+};

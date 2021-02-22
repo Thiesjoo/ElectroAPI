@@ -23,7 +23,10 @@ export class NotificationService {
    * @param token Token of user
    * @param notf Notification to add
    */
-  add(token: AuthTokenPayload, notf: IMessageNotification) {
+  async add(
+    token: AuthTokenPayload,
+    notf: IMessageNotification,
+  ): Promise<MessageNotification> {
     return this.notfModel.create({
       ...notf,
       user: token.sub,

@@ -11,9 +11,9 @@ import {
 export class MessageNotification
   extends Document
   implements IMessageNotification {
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   user: string;
-  @Prop({ enum: AuthProviders })
+  @Prop({ enum: AuthProviders, required: true })
   providerType: AuthProviders;
   @Prop({ required: true })
   image: string;
@@ -23,10 +23,11 @@ export class MessageNotification
   message: string;
   @Prop({ required: true })
   time: string;
+  @Prop({ required: true })
+  color: string;
   @Prop({ required: true, type: MessageAuthor })
   author: MessageAuthor;
-  //TODO: Proper typing for this
-  @Prop({ type: Number })
+  @Prop({ type: MongooseSchema.Types.Mixed })
   extra: {};
 }
 
