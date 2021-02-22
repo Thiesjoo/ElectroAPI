@@ -10,10 +10,10 @@ import { JwtGuard } from '../../jwt.guard';
 @ApiTags('Auth')
 export class DiscordController {
   /** Login route */
+  @Get('login')
   @UseGuards(JwtGuard, AuthGuard(AuthProviders.Discord))
   @AuthedUser()
   @ApiBearerAuth()
-  @Get('login')
   async login() {}
 
   /** Callback from Discord api */

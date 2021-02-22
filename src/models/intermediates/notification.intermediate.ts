@@ -27,6 +27,10 @@ export class MessageAuthor {
  * General notification class
  */
 export class IMessageNotification {
+  @ApiProperty({
+    description: 'The unique ID of the notification',
+  })
+  _id?: string;
   /** The id of the user */
   @ApiProperty({
     description: 'The unique ID of the user',

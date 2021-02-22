@@ -51,11 +51,8 @@ async function bootstrap() {
     .addTag('electro')
     .addBearerAuth({ in: 'header', type: 'http' })
     .addCookieAuth('jwt')
-    .setBasePath('')
     .build();
-  const document = SwaggerModule.createDocument(app, swaggerBuilder, {
-    // operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
-  });
+  const document = SwaggerModule.createDocument(app, swaggerBuilder);
   SwaggerModule.setup('api', app, document);
 
   await app.listen(config.port);

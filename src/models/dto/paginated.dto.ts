@@ -25,30 +25,28 @@ export class PaginatedDto<T> {
 export const ApiPaginatedResponse = <TModel extends Type<any>>(
   model: TModel,
 ) => {
+  console.log(model, getSchemaPath(model));
   return applyDecorators(
     ApiOkResponse({
       schema: {
-        title: `PaginatedResponseOf${model.name}`,
-        allOf: [
-          { $ref: getSchemaPath(PaginatedDto) },
-          {
-            properties: {
-              docs: {
-                type: 'array',
-                items: { $ref: getSchemaPath(model) },
-              },
-              page: {
-                type: 'number',
-              },
-              limit: {
-                type: 'number',
-              },
-              total: {
-                type: 'number',
-              },
-            },
+        title: `Paginated${model.name}`,
+        type: 'object',
+        required: ['docs', 'page', 'limit', 'total'],
+        properties: {
+          docs: {
+            type: 'array',
+            items: { $ref: getSchemaPath(model) },
           },
-        ],
+          page: {
+            type: 'number',
+          },
+          limit: {
+            type: 'number',
+          },
+          total: {
+            type: 'number',
+          },
+        },
       },
     }),
   );

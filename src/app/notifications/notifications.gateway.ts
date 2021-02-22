@@ -147,7 +147,7 @@ export class NotificationGateway {
     return true;
   }
 
-  /** Get data */
+  /** Get data. Client doesn't have to be authed with this.client, because notifications can be accessed via API also */
   @AuthedUser()
   @SubscribeMessage(Rout.GetSample)
   async getData(

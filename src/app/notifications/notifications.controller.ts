@@ -16,7 +16,13 @@ import {
   Post,
   Query
 } from '@nestjs/common';
-import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiExtraModels,
+  ApiQuery,
+  ApiResponse,
+  ApiTags
+} from '@nestjs/swagger';
 import { JwtGuard } from '../auth';
 import { NotificationService } from './notifications.service';
 
@@ -25,6 +31,7 @@ import { NotificationService } from './notifications.service';
 @ResponsePrefix()
 @AuthPrefixes(JwtGuard, [AuthedUser()])
 @ApiTags('Notification')
+@ApiExtraModels(IMessageNotification)
 export class NotificationController {
   constructor(
     private notificationService: NotificationService,
