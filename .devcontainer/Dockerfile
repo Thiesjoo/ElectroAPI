@@ -2,9 +2,10 @@ FROM alpine:3.13
 ARG USERNAME=vscode
 
 # Packages
-RUN apk add zsh git openssh gnupg nodejs libgcc libstdc++ npm sudo openssl \
-     docker-cli=20.10.2-r0 \
-     docker-compose=1.27.4-r0 \
+RUN apk add zsh git openssh gnupg nodejs libgcc libstdc++ npm sudo openssl curl --no-cache && \
+     apk add --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+     docker-cli \
+     docker-compose \
      --no-cache
 
 # User

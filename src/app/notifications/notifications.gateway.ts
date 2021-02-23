@@ -3,12 +3,13 @@ import { AuthedUser, UserToken } from 'src/common';
 import {
   AuthTokenPayload,
   IngestClient,
+  ListenerType,
   NotificationSocketEvents as Eve,
   NotificationSocketRequests as Requ,
   NotificationSocketRoutes as Rout,
   Provider,
   ReturnTypeOfMethod,
-  ServerEmitter
+  ServerEventEmitter
 } from 'src/models';
 import {
   BadRequestException,
@@ -39,7 +40,7 @@ export class NotificationGateway {
   // server: Server;
   /** Map of every client, mapped to the data about client */
   private sendClients: Record<string, IngestClient> = {};
-  private receiveClients: Record<string, ServerEmitter<Eve>> = {};
+  private receiveClients: Record<string, ServerEventEmitter<Socket, Eve>> = {};
   /** Logger of this service */
   private logger: Logger = new Logger(NotificationGateway.name);
 
@@ -190,11 +191,15 @@ export class NotificationGateway {
   ): Promise<ReturnTypeOfMethod<Requ[Rout.GetSample]>> {
     this.logger.debug(`Ingest: requested data`);
 
-    this.broadcast(token.sub, 'connect', 'asd');
+    this.broadcast(token.sub, 'connect', null);
     return this.notificationService.getWithID(token, data);
   }
 
-  broadcast(user: string, channel: keyof Eve, message: any) {
-    this.receiveClients[user].emit(channel);
+  broadcast<T extends keyof Eve>(
+    user: string,
+    channel: T,
+    message: ListenerType<Eve[T]>,
+  ) {
+    this.receiveClients[user].emit(channel, message);
   }
 }

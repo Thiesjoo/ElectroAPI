@@ -1,4 +1,4 @@
-export interface TypeRecord<T, U, V> {
+interface TypeRecord<T, U, V> {
   ' _emitterType'?: T;
   ' _eventsType'?: U;
   ' _emitType'?: V;
@@ -6,12 +6,12 @@ export interface TypeRecord<T, U, V> {
 export declare type ReturnTypeOfMethod<T> = T extends (...args: any[]) => any
   ? ReturnType<T>
   : void;
-declare type ListenerType<T> = [T] extends [(args: infer U) => any]
+export declare type ListenerType<T> = [T] extends [(args: infer U) => any]
   ? U
   : [T] extends [void]
   ? []
   : [T];
-export declare type OverriddenMethods<TEmitter, TEventRecord, TEmitRecord> = {
+declare type ClientOverriddenMethods<TEmitter, TEventRecord, TEmitRecord> = {
   on<P extends keyof TEventRecord, T>(
     this: T,
     event: P,
@@ -44,31 +44,52 @@ export declare type OverriddenMethods<TEmitter, TEventRecord, TEmitRecord> = {
     ack: (payload: ReturnTypeOfMethod<TEmitRecord[P]>) => void,
   ): TEmitter;
 };
-export declare type OverriddenKeys = keyof OverriddenMethods<any, any, any>;
-export declare type StrictEventEmitter<
+declare type OverriddenKeysClient = keyof ClientOverriddenMethods<
+  any,
+  any,
+  any
+>;
+export declare type ClientEventEmitter<
   TEmitterType,
   TEventRecord,
   TEmitRecord,
-  UnneededMethods extends Exclude<OverriddenKeys, keyof TEmitterType> = Exclude<
-    OverriddenKeys,
+  UnneededMethods extends Exclude<
+    OverriddenKeysClient,
     keyof TEmitterType
-  >,
-  NeededMethods extends Exclude<OverriddenKeys, UnneededMethods> = Exclude<
-    OverriddenKeys,
+  > = Exclude<OverriddenKeysClient, keyof TEmitterType>,
+  NeededMethods extends Exclude<
+    OverriddenKeysClient,
     UnneededMethods
-  >
+  > = Exclude<OverriddenKeysClient, UnneededMethods>
 > = TypeRecord<TEmitterType, TEventRecord, TEmitRecord> &
-  Pick<TEmitterType, Exclude<keyof TEmitterType, OverriddenKeys>> &
+  Pick<TEmitterType, Exclude<keyof TEmitterType, OverriddenKeysClient>> &
   Pick<
-    OverriddenMethods<TEmitterType, TEventRecord, TEmitRecord>,
+    ClientOverriddenMethods<TEmitterType, TEventRecord, TEmitRecord>,
     NeededMethods
   >;
-export default StrictEventEmitter;
+export default ClientEventEmitter;
 
-export declare type ServerEmitter<TEventRecord> = {
+declare type ServerOverriddenMethods<TEmitter, TEventRecord> = {
   emit<P extends keyof TEventRecord, T>(
     this: T,
     event: P,
     args: ListenerType<TEventRecord[P]>,
   ): boolean;
 };
+
+declare type OverriddenKeysServer = keyof ServerOverriddenMethods<any, any>;
+
+export declare type ServerEventEmitter<
+  TEmitterType,
+  TEventRecord,
+  UnneededMethods extends Exclude<
+    OverriddenKeysServer,
+    keyof TEmitterType
+  > = Exclude<OverriddenKeysServer, keyof TEmitterType>,
+  NeededMethods extends Exclude<
+    OverriddenKeysServer,
+    UnneededMethods
+  > = Exclude<OverriddenKeysServer, UnneededMethods>
+> = TypeRecord<TEmitterType, TEventRecord, null> &
+  Pick<TEmitterType, Exclude<keyof TEmitterType, OverriddenKeysServer>> &
+  Pick<ServerOverriddenMethods<TEmitterType, TEventRecord>, NeededMethods>;
