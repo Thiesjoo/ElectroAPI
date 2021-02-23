@@ -61,7 +61,6 @@ export class JwtGuard implements CanActivate {
                   return Object.assign(res, { [key]: val });
                 }
               }, {});
-            console.log(client.handshake.headers);
 
             wsToken = params?.[this.configService.cookieNames.access];
           }

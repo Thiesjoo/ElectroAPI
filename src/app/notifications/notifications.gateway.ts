@@ -191,7 +191,9 @@ export class NotificationGateway {
   ): Promise<ReturnTypeOfMethod<Requ[Rout.GetSample]>> {
     this.logger.debug(`Ingest: requested data`);
 
-    this.broadcast(token.sub, 'connect', null);
+    this.broadcast(token.sub, 'events', {
+      token: 'does this work?',
+    });
     return this.notificationService.getWithID(token, data);
   }
 
@@ -200,6 +202,11 @@ export class NotificationGateway {
     channel: T,
     message: ListenerType<Eve[T]>,
   ) {
+    if (!this.receiveClients[user]) {
+      throw new WsException(
+        new UnauthorizedException('User has not authenticated with our API'),
+      );
+    }
     this.receiveClients[user].emit(channel, message);
   }
 }
