@@ -16,7 +16,7 @@ ElectroAPI MVP:
 
 ## Infrastructure
 
-[AUTH](docs/auth.md)
+[AUTH](docs/authentication.md)
 Users will be able to register new client applications use client id and key. This is so users can develop their own apps
 
 ## Configuration
