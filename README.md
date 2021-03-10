@@ -2,18 +2,22 @@
 
 ## Description
 
-ElectroAPI is currently WIP
+ElectroAPI MVP:
+- Socket service to ingest events
+  - Events: Small bits of information
+    - Discord message
+    - Realtime data update (Site uptime, PC uptime, CPU Usage, RAM Usage, bot status)
+    - Twitch (Chat pings, user goes live)
+  - Must be extendable. MVP Has clients for all of the above, but must be easy to generate new points
+- Api to query these by:
+  - Date
+  - Name (Of service)
+  - Message
 
 ## Infrastructure
 
-Signup with email and password
-
-Several providers:
-
-- If unauthed: prompt to create new account
-- If authed: bind provider to user
-
-Add a route to transfer providers between accounts.
+[AUTH](docs/auth.md)
+Users will be able to register new client applications use client id and key. This is so users can develop their own apps
 
 ## Configuration
 
