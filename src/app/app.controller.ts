@@ -23,7 +23,9 @@ export class AppController {
   /** Redirect main page to API */
   @Get('')
   @Redirect('api', 301)
-  redirect() {}
+  redirect() {
+    return 'Redirecting to /api';
+  }
 
   /** Simple hello world route */
   @Get('hello')

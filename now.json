@@ -1,10 +1,9 @@
-{ 
-  "version": 2, 
-  "name": "nestjs-now", 
-  "builds": [
-    { "src": "dist/main.js", "use": "@now/node" }
-   ],
-  "routes": [
-    { "src": "/(.*)", "dest": "dist/main.js" }
-   ]
+{
+  "functions": {
+    "dist/main.js": {
+      "runtime": "@vercel/node",
+      "includeFiles": "package.json"
+    }
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": "dist/main.js" }]
 }

@@ -1,11 +1,14 @@
 import { existsSync, readFileSync } from 'fs';
 import * as Joi from 'joi';
 import * as yaml from 'js-yaml';
+import * as loadPkg from 'load-pkg';
 import * as ms from 'ms';
 import { isAbsolute as pathAbsolute, join as pathJoin } from 'path';
 import { AuthProviders } from 'src/models';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
+const pkgJSON = loadPkg.sync();
 
 /** All cookie settings */
 interface CookieSettings {
@@ -76,10 +79,10 @@ export class ApiConfigService {
 
   /** Actual version of the application */
   get version(): string {
-    const info = JSON.parse(
-      readFileSync(pathJoin(require.main.path, '../package.json'), 'utf-8'),
-    );
-    return info?.version || '0.0.0';
+    const commitSlug = process.env.VERCEL_GIT_COMMIT_SHA;
+    return `${pkgJSON?.version || '0.0.0'}${
+      commitSlug ? ` (Commitid: ${commitSlug})` : ''
+    }`;
   }
 
   /** Get JWT key from file system */
