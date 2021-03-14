@@ -88,6 +88,7 @@ export class ApiConfigService {
   /** Get JWT key from file system */
   private getJWT(pub: boolean): string {
     let jwtPath = this.get('app.jwtPath');
+    console.log('LOADING JWT KEYS FROM PATH: ', jwtPath);
     if (jwtPath === 'ENV') {
       console.log('Loading JWT KEYS from ENV');
       if (!process.env.PUBKEY || !process.env.PRIVKEY)
