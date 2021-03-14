@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "dist/main.js": {
-      "runtime": "@vercel/node",
-      "includeFiles": "package.json"
-    }
-  },
+  "builds": [{ "src": "dist/main.js", "use": "@now/node" }],
   "rewrites": [{ "source": "/(.*)", "destination": "dist/main.js" }]
 }
