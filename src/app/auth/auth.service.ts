@@ -40,6 +40,7 @@ export class AuthService {
   ): Promise<{ access: string; refresh: string }> {
     //TODO: Bcrypt hashing
     const user = await this.authUsersService.findUserByEmail(email);
+    console.log('Found user', user, await this.authUsersService.findAllUsers());
     if (user && user.password === pass) {
       return {
         access: await this.createAccessToken(user),

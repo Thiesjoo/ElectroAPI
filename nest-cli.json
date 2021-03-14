@@ -1,5 +1,7 @@
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
-  "assets": ["**/*.yml"]
+  "compilerOptions": {
+    "assets": ["**/*.yml", "**/*.css"]
+  }
 }

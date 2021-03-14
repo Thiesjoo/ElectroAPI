@@ -1,6 +1,8 @@
 import * as cookieParser from 'cookie-parser';
+import { join } from 'path';
 import { LogLevel, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import filters from './common/errors';
@@ -28,7 +30,7 @@ async function bootstrap() {
   }
 
   //Creation
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: levels.slice(0, foundLogLevel + 1).map((x) => <LogLevel>x),
   });
 
@@ -44,6 +46,7 @@ async function bootstrap() {
 
   //Express stuff
   app.use(cookieParser());
+  app.useStaticAssets(join(__dirname, 'public'));
 
   //OpenAPI setup
   const swaggerBuilder = new DocumentBuilder()
@@ -57,7 +60,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerBuilder);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(config.port);
+  app.listen(config.port);
 }
 
 bootstrap();

@@ -34,8 +34,7 @@ const OauthJoiScheme = Joi.object({
 /** Validation for .yml file */
 const configValidation = Joi.object({
   mongodb: Joi.object({
-    host: Joi.string().required(),
-    port: Joi.number().default(27017),
+    connection: Joi.string().required(),
   }).default(),
   providers: Joi.object({
     discord: OauthJoiScheme,
@@ -69,7 +68,9 @@ export class ApiConfigService {
   /** MongoDatabase url. */
   get mongoURL(): string {
     const db = this.configService.get('mongodb');
-    return `mongodb://${db.host}:${db.port}/${this.get('NODE_ENV')}`;
+    return `${db.connection}/electroapi-${
+      this.production ? 'production' : 'dev'
+    }`;
   }
 
   /** Port application should run on */
@@ -90,7 +91,6 @@ export class ApiConfigService {
     let jwtPath = this.get('app.jwtPath');
     console.log('LOADING JWT KEYS FROM PATH: ', jwtPath);
     if (jwtPath === 'ENV') {
-      console.log('Loading JWT KEYS from ENV');
       if (!process.env.PUBKEY || !process.env.PRIVKEY)
         throw new Error('Please set PUBKEY and PRIVKEY in env variables');
       return pub ? process.env.PUBKEY : process.env.PRIVKEY;
@@ -186,6 +186,7 @@ export function loadConfig() {
     if (!existsSync(cfgPath)) {
       throw new Error('Config file could not be found at path: ' + cfgPath);
     }
+    console.log('Loading config from path:', cfgPath);
     data = readFileSync(cfgPath, 'utf8');
   }
 
