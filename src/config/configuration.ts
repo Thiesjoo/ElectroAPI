@@ -88,12 +88,18 @@ export class ApiConfigService {
   /** Get JWT key from file system */
   private getJWT(pub: boolean): string {
     let jwtPath = this.get('app.jwtPath');
-    jwtPath = pathJoin(jwtPath, `jwt.key${pub ? '.pub' : ''}`);
+    if (jwtPath === 'ENV') {
+      console.log('Loading JWT KEYS from ENV');
+      if (!process.env.PUBKEY || !process.env.PRIVKEY)
+        throw new Error('Please set PUBKEY and PRIVKEY in env variables');
+      return pub ? process.env.PUBKEY : process.env.PRIVKEY;
+    }
 
+    jwtPath = pathJoin(jwtPath, `jwt.key${pub ? '.pub' : ''}`);
     if (!pathAbsolute(jwtPath)) {
       jwtPath = pathJoin(require.main.path, jwtPath);
     }
-    return jwtPath;
+    return readFileSync(jwtPath, 'utf-8');
   }
 
   /** JWT path for public key */

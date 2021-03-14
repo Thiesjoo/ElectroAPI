@@ -23,14 +23,10 @@ import { AuthUserModule } from './user/auth.user.module';
         // TODO: Throw away tokens after version bump?
         const issuer = `ElectroAPI-v${configService.version}`;
         const algorithm = 'RS256';
-        const fileEncoding = 'utf8';
 
         return {
-          publicKey: fs.readFileSync(configService.jwtPublicPath, fileEncoding),
-          privateKey: fs.readFileSync(
-            configService.jwtPrivatePath,
-            fileEncoding,
-          ),
+          publicKey: configService.jwtPublicPath,
+          privateKey: configService.jwtPrivatePath,
           signOptions: {
             expiresIn: configService.expiry.accessExpiry,
             algorithm,
