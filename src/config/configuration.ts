@@ -160,18 +160,26 @@ export class ApiConfigService {
 
 /** Load config from yaml file and validate it */
 export function loadConfig() {
-  let cfgPath = process.env.CONFIG_PATH || '../env.yml';
-  if (!cfgPath) {
-    throw new Error('Config path not found in env: CONFIG_PATH');
-  }
-  if (!pathAbsolute(cfgPath)) {
-    cfgPath = pathJoin(require.main.path, cfgPath);
-  }
-  if (!existsSync(cfgPath)) {
-    throw new Error('Config file could not be found at path: ' + cfgPath);
+  let data = '';
+
+  if (process.env.CONFIG) {
+    data = process.env.CONFIG;
+    console.log('Loading custom env config. Length: ', data.length);
+  } else {
+    let cfgPath = process.env.CONFIG_PATH || '../env.yml';
+    if (!cfgPath) {
+      throw new Error('Config path not found in env: CONFIG_PATH');
+    }
+    if (!pathAbsolute(cfgPath)) {
+      cfgPath = pathJoin(require.main.path, cfgPath);
+    }
+    if (!existsSync(cfgPath)) {
+      throw new Error('Config file could not be found at path: ' + cfgPath);
+    }
+    data = readFileSync(cfgPath, 'utf8');
   }
 
-  let yamlLoaded = yaml.load(readFileSync(cfgPath, 'utf8')) as object;
+  let yamlLoaded = yaml.load(data) as object;
   const allConfigs = { ...yamlLoaded, ...process.env };
 
   const { value, error } = configValidation.validate(allConfigs, {
