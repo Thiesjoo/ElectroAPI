@@ -1,4 +1,6 @@
+import { hash } from 'bcrypt';
 import { FilterQuery, Model, ObjectId, UpdateQuery } from 'mongoose';
+import { ApiConfigService } from 'src/config/configuration';
 import { AuthProviders, AuthRole, User, UserDTO } from 'src/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,6 +20,7 @@ export class AuthUserService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<User>,
+    private configService: ApiConfigService,
   ) {}
 
   /**
@@ -70,10 +73,9 @@ export class AuthUserService {
    * @param {UserDTO} user Partial details of a user
    */
   async createUser(userInput: UserDTO, password: string): Promise<User> {
-    //FIXME: Add bcrypt here
     const user: User = await this.userModel.create({
       ...userInput,
-      password,
+      password: await hash(password, this.configService.saltRounds),
       providers: [],
       role: AuthRole.User,
     });

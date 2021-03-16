@@ -12,6 +12,7 @@ import {
   LocalRefreshService,
   LocalStrategy
 } from './strategies';
+import { LocalAuthService } from './strategies/local/local.service';
 import { AuthUserModule } from './user/auth.user.module';
 
 @Global()
@@ -47,6 +48,7 @@ import { AuthUserModule } from './user/auth.user.module';
     LocalStrategy,
     DiscordStrategy,
     LocalRefreshService,
+    LocalAuthService,
     Oauth2RefreshService,
   ],
   exports: [AuthService, JwtModule],

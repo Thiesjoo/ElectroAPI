@@ -10,10 +10,15 @@ export class User extends Document implements IUser {
   @Prop({ required: true })
   name: string;
   // @ts-ignore
-  @Prop({ required: true, unique: 'Password/Email combination is incorrect' })
+  @Prop({
+    required: true,
+    unique: 'Password/Email combination is incorrect or user already exists',
+  })
   email: string;
   @Prop({ required: true })
   password: string;
+  @Prop({ default: false })
+  emailVerified: boolean;
 
   @Prop({ required: true, type: Array<Provider>() })
   providers: Provider[];

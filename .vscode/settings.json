@@ -5,9 +5,6 @@
   "importSorter.importStringConfiguration.tabSize": 2,
   "importSorter.sortConfiguration.customOrderingRules.defaultNumberOfEmptyLinesAfterGroup": 0,
   "cSpell.enabled": true,
-  "cSpell.words": [
-    "Authed",
-    "Requ",
-    "nestjs"
-  ]
+  "cSpell.words": ["Authed", "Requ", "nestjs"],
+  "todo-tree.filtering.excludeGlobs": ["**/node_modules/**"]
 }

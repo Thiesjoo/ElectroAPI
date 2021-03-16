@@ -112,6 +112,11 @@ export class ApiConfigService {
     return this.getJWT(false);
   }
 
+  /** Salt rounds for password encryption */
+  get saltRounds(): number {
+    return this.production ? 15 : 5;
+  }
+
   /** Get information about provider */
   getProvider(
     providerType: AuthProviders,
