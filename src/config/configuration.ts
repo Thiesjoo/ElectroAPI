@@ -163,7 +163,7 @@ export class ApiConfigService {
         expires: new Date(Date.now() + this.expiry.refreshExpiry),
         httpOnly: true,
         sameSite: 'none',
-        path: '/auth/refresh',
+        path: 'auth/refresh/access',
         secure: true, // HTTPS only
         domain: 'localhost',
       },
@@ -210,7 +210,11 @@ export const corsSettings = {
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   origin: (org, cb) => {
     //FIXME: Make this secure (:
-    if (['http://localhost:3000', 'http://localhost:4200'].includes(org)) {
+    if (
+      ['http://localhost:3000', 'http://localhost:4200', undefined].includes(
+        org,
+      )
+    ) {
       cb(null, true);
     } else {
       cb(new Error(`Origin: ${org} is not whitelisted`));

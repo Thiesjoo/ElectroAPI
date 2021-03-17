@@ -26,7 +26,10 @@ export class LocalRefreshController {
   @Get(['wipecookies', 'logout'])
   @UseGuards(JwtGuard)
   @AuthedUser()
-  async wipeCookies(@Req() req: Request, @Res() res: Response) {
+  async wipeCookies(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     // Expiry time is not allowed in clearCookie
     const {
       expires: a,
@@ -56,7 +59,7 @@ export class LocalRefreshController {
   async refreshTokens(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<string> {
+  ): Promise<void> {
     const newToken = await this.localRefreshService.getAccessToken(
       req.cookies[this.configService.cookieNames.refresh],
     );
@@ -66,6 +69,6 @@ export class LocalRefreshController {
       this.configService.cookieSettings.access,
     );
 
-    return newToken;
+    res.json({ ok: true, token: newToken });
   }
 }
