@@ -50,7 +50,7 @@ export class UsersController {
     return (await this.usersService.findAllUsers()).map(userMapper);
   }
 
-  /** Get yousrself as a user */
+  /** Get yourself as a user */
   @Get('/me')
   @ApiResponse({
     status: HttpStatus.OK,

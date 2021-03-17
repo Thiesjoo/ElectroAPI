@@ -1,8 +1,15 @@
 import { Request, Response } from 'express';
 import { AuthedUser } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Req,
+  Res,
+  UseGuards
+} from '@nestjs/common';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../../jwt.guard';
 import { LocalRefreshService } from './localRefresh.service';
 
@@ -41,10 +48,15 @@ export class LocalRefreshController {
   /** Refresh the users token */
   @Get('access')
   @AuthedUser()
+  @ApiResponse({
+    description: 'Your new token',
+    status: HttpStatus.OK,
+    type: String,
+  })
   async refreshTokens(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<string> {
     const newToken = await this.localRefreshService.getAccessToken(
       req.cookies[this.configService.cookieNames.refresh],
     );

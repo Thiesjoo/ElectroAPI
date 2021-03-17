@@ -1,3 +1,4 @@
+import { CookieOptions } from 'express';
 import { existsSync, readFileSync } from 'fs';
 import * as Joi from 'joi';
 import * as yaml from 'js-yaml';
@@ -10,20 +11,6 @@ import { ConfigService } from '@nestjs/config';
 
 const pkgJSON = loadPkg.sync();
 
-/** All cookie settings */
-interface CookieSettings {
-  /** Same site Settings. Should be strict on production */
-  sameSite: 'none' | 'strict' | 'lax';
-  /** Expiry date in unix time */
-  expires: Date;
-  /** Wether the cookie should be accessible by JS */
-  httpOnly: boolean;
-  /** Wether the cookie should only be served with https */
-  secure: boolean;
-  /** The path the cookie applies to */
-  path: string;
-}
-
 /** Nested validation */
 const OauthJoiScheme = Joi.object({
   clientID: Joi.string().required(),
@@ -35,10 +22,17 @@ const OauthJoiScheme = Joi.object({
 const configValidation = Joi.object({
   mongodb: Joi.object({
     connection: Joi.string().required(),
-  }).default(),
+  })
+    .default()
+    .required(),
   providers: Joi.object({
     discord: OauthJoiScheme,
   }),
+  pusher: Joi.object({
+    appId: Joi.string(),
+    key: Joi.string(),
+    secret: Joi.string(),
+  }).required(),
   app: Joi.object({
     jwtPath: Joi.string().required(),
     logLevel: Joi.string().required(),
@@ -63,6 +57,10 @@ export class ApiConfigService {
   /** Boolean if app is in production */
   get production(): boolean {
     return this.configService.get('NODE_ENV') === 'production';
+  }
+
+  get pusherConfig() {
+    return this.get('pusher');
   }
 
   /** MongoDatabase url. */
@@ -149,25 +147,25 @@ export class ApiConfigService {
 
   /** Get cookie settings */
   get cookieSettings(): {
-    access: CookieSettings;
-    refresh: CookieSettings;
+    access: CookieOptions;
+    refresh: CookieOptions;
   } {
     return {
       access: {
-        expires: new Date(Date.now() + this.expiry.accessExpiry),
-        httpOnly: true,
-        sameSite: 'lax',
-        // sameSite: this.production ? 'Strict' : false,
-        path: '/',
-        secure: this.production,
+        expires: new Date(Date.now() + this.expiry.accessExpiry), // Expiry
+        httpOnly: true, // JS Cannot access this cookie
+        sameSite: 'none', // Cookie can be used from different domains (CORS)
+        path: '/', // Used in the entire api
+        secure: true, // HTTPS only
+        domain: 'localhost',
       },
       refresh: {
         expires: new Date(Date.now() + this.expiry.refreshExpiry),
         httpOnly: true,
-        sameSite: 'strict',
-        // sameSite: this.production ? 'Strict' : false,
+        sameSite: 'none',
         path: '/auth/refresh',
-        secure: this.production,
+        secure: true, // HTTPS only
+        domain: 'localhost',
       },
     };
   }
@@ -211,11 +209,12 @@ export function loadConfig() {
 export const corsSettings = {
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   origin: (org, cb) => {
-    // if (['http://localhost:8080'].includes(org)) {
-    cb(null, true);
-    // } else {
-    //   cb(new Error(`Origin: ${org} is not whitelisted`));
-    // }
+    //FIXME: Make this secure (:
+    if (['http://localhost:3000', 'http://localhost:4200'].includes(org)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`Origin: ${org} is not whitelisted`));
+    }
   },
   credentials: true,
 };

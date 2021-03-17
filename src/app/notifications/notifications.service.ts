@@ -52,6 +52,7 @@ export class NotificationService {
     token: AuthTokenPayload,
     id: string,
   ): Promise<MessageNotification> {
+    console.log('trigger?');
     this.pusher.trigger('private-user', 'test', { msg: 'goi' });
 
     return this.notfModel.findOne({ _id: id, user: token.sub }).exec();
