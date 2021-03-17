@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import { ApiConfigService } from 'src/config/configuration';
-import { Global, Module } from '@nestjs/common';
+import { forwardRef, Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { AppModule } from '../app.module';
 import { AuthService } from './';
 import { Oauth2RefreshService } from './auth-refresh.service';
 import {
@@ -10,7 +11,8 @@ import {
   LocalController,
   LocalRefreshController,
   LocalRefreshService,
-  LocalStrategy
+  LocalStrategy,
+  PusherController
 } from './strategies';
 import { LocalAuthService } from './strategies/local/local.service';
 import { AuthUserModule } from './user/auth.user.module';
@@ -18,6 +20,7 @@ import { AuthUserModule } from './user/auth.user.module';
 @Global()
 @Module({
   imports: [
+    forwardRef(() => AppModule),
     AuthUserModule,
     JwtModule.registerAsync({
       useFactory: async (configService: ApiConfigService) => {
@@ -42,7 +45,12 @@ import { AuthUserModule } from './user/auth.user.module';
       inject: [ApiConfigService],
     }),
   ],
-  controllers: [LocalController, DiscordController, LocalRefreshController],
+  controllers: [
+    LocalController,
+    DiscordController,
+    LocalRefreshController,
+    PusherController,
+  ],
   providers: [
     AuthService,
     LocalStrategy,

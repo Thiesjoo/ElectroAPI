@@ -189,11 +189,7 @@ export class NotificationGateway {
     @MessageBody()
     ...[data]: Parameters<Requ[Rout.GetSample]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.GetSample]>> {
-    this.logger.debug(`Ingest: requested data`);
-
-    this.broadcast(token.sub, 'events', {
-      token: 'does this work?',
-    });
+    this.logger.debug('Request data: ', data);
     return this.notificationService.getWithID(token, data);
   }
 
