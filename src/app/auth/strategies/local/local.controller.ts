@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { ApiConfigService } from 'src/config/configuration';
-import { AuthNames } from 'src/models';
+import { AuthNames, AuthRole } from 'src/models';
 import {
   Controller,
   HttpStatus,
@@ -13,7 +13,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 /** DTO to validate users request */
-class ValidationDTO {
+class UserLoginDTO {
   /** Their email */
   @ApiProperty({
     description: 'The email of the user',
@@ -28,6 +28,16 @@ class ValidationDTO {
   password: string;
 }
 
+/** The response of local api */
+class UserLoginResponse {
+  /** Access token */
+  @ApiProperty()
+  access: string;
+  /** Refresh token */
+  @ApiProperty()
+  refresh: string;
+}
+
 /** Controller for authenticating with this API */
 @Controller('auth/local')
 @ApiTags('Auth')
@@ -36,15 +46,19 @@ export class LocalController {
 
   /** Setup cookies for users login request */
   @UseGuards(AuthGuard(AuthNames.Local))
-  @ApiBody({ type: ValidationDTO })
+  @ApiBody({ type: UserLoginDTO })
   @ApiResponse({
     description:
       'The accesstoken is returned, and all the required cookies are set',
-    status: HttpStatus.OK,
+    status: HttpStatus.CREATED,
+    type: UserLoginResponse,
   })
   @Post('login')
   login(@Req() req, @Res({ passthrough: true }) res: Response) {
-    const tokens = req?.user as { access: string; refresh: string };
+    const tokens = req?.user as {
+      access: string;
+      refresh: string;
+    };
 
     res.cookie(
       this.configService.cookieNames.access,
@@ -56,7 +70,6 @@ export class LocalController {
       tokens.refresh,
       this.configService.cookieSettings.refresh,
     );
-
-    return tokens.access;
+    return tokens;
   }
 }

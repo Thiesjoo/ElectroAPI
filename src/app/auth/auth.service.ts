@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto';
 import { ApiConfigService } from 'src/config/configuration';
 import {
+  AuthRole,
   AuthTokenPayload,
   IUser,
   Provider,
