@@ -1,4 +1,4 @@
-import { hash } from 'bcrypt';
+import { hash } from 'bcryptjs';
 import { FilterQuery, Model, ObjectId, UpdateQuery } from 'mongoose';
 import { ApiConfigService } from 'src/config/configuration';
 import { AuthProviders, AuthRole, User, UserDTO } from 'src/models';

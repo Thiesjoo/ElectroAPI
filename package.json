@@ -38,7 +38,7 @@
     "@nestjs/swagger": "^4.7.13",
     "@nestjs/websockets": "^7.6.12",
     "axios": "^0.21.1",
-    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
     "class-transformer": "^0.3.2",
     "class-validator": "^0.13.1",
     "cookie-parser": "^1.4.5",

@@ -1,4 +1,4 @@
-import { compare, hash } from 'bcrypt';
+import { compare } from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { ApiConfigService } from 'src/config/configuration';
 import {
@@ -8,14 +8,14 @@ import {
   Provider,
   RefreshTokenPayload,
   Tokens,
-  User
+  User,
 } from 'src/models';
 import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  UnauthorizedException
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Oauth2RefreshService } from './auth-refresh.service';
