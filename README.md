@@ -1,5 +1,10 @@
 # ElectroAPI
 
+Preffered URL:
+
+pr-1.electroapi.dev --> pr-1-electroapi.vercel.app
+v1.0.0-electroapi.dev --> v1-0-0-electroapi.vercel.app
+
 ## Description
 
 ElectroAPI MVP:
