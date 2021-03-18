@@ -1,7 +1,7 @@
 import { IsAlphanumeric, IsEmail, IsString, Length } from 'class-validator';
 import { Response } from 'express';
 import { ApiConfigService } from 'src/config/configuration';
-import { AuthNames, Tokens, UserDTO, userMapper } from 'src/models';
+import { AuthNames, AuthRole, Tokens, UserDTO, userMapper } from 'src/models';
 import {
   Body,
   Controller,
@@ -16,7 +16,7 @@ import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LocalAuthService } from './local.service';
 
 /** DTO to validate users request */
-class LoginDTO {
+class UserLoginDTO {
   /** Their email */
   @ApiProperty({
     description: 'The email of the user',
@@ -33,7 +33,18 @@ class LoginDTO {
   password: string;
 }
 
-class RegisterDTO extends LoginDTO {
+
+/** The response of local api */
+class UserLoginResponse {
+  /** Access token */
+  @ApiProperty()
+  access: string;
+  /** Refresh token */
+  @ApiProperty()
+  refresh: string;
+}
+
+class RegisterDTO extends UserLoginDTO {
   @ApiProperty({
     description: 'The name of the user',
   })
@@ -41,6 +52,7 @@ class RegisterDTO extends LoginDTO {
   @IsAlphanumeric()
   @Length(5)
   name: string;
+
 }
 
 /** Controller for authenticating with this API */
@@ -55,14 +67,19 @@ export class LocalController {
   /** Setup cookies for users login request */
   @ApiBody({ type: LoginDTO })
   @UseGuards(AuthGuard(AuthNames.Local))
+  @ApiBody({ type: UserLoginDTO })
   @ApiResponse({
     description:
       'The accesstoken is returned, and all the required cookies are set',
-    status: HttpStatus.OK,
+    status: HttpStatus.CREATED,
+    type: UserLoginResponse,
   })
   @Post('login')
-  login(@Req() req, @Res({ passthrough: true }) res: Response) {
-    const tokens = req?.user as { access: string; refresh: string };
+  login(@Req() req, @Res({ passthrough: true }) res: Response, @Body() loginData: UserLoginDTO) {
+    const tokens = req?.user as {
+      access: string;
+      refresh: string;
+    };
 
     res.cookie(
       this.configService.cookieNames.access,
@@ -74,8 +91,7 @@ export class LocalController {
       tokens.refresh,
       this.configService.cookieSettings.refresh,
     );
-
-    return tokens.access;
+    return tokens;
   }
 
   /** Register new user */

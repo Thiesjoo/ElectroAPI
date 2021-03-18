@@ -1,10 +1,13 @@
 import { ResponsePrefix } from 'src/common';
 import {
+  AuthTokenPayload,
   IngestClient,
   MasterEnums,
   NotificationAuthDTO,
   PaginatedDto,
-  Provider
+  Provider,
+  RefreshToken,
+  RefreshTokenPayload
 } from 'src/models';
 import { Controller, Get, HttpStatus, Redirect } from '@nestjs/common';
 import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';
@@ -18,6 +21,9 @@ import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';
   MasterEnums,
   IngestClient,
   NotificationAuthDTO,
+  AuthTokenPayload,
+  RefreshToken,
+  RefreshTokenPayload,
 )
 export class AppController {
   /** Redirect main page to API */
