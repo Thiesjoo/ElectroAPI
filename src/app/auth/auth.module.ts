@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import { ApiConfigService } from 'src/config/configuration';
-import { Global, Module } from '@nestjs/common';
+import { forwardRef, Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { AppModule } from '../app.module';
 import { AuthService } from './';
 import { Oauth2RefreshService } from './auth-refresh.service';
 import {
@@ -10,27 +11,26 @@ import {
   LocalController,
   LocalRefreshController,
   LocalRefreshService,
-  LocalStrategy
+  LocalStrategy,
+  PusherController
 } from './strategies';
+import { LocalAuthService } from './strategies/local/local.service';
 import { AuthUserModule } from './user/auth.user.module';
 
 @Global()
 @Module({
   imports: [
+    forwardRef(() => AppModule),
     AuthUserModule,
     JwtModule.registerAsync({
       useFactory: async (configService: ApiConfigService) => {
         // TODO: Throw away tokens after version bump?
         const issuer = `ElectroAPI-v${configService.version}`;
         const algorithm = 'RS256';
-        const fileEncoding = 'utf8';
 
         return {
-          publicKey: fs.readFileSync(configService.jwtPublicPath, fileEncoding),
-          privateKey: fs.readFileSync(
-            configService.jwtPrivatePath,
-            fileEncoding,
-          ),
+          publicKey: configService.jwtPublicPath,
+          privateKey: configService.jwtPrivatePath,
           signOptions: {
             expiresIn: configService.expiry.accessExpiry,
             algorithm,
@@ -45,12 +45,18 @@ import { AuthUserModule } from './user/auth.user.module';
       inject: [ApiConfigService],
     }),
   ],
-  controllers: [LocalController, DiscordController, LocalRefreshController],
+  controllers: [
+    LocalController,
+    DiscordController,
+    LocalRefreshController,
+    PusherController,
+  ],
   providers: [
     AuthService,
     LocalStrategy,
     DiscordStrategy,
     LocalRefreshService,
+    LocalAuthService,
     Oauth2RefreshService,
   ],
   exports: [AuthService, JwtModule],

@@ -1,8 +1,15 @@
 import { Request, Response } from 'express';
 import { AuthedUser } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Req,
+  Res,
+  UseGuards
+} from '@nestjs/common';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../../jwt.guard';
 import { LocalRefreshService } from './localRefresh.service';
 
@@ -19,7 +26,10 @@ export class LocalRefreshController {
   @Get(['wipecookies', 'logout'])
   @UseGuards(JwtGuard)
   @AuthedUser()
-  async wipeCookies(@Req() req: Request, @Res() res: Response) {
+  async wipeCookies(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     // Expiry time is not allowed in clearCookie
     const {
       expires: a,
@@ -41,10 +51,15 @@ export class LocalRefreshController {
   /** Refresh the users token */
   @Get('access')
   @AuthedUser()
+  @ApiResponse({
+    description: 'Your new token',
+    status: HttpStatus.OK,
+    type: String,
+  })
   async refreshTokens(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<void> {
     const newToken = await this.localRefreshService.getAccessToken(
       req.cookies[this.configService.cookieNames.refresh],
     );
@@ -54,6 +69,6 @@ export class LocalRefreshController {
       this.configService.cookieSettings.access,
     );
 
-    return newToken;
+    res.json({ ok: true, token: newToken });
   }
 }

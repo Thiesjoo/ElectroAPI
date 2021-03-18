@@ -1,3 +1,4 @@
+import { compare, hash } from 'bcrypt';
 import { randomBytes } from 'crypto';
 import { ApiConfigService } from 'src/config/configuration';
 import {
@@ -6,6 +7,7 @@ import {
   IUser,
   Provider,
   RefreshTokenPayload,
+  Tokens,
   User
 } from 'src/models';
 import {
@@ -35,17 +37,14 @@ export class AuthService {
    * @param email Email of the user
    * @param pass Pass of the user
    */
-  async validateLocalUser(
-    email: string,
-    pass: string,
-  ): Promise<{ access: string; refresh: string }> {
-    //TODO: Bcrypt hashing
+  async validateLocalUser(email: string, pass: string): Promise<Tokens> {
     const user = await this.authUsersService.findUserByEmail(email);
-    if (user && user.password === pass) {
-      return {
-        access: await this.createAccessToken(user),
-        refresh: await this.createRefreshToken(user),
-      };
+    if (user) {
+      const passwordComp = await compare(pass, user.password);
+      if (!passwordComp) {
+        return null;
+      }
+      return this.generateTokens(user);
     }
     return null;
   }
@@ -89,22 +88,6 @@ export class AuthService {
     return;
   }
 
-  /**
-   * Signs a new JWT token for the user provided
-   * @param user User the token has to be created for
-   */
-  createAccessToken(user: IUser): Promise<string> {
-    if (!user) return null;
-    const { id, role } = user;
-    const payload: AuthTokenPayload = {
-      sub: id,
-      rol: role,
-    };
-    return this.jwtService.signAsync(payload, {
-      expiresIn: this.configService.expiry.accessExpiry / 1000,
-    });
-  }
-
   /** Refresh the accesstoken from a provider
    * @param userUid Id of user
    * @param provider Provider in question
@@ -143,6 +126,14 @@ export class AuthService {
     return user;
   }
 
+  /** generate two tokens for a user */
+  async generateTokens(user: User): Promise<Tokens> {
+    return {
+      access: await this.createAccessToken(user),
+      refresh: await this.createRefreshToken(user),
+    };
+  }
+
   /**
    * Signs a new JWT token for the user provided
    * @param user User the token has to be created for
@@ -168,6 +159,22 @@ export class AuthService {
 
     return this.jwtService.signAsync(payload, {
       expiresIn: this.configService.expiry.refreshExpiry / 1000,
+    });
+  }
+
+  /**
+   * Signs a new JWT token for the user provided
+   * @param user User the token has to be created for
+   */
+  createAccessToken(user: IUser): Promise<string> {
+    if (!user) return null;
+    const { id, role } = user;
+    const payload: AuthTokenPayload = {
+      sub: id,
+      rol: role,
+    };
+    return this.jwtService.signAsync(payload, {
+      expiresIn: this.configService.expiry.accessExpiry / 1000,
     });
   }
 

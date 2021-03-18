@@ -17,10 +17,10 @@ export class LocalStrategy extends PassportStrategy(Strategy, AuthNames.Local) {
     super({ usernameField: 'email' });
   }
 
-  /** Validate request */
+  /** Validate request inside function, because authguard comes before validation */
   async validate(
-    email,
-    password,
+    email: string,
+    password: string,
   ): Promise<{ access: string; refresh: string }> {
     if (!isEmail(email) || !isString(password)) {
       throw new BadRequestException();

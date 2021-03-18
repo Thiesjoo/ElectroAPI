@@ -1,10 +1,11 @@
+import Pusher from 'pusher';
 import {
   AuthTokenPayload,
   IMessageNotification,
   MessageNotification,
   PaginateModel
 } from 'src/models';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 /** Service for notification controller */
@@ -14,6 +15,7 @@ export class NotificationService {
   constructor(
     @InjectModel(MessageNotification.name)
     private notfModel: PaginateModel<MessageNotification>,
+    @Inject('Pusher') private pusher: Pusher,
   ) {}
 
   //Add, dismiss? (Do we want history), get (Paginated. By ID.  All is only for dev?)
@@ -27,10 +29,14 @@ export class NotificationService {
     token: AuthTokenPayload,
     notf: IMessageNotification,
   ): Promise<MessageNotification> {
-    return this.notfModel.create({
+    const notification = await this.notfModel.create({
       ...notf,
       user: token.sub,
     });
+
+    //push
+
+    return notification;
   }
 
   /** Remove notification from DB */
@@ -46,6 +52,9 @@ export class NotificationService {
     token: AuthTokenPayload,
     id: string,
   ): Promise<MessageNotification> {
+    console.log('trigger?');
+    this.pusher.trigger('private-user', 'test', { msg: 'goi' });
+
     return this.notfModel.findOne({ _id: id, user: token.sub }).exec();
   }
 

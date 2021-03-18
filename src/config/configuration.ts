@@ -1,25 +1,15 @@
+import { CookieOptions } from 'express';
 import { existsSync, readFileSync } from 'fs';
 import * as Joi from 'joi';
 import * as yaml from 'js-yaml';
+import * as loadPkg from 'load-pkg';
 import * as ms from 'ms';
 import { isAbsolute as pathAbsolute, join as pathJoin } from 'path';
 import { AuthProviders } from 'src/models';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-/** All cookie settings */
-interface CookieSettings {
-  /** Same site Settings. Should be strict on production */
-  sameSite: 'none' | 'strict' | 'lax';
-  /** Expiry date in unix time */
-  expires: Date;
-  /** Wether the cookie should be accessible by JS */
-  httpOnly: boolean;
-  /** Wether the cookie should only be served with https */
-  secure: boolean;
-  /** The path the cookie applies to */
-  path: string;
-}
+const pkgJSON = loadPkg.sync();
 
 /** Nested validation */
 const OauthJoiScheme = Joi.object({
@@ -31,12 +21,18 @@ const OauthJoiScheme = Joi.object({
 /** Validation for .yml file */
 const configValidation = Joi.object({
   mongodb: Joi.object({
-    host: Joi.string().required(),
-    port: Joi.number().default(27017),
-  }).default(),
+    connection: Joi.string().required(),
+  })
+    .default()
+    .required(),
   providers: Joi.object({
     discord: OauthJoiScheme,
   }),
+  pusher: Joi.object({
+    appId: Joi.string(),
+    key: Joi.string(),
+    secret: Joi.string(),
+  }).required(),
   app: Joi.object({
     jwtPath: Joi.string().required(),
     logLevel: Joi.string().required(),
@@ -63,10 +59,16 @@ export class ApiConfigService {
     return this.configService.get('NODE_ENV') === 'production';
   }
 
+  get pusherConfig() {
+    return this.get('pusher');
+  }
+
   /** MongoDatabase url. */
   get mongoURL(): string {
     const db = this.configService.get('mongodb');
-    return `mongodb://${db.host}:${db.port}/${this.get('NODE_ENV')}`;
+    return `${db.connection}/electroapi-${
+      this.production ? 'production' : 'dev'
+    }`;
   }
 
   /** Port application should run on */
@@ -76,21 +78,27 @@ export class ApiConfigService {
 
   /** Actual version of the application */
   get version(): string {
-    const info = JSON.parse(
-      readFileSync(pathJoin(require.main.path, '../package.json'), 'utf-8'),
-    );
-    return info?.version || '0.0.0';
+    const commitSlug = process.env.VERCEL_GIT_COMMIT_SHA;
+    return `${pkgJSON?.version || '0.0.0'}${
+      commitSlug ? ` (Commitid: ${commitSlug})` : ''
+    }`;
   }
 
   /** Get JWT key from file system */
   private getJWT(pub: boolean): string {
     let jwtPath = this.get('app.jwtPath');
-    jwtPath = pathJoin(jwtPath, `jwt.key${pub ? '.pub' : ''}`);
+    console.log('LOADING JWT KEYS FROM PATH: ', jwtPath);
+    if (jwtPath === 'ENV') {
+      if (!process.env.PUBKEY || !process.env.PRIVKEY)
+        throw new Error('Please set PUBKEY and PRIVKEY in env variables');
+      return pub ? process.env.PUBKEY : process.env.PRIVKEY;
+    }
 
+    jwtPath = pathJoin(jwtPath, `jwt.key${pub ? '.pub' : ''}`);
     if (!pathAbsolute(jwtPath)) {
       jwtPath = pathJoin(require.main.path, jwtPath);
     }
-    return jwtPath;
+    return readFileSync(jwtPath, 'utf-8');
   }
 
   /** JWT path for public key */
@@ -100,6 +108,11 @@ export class ApiConfigService {
   /** JWT path for private key */
   get jwtPrivatePath(): string {
     return this.getJWT(false);
+  }
+
+  /** Salt rounds for password encryption */
+  get saltRounds(): number {
+    return this.production ? 15 : 5;
   }
 
   /** Get information about provider */
@@ -134,25 +147,25 @@ export class ApiConfigService {
 
   /** Get cookie settings */
   get cookieSettings(): {
-    access: CookieSettings;
-    refresh: CookieSettings;
+    access: CookieOptions;
+    refresh: CookieOptions;
   } {
     return {
       access: {
-        expires: new Date(Date.now() + this.expiry.accessExpiry),
-        httpOnly: true,
-        sameSite: 'lax',
-        // sameSite: this.production ? 'Strict' : false,
-        path: '/',
-        secure: this.production,
+        expires: new Date(Date.now() + this.expiry.accessExpiry), // Expiry
+        httpOnly: true, // JS Cannot access this cookie
+        sameSite: 'none', // Cookie can be used from different domains (CORS)
+        path: '/', // Used in the entire api
+        secure: true, // HTTPS only
+        domain: 'localhost',
       },
       refresh: {
         expires: new Date(Date.now() + this.expiry.refreshExpiry),
         httpOnly: true,
-        sameSite: 'strict',
-        // sameSite: this.production ? 'Strict' : false,
-        path: '/auth/refresh',
-        secure: this.production,
+        sameSite: 'none',
+        path: 'auth/refresh/access',
+        secure: true, // HTTPS only
+        domain: 'localhost',
       },
     };
   }
@@ -160,18 +173,27 @@ export class ApiConfigService {
 
 /** Load config from yaml file and validate it */
 export function loadConfig() {
-  let cfgPath = process.env.CONFIG_PATH || '../env.yml';
-  if (!cfgPath) {
-    throw new Error('Config path not found in env: CONFIG_PATH');
-  }
-  if (!pathAbsolute(cfgPath)) {
-    cfgPath = pathJoin(require.main.path, cfgPath);
-  }
-  if (!existsSync(cfgPath)) {
-    throw new Error('Config file could not be found at path: ' + cfgPath);
+  let data = '';
+
+  if (process.env.CONFIG) {
+    data = process.env.CONFIG;
+    console.log('Loading custom env config. Length: ', data.length);
+  } else {
+    let cfgPath = process.env.CONFIG_PATH || '../env.yml';
+    if (!cfgPath) {
+      throw new Error('Config path not found in env: CONFIG_PATH');
+    }
+    if (!pathAbsolute(cfgPath)) {
+      cfgPath = pathJoin(require.main.path, cfgPath);
+    }
+    if (!existsSync(cfgPath)) {
+      throw new Error('Config file could not be found at path: ' + cfgPath);
+    }
+    console.log('Loading config from path:', cfgPath);
+    data = readFileSync(cfgPath, 'utf8');
   }
 
-  let yamlLoaded = yaml.load(readFileSync(cfgPath, 'utf8')) as object;
+  let yamlLoaded = yaml.load(data) as object;
   const allConfigs = { ...yamlLoaded, ...process.env };
 
   const { value, error } = configValidation.validate(allConfigs, {
@@ -187,11 +209,16 @@ export function loadConfig() {
 export const corsSettings = {
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   origin: (org, cb) => {
-    // if (['http://localhost:8080'].includes(org)) {
-    cb(null, true);
-    // } else {
-    //   cb(new Error(`Origin: ${org} is not whitelisted`));
-    // }
+    //FIXME: Make this secure (:
+    if (
+      ['http://localhost:3000', 'http://localhost:4200', undefined].includes(
+        org,
+      )
+    ) {
+      cb(null, true);
+    } else {
+      cb(new Error(`Origin: ${org} is not whitelisted`));
+    }
   },
   credentials: true,
 };

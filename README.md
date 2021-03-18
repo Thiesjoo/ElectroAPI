@@ -2,24 +2,36 @@
 
 ## Description
 
-ElectroAPI is currently WIP
+ElectroAPI MVP:
+
+- Socket service to ingest events
+  - Events: Small bits of information
+    - Discord message
+    - Realtime data update (Site uptime, PC uptime, CPU Usage, RAM Usage, bot status)
+    - Twitch (Chat pings, user goes live)
+  - Must be extendable. MVP Has clients for all of the above, but must be easy to generate new points
+- Api to query these by:
+  - Date
+  - Name (Of service)
+  - Message
 
 ## Infrastructure
 
-Signup with email and password
-
-Several providers:
-
-- If unauthed: prompt to create new account
-- If authed: bind provider to user
-
-Add a route to transfer providers between accounts.
+[AUTH](docs/authentication.md)
+Users will be able to register new client applications use client id and key. This is so users can develop their own apps
 
 ## Configuration
 
-Main config is in a YAML file called `env.yml` and additional configuration is in the env variables.
+Main config is in a YAML file called `env.yml`. It's automatically loaded from project root but can be loaded from different path (See ENV Variables).
+`env.yml` can also be provided with ENV variables( Specify env variable `CONFIG` with the file as a string).
 
-### ENV
+### env.yml
+
+For configuration see: `sample.env.yml`
+
+If you set `jwtPath` to `ENV` the JWT keys will be loaded from env (`PRIVKEY` for the private key and `PUBKEY` for the public one).
+
+### ENV Variables
 
 - LOG_LEVEL = Log level of the entire application. Defaults to `verbose`
 - CONFIG_PATH - The path of your `env.yml`. Defaults to `env.yml`
