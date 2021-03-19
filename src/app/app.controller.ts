@@ -1,4 +1,5 @@
 import { ResponsePrefix } from 'src/common';
+import { ApiConfigService } from 'src/config/configuration';
 import {
   AuthTokenPayload,
   IngestClient,
@@ -26,6 +27,8 @@ import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';
   RefreshTokenPayload,
 )
 export class AppController {
+  constructor(private configService: ApiConfigService) {}
+
   /** Redirect main page to API */
   @Get('')
   @Redirect('api', 301)
@@ -37,10 +40,19 @@ export class AppController {
   @Get('hello')
   @ApiResponse({
     status: HttpStatus.OK,
-    type: String,
     description: 'Hello world!',
   })
-  getHello(): string {
-    return 'Hello world!';
+  getHello() {
+    return { ok: true, msg: 'Hello world!' };
+  }
+
+  /** Simple version route */
+  @Get('version')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns version of the api',
+  })
+  getVersion() {
+    return { ok: true, version: this.configService.version };
   }
 }
