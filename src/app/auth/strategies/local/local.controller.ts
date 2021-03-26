@@ -9,7 +9,7 @@ import {
   Post,
   Req,
   Res,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -44,12 +44,13 @@ class UserLoginResponse {
 }
 
 class RegisterDTO extends UserLoginDTO {
+  /** Name of user */
   @ApiProperty({
     description: 'The name of the user',
   })
   @IsString()
   @IsAlphanumeric()
-  @Length(5)
+  @Length(3)
   name: string;
 }
 
@@ -75,6 +76,7 @@ export class LocalController {
   login(
     @Req() req,
     @Res({ passthrough: true }) res: Response,
+    /** For validation purposes */
     @Body() loginData: UserLoginDTO,
   ) {
     const tokens = req?.user as {
@@ -101,6 +103,7 @@ export class LocalController {
     description:
       'The accesstoken is returned, and all the required cookies are set',
     status: HttpStatus.OK,
+    type: String,
   })
   @Post('register')
   async register(@Body() registerDTO: RegisterDTO): Promise<string> {
