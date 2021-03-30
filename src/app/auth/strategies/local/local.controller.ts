@@ -34,7 +34,7 @@ class UserLoginDTO {
 }
 
 /** The response of local api */
-class UserLoginResponse {
+class UserLoginResponse implements Tokens {
   /** Access token */
   @ApiProperty()
   access: string;
@@ -63,6 +63,19 @@ export class LocalController {
     private localService: LocalAuthService,
   ) {}
 
+  private setCookies(tokens: Tokens, res: Response) {
+    res.cookie(
+      this.configService.cookieNames.access,
+      tokens.access,
+      this.configService.cookieSettings.access,
+    );
+    res.cookie(
+      this.configService.cookieNames.refresh,
+      tokens.refresh,
+      this.configService.cookieSettings.refresh,
+    );
+  }
+
   /** Setup cookies for users login request */
   @UseGuards(AuthGuard(AuthNames.Local))
   @ApiBody({ type: UserLoginDTO })
@@ -78,22 +91,10 @@ export class LocalController {
     @Res({ passthrough: true }) res: Response,
     /** For validation purposes */
     @Body() loginData: UserLoginDTO,
-  ) {
-    const tokens = req?.user as {
-      access: string;
-      refresh: string;
-    };
+  ): Tokens {
+    const tokens = req?.user as Tokens;
+    this.setCookies(tokens, res);
 
-    res.cookie(
-      this.configService.cookieNames.access,
-      tokens.access,
-      this.configService.cookieSettings.access,
-    );
-    res.cookie(
-      this.configService.cookieNames.refresh,
-      tokens.refresh,
-      this.configService.cookieSettings.refresh,
-    );
     return tokens;
   }
 
@@ -102,17 +103,20 @@ export class LocalController {
   @ApiResponse({
     description:
       'The accesstoken is returned, and all the required cookies are set',
-    status: HttpStatus.OK,
-    type: String,
+    status: HttpStatus.CREATED,
+    type: UserLoginResponse,
   })
   @Post('register')
-  async register(@Body() registerDTO: RegisterDTO): Promise<string> {
-    return (
-      await this.localService.register(
-        registerDTO.name,
-        registerDTO.email,
-        registerDTO.password,
-      )
-    ).access;
+  async register(
+    @Body() registerDTO: RegisterDTO,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<Tokens> {
+    const tokens = await this.localService.register(
+      registerDTO.name,
+      registerDTO.email,
+      registerDTO.password,
+    );
+    this.setCookies(tokens, res);
+    return tokens;
   }
 }

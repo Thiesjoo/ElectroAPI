@@ -23,13 +23,10 @@ export class LocalRefreshController {
   ) {}
 
   /** Wipe cookies of user, and revoke them in the database */
-  @Get(['wipecookies', 'logout'])
+  @Get('logout')
   @UseGuards(JwtGuard)
   @AuthedUser()
-  async wipeCookies(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     // Expiry time is not allowed in clearCookie
     const {
       expires: a,

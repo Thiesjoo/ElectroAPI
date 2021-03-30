@@ -155,17 +155,16 @@ export class ApiConfigService {
         expires: new Date(Date.now() + this.expiry.accessExpiry), // Expiry
         httpOnly: true, // JS Cannot access this cookie
         sameSite: 'none', // Cookie can be used from different domains (CORS)
-        path: '/', // Used in the entire api
         secure: true, // HTTPS only
-        domain: 'localhost',
+        // domain: 'localhost',
       },
       refresh: {
         expires: new Date(Date.now() + this.expiry.refreshExpiry),
         httpOnly: true,
         sameSite: 'none',
-        path: 'auth/refresh/access',
+        path: '/auth',
         secure: true, // HTTPS only
-        domain: 'localhost',
+        // domain: 'localhost',
       },
     };
   }

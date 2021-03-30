@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongoose';
 import {
+  AuthedUser,
   AuthPrefixes,
   DeveloperOnly,
   ResponsePrefix,
@@ -61,6 +62,7 @@ export class UsersController {
     status: HttpStatus.NOT_FOUND,
     description: 'User with given ID was not found',
   })
+  @AuthedUser()
   async getMe(@UserToken('id') token: AuthTokenPayload) {
     return userMapper(await this.usersService.findUserByUid(token.sub));
   }
