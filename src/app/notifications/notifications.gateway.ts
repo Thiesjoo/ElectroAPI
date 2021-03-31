@@ -4,6 +4,7 @@ import {
   AuthTokenPayload,
   IngestClient,
   ListenerType,
+  NotificationRoutes as Rout2,
   NotificationSocketEvents as Eve,
   NotificationSocketRequests as Requ,
   NotificationSocketRoutes as Rout,
@@ -158,13 +159,13 @@ export class NotificationGateway {
    * Simple ingest function
    */
   @AuthedUser()
-  @SubscribeMessage(Rout.Ingest)
+  @SubscribeMessage(Rout2.Ingest)
   async ingestData(
     @ConnectedSocket() client: Socket,
     @UserToken() token: AuthTokenPayload,
     @MessageBody()
-    ...[data]: Parameters<Requ[Rout.Ingest]>
-  ): Promise<ReturnTypeOfMethod<Requ[Rout.Ingest]>> {
+    ...[data]: Parameters<Requ[Rout2.Ingest]>
+  ): Promise<ReturnTypeOfMethod<Requ[Rout2.Ingest]>> {
     //FIXME: Move this to a decorator?
     if (!this.sendClients[client.id]) {
       throw new WsException(new UnauthorizedException());

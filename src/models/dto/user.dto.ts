@@ -25,6 +25,12 @@ export class UserDTO {
     type: String,
   })
   uid?: string;
+  /** The pusher gateway to use */
+  @ApiProperty({
+    description: 'The Pusher gateway ID',
+    type: String,
+  })
+  gateway?: string;
 }
 
 /** Map the user to the DTO user */

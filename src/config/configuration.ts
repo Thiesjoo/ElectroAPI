@@ -59,7 +59,11 @@ export class ApiConfigService {
     return this.configService.get('NODE_ENV') === 'production';
   }
 
-  get pusherConfig() {
+  get pusherConfig(): {
+    appId: string;
+    key: string;
+    secret: string;
+  } {
     return this.get('pusher');
   }
 
@@ -80,7 +84,7 @@ export class ApiConfigService {
   get version(): string {
     const commitSlug = process.env.VERCEL_GIT_COMMIT_SHA;
     return `${pkgJSON?.version || '0.0.0'}${
-      commitSlug ? ` (Commitid: ${commitSlug})` : ''
+      commitSlug ? ` (CommitSlug: ${commitSlug})` : ''
     }`;
   }
 

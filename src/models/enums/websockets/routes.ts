@@ -1,42 +1,27 @@
 import {
   IMessageNotification,
   IngestClient,
-  NotificationAuthDTO,
+  NotificationAuthDto,
   Provider
 } from '../../';
 
-/** The routes available to a websocket client */
-export enum NotificationSocketRoutes {
-  AuthSend = 'authenticateSending',
-  AuthReceive = 'autenticateReceiving',
-  Identity = 'identity',
+/** Events to publish */
+export enum NotificationRoutes {
   Ingest = 'ingest',
-  GetSample = 'getSampleData',
+  Update = 'update',
 }
 
-/** Map of socket routes and their responses */
-export interface NotificationSocketRequests {
-  /**
-   * Authenticate to websocket api for sending data
-   */
-  [NotificationSocketRoutes.AuthSend]: (data: NotificationAuthDTO) => Provider;
-  /**
-   * Authenticate to receive data
-   */
-  [NotificationSocketRoutes.AuthReceive]: (userUid: string) => boolean;
+/** Publisch event types */
+export interface NotificationRequests {
+  /** */
+  [NotificationRoutes.Ingest]: (data: IMessageNotification) => boolean;
 
-  [NotificationSocketRoutes.Identity]: () => IngestClient;
-  [NotificationSocketRoutes.Ingest]: (data: IMessageNotification) => boolean;
-  [NotificationSocketRoutes.GetSample]: (id: string) => IMessageNotification;
+  /** */
+  [NotificationRoutes.Update]: (data: IMessageNotification) => boolean;
 }
 
-/** Events to listen to */
-export interface NotificationSocketEvents {
-  /** Connected to server */
-  connect: () => void;
-  /** Not used yet */
-  events: (data: any) => void;
-
+/** Events to receive */
+export interface NotificationEvents {
   /** Emitted on new notification. */
   newNotification: (data: IMessageNotification) => boolean;
   /** Route used for any expections */
@@ -49,6 +34,39 @@ export interface NotificationSocketEvents {
     status: number;
     message: string;
   }) => void;
+}
+
+/******/
+// All the socket routes
+/** The routes available to a websocket client */
+export enum NotificationSocketRoutes {
+  AuthSend = 'authenticateSending',
+  AuthReceive = 'autenticateReceiving',
+  Identity = 'identity',
+  GetSample = 'getSampleData',
+}
+
+/** Map of socket routes and their responses */
+export interface NotificationSocketRequests extends NotificationRequests {
+  /**
+   * Authenticate to websocket api for sending data
+   */
+  [NotificationSocketRoutes.AuthSend]: (data: NotificationAuthDto) => Provider;
+  /**
+   * Authenticate to receive data
+   */
+  [NotificationSocketRoutes.AuthReceive]: (userUid: string) => boolean;
+
+  [NotificationSocketRoutes.Identity]: () => IngestClient;
+  [NotificationSocketRoutes.GetSample]: (id: string) => IMessageNotification;
+}
+
+export interface NotificationSocketEvents extends NotificationEvents {
+  /** Connected to server */
+  connect: () => void;
+  /** Not used yet */
+  events: (data: any) => void;
+
   /** Disconnected from server */
   disconnect: () => void;
 }

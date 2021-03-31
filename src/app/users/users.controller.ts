@@ -6,6 +6,7 @@ import {
   ResponsePrefix,
   UserToken
 } from 'src/common';
+import { ApiConfigService } from 'src/config/configuration';
 import {
   AuthTokenPayload,
   UpdateUserDto,
@@ -32,7 +33,10 @@ import { UsersService } from './users.service';
 @ResponsePrefix()
 @ApiTags('User')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private configService: ApiConfigService,
+  ) {}
 
   /**
    * Create a new user
@@ -64,7 +68,9 @@ export class UsersController {
   })
   @AuthedUser()
   async getMe(@UserToken('id') token: AuthTokenPayload) {
-    return userMapper(await this.usersService.findUserByUid(token.sub));
+    let user = userMapper(await this.usersService.findUserByUid(token.sub));
+    user.gateway = this.configService.pusherConfig.key;
+    return user;
   }
 
   /**
