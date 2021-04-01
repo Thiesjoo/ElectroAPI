@@ -7,8 +7,8 @@ import * as ms from 'ms';
 import { isAbsolute as pathAbsolute, join as pathJoin } from 'path';
 import { AuthProviders } from 'src/models';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { ConfigService } from '@nestjs/config';
 
 const pkgJSON = loadPkg.sync();
 

@@ -8,14 +8,14 @@ import {
   Provider,
   RefreshTokenPayload,
   Tokens,
-  User,
+  User
 } from 'src/models';
 import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Oauth2RefreshService } from './auth-refresh.service';
