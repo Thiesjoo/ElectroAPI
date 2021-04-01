@@ -8,6 +8,7 @@ import { isAbsolute as pathAbsolute, join as pathJoin } from 'path';
 import { AuthProviders } from 'src/models';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 const pkgJSON = loadPkg.sync();
 
@@ -209,14 +210,17 @@ export function loadConfig() {
   return value;
 }
 
-export const corsSettings = {
+export const corsSettings: CorsOptions = {
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   origin: (org, cb) => {
     //FIXME: Make this secure (:
     if (
-      ['http://localhost:3000', 'http://localhost:4200', undefined].includes(
-        org,
-      )
+      [
+        'http://localhost:3000',
+        'http://localhost:4200',
+        'https://electro-dash.vercel.app',
+        undefined,
+      ].includes(org)
     ) {
       cb(null, true);
     } else {
