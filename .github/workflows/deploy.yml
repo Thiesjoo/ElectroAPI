@@ -1,0 +1,37 @@
+name: deploy website
+on: [pull_request]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: build
+        run: |
+          npm ci
+          npm run buid
+      - uses: ./
+        id: vercel-action-staging
+        if: github.event_name == 'pull_request_target'
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
+          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
+          vercel-org-id: ${{ secrets.ORG_ID}} #Required
+          vercel-project-id: ${{ secrets.PROJECT_ID}} #Required
+          # working-directory: dist/
+          # alias-domains: |
+          #   staging.angular.vercel-action.amond.dev
+          #   pr-{{PR_NUMBER}}.angular.vercel-action.amond.dev
+
+      # - uses: actions/checkout@v2
+      # - uses: amondnet/vercel-action@v20
+      #   with:
+      #     vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
+      #     github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
+      #     vercel-org-id: ${{ secrets.ORG_ID}} #Required
+      #     vercel-project-id: ${{ secrets.PROJECT_ID}} #Required
