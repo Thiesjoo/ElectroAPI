@@ -1,5 +1,10 @@
-name: deploy website
-on: [pull_request]
+name: deploy electroapi
+on:
+  # push:
+  #   branches:
+  #     - master
+  pull_request_target:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -14,9 +19,9 @@ jobs:
       - name: build
         run: |
           npm ci
-          npm run buid
-      - uses: ./
-        id: vercel-action-staging
+          npm run build
+      - uses: amondnet/vercel-action@v20
+        id: vercel-deploy-pr
         if: github.event_name == 'pull_request_target'
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
