@@ -3,7 +3,7 @@ on:
   # push:
   #   branches:
   #     - master
-  pull_request_target:
+  pull_request:
 
 jobs:
   deploy:
@@ -22,7 +22,7 @@ jobs:
           npm run build
       - uses: amondnet/vercel-action@v20
         id: vercel-deploy-pr
-        if: github.event_name == 'pull_request_target'
+        if: github.event_name == 'pull_request'
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
