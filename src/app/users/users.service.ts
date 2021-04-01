@@ -72,7 +72,7 @@ export class UsersService {
    * Delete a user with a given ID
    * @param uid The unique identifier of the user
    */
-  deleteUser(uid: string): Promise<void> {
+  deleteUser(uid: string) {
     return this.authUserService.deleteUser(uid);
   }
 }
