@@ -69,7 +69,7 @@ export declare type ClientEventEmitter<
   >;
 export default ClientEventEmitter;
 
-declare type ServerOverriddenMethods<TEmitter, TEventRecord> = {
+declare type ServerOverriddenMethods<TEventRecord> = {
   emit<P extends keyof TEventRecord, T>(
     this: T,
     event: P,
@@ -77,7 +77,7 @@ declare type ServerOverriddenMethods<TEmitter, TEventRecord> = {
   ): boolean;
 };
 
-declare type OverriddenKeysServer = keyof ServerOverriddenMethods<any, any>;
+declare type OverriddenKeysServer = keyof ServerOverriddenMethods<any>;
 
 export declare type ServerEventEmitter<
   TEmitterType,
@@ -92,4 +92,4 @@ export declare type ServerEventEmitter<
   > = Exclude<OverriddenKeysServer, UnneededMethods>
 > = TypeRecord<TEmitterType, TEventRecord, null> &
   Pick<TEmitterType, Exclude<keyof TEmitterType, OverriddenKeysServer>> &
-  Pick<ServerOverriddenMethods<TEmitterType, TEventRecord>, NeededMethods>;
+  Pick<ServerOverriddenMethods<TEventRecord>, NeededMethods>;

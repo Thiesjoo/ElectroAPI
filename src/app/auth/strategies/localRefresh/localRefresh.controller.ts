@@ -7,7 +7,7 @@ import {
   HttpStatus,
   Req,
   Res,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../../jwt.guard';
@@ -29,14 +29,14 @@ export class LocalRefreshController {
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     // Expiry time is not allowed in clearCookie
     const {
-      expires: a,
+      expires: _, // eslint-disable-line
       ...restAccess
     } = this.configService.cookieSettings.access;
     res.clearCookie(this.configService.cookieNames.access, restAccess);
 
     const token = req.cookies[this.configService.cookieNames.refresh];
     const {
-      expires,
+      expires, // eslint-disable-line
       ...restRefresh
     } = this.configService.cookieSettings.refresh;
     res.clearCookie(this.configService.cookieNames.refresh, restRefresh);

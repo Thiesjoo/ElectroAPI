@@ -2,7 +2,6 @@ import { compare } from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { ApiConfigService } from 'src/config/configuration';
 import {
-  AuthRole,
   AuthTokenPayload,
   IUser,
   Provider,
@@ -62,7 +61,7 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    let prov = user.providers.findIndex(
+    const prov = user.providers.findIndex(
       (x) =>
         providerData.id === x.id &&
         providerData.providerName === x.providerName,

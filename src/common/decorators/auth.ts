@@ -3,7 +3,7 @@ import {
   CustomDecorator,
   HttpStatus,
   SetMetadata,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { AuthRole } from '../../models/enums';

@@ -5,7 +5,7 @@ import {
   IsHexColor,
   IsObject,
   IsString,
-  ValidateNested
+  ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { AuthProviders } from '../';
@@ -70,5 +70,5 @@ export class IMessageNotification {
   /** Extra information */
   @IsObject()
   @ApiProperty()
-  extra: {};
+  extra: any;
 }

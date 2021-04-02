@@ -1,7 +1,7 @@
 import { IsAlphanumeric, IsEmail, IsString, Length } from 'class-validator';
 import { Response } from 'express';
 import { ApiConfigService } from 'src/config/configuration';
-import { AuthNames, AuthRole, Tokens, UserDTO, userMapper } from 'src/models';
+import { AuthNames, Tokens } from 'src/models';
 import {
   Body,
   Controller,
@@ -9,7 +9,7 @@ import {
   Post,
   Req,
   Res,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -90,6 +90,7 @@ export class LocalController {
     @Req() req,
     @Res({ passthrough: true }) res: Response,
     /** For validation purposes */
+    //eslint-disable-next-line
     @Body() loginData: UserLoginDTO,
   ): Tokens {
     const tokens = req?.user as Tokens;

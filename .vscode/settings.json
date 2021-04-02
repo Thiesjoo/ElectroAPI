@@ -11,5 +11,12 @@
     "accesstoken",
     "nestjs"
   ],
-  "todo-tree.filtering.excludeGlobs": ["**/node_modules/**"]
+  "todo-tree.filtering.excludeGlobs": [
+    "**/node_modules/**"
+  ],
+  "importSorter.sortConfiguration.removeUnusedDefaultImports": true,
+  "importSorter.sortConfiguration.removeUnusedImports": true,
+  "importSorter.importStringConfiguration.trailingComma": "multiLine",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

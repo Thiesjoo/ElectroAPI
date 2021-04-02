@@ -4,7 +4,7 @@ import {
   CallHandler,
   Injectable,
   NestInterceptor,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 
 /** Empty response handler */

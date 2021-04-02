@@ -23,9 +23,4 @@ export class DiscordController {
   async redirect() {
     return 'Discord profile connected with your profile!';
   }
-
-  @Get('callback2')
-  @UseGuards(JwtGuard)
-  @AuthedUser()
-  async test() {}
 }

@@ -4,14 +4,14 @@ import {
   AuthPrefixes,
   DeveloperOnly,
   ResponsePrefix,
-  UserToken
+  UserToken,
 } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
 import {
   AuthTokenPayload,
   UpdateUserDto,
   UserDTO,
-  userMapper
+  userMapper,
 } from 'src/models';
 import {
   Body,
@@ -21,7 +21,7 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put
+  Put,
 } from '@nestjs/common';
 import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth/jwt.guard';
@@ -68,7 +68,7 @@ export class UsersController {
   })
   @AuthedUser()
   async getMe(@UserToken('id') token: AuthTokenPayload) {
-    let user = userMapper(await this.usersService.findUserByUid(token.sub));
+    const user = userMapper(await this.usersService.findUserByUid(token.sub));
     user.gateway = this.configService.pusherConfig.key;
     return user;
   }
@@ -110,7 +110,8 @@ export class UsersController {
    * @param id Id of user
    */
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.deleteUser(id);
+  async remove(@Param('id') id: string) {
+    await this.usersService.deleteUser(id);
+    return { ok: true };
   }
 }

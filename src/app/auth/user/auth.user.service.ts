@@ -98,9 +98,12 @@ export class AuthUserService {
    * @param {FilterQuery<User>} filter The unique identifier of the user
    * @param { UpdateQuery<User>} update Partial details of the user
    */
-  update(filter: FilterQuery<User>, update: UpdateQuery<User>): Promise<User> {
+  async update(
+    filter: FilterQuery<User>,
+    update: UpdateQuery<User>,
+  ): Promise<User> {
     return this.userModel
-      .updateOne(filter, update, { useFindAndModify: false })
+      .findOneAndUpdate(filter, update, { new: true, useFindAndModify: true })
       .exec();
   }
 
@@ -130,7 +133,7 @@ export class AuthUserService {
    * Delete a user with a given ID
    * @param uid The unique identifier of the user
    */
-  deleteUser(uid: idType): Promise<void> {
+  deleteUser(uid: idType) {
     return this.userModel.deleteOne({ _id: uid }).exec();
   }
 }

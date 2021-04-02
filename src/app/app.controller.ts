@@ -8,7 +8,7 @@ import {
   PaginatedDto,
   Provider,
   RefreshToken,
-  RefreshTokenPayload
+  RefreshTokenPayload,
 } from 'src/models';
 import { Controller, Get, HttpStatus, Redirect } from '@nestjs/common';
 import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';

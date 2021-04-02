@@ -7,6 +7,7 @@ import * as ms from 'ms';
 import { isAbsolute as pathAbsolute, join as pathJoin } from 'path';
 import { AuthProviders } from 'src/models';
 import { Injectable } from '@nestjs/common';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ConfigService } from '@nestjs/config';
 
 const pkgJSON = loadPkg.sync();
@@ -196,7 +197,7 @@ export function loadConfig() {
     data = readFileSync(cfgPath, 'utf8');
   }
 
-  let yamlLoaded = yaml.load(data) as object;
+  const yamlLoaded = yaml.load(data) as object;
   const allConfigs = { ...yamlLoaded, ...process.env };
 
   const { value, error } = configValidation.validate(allConfigs, {
@@ -209,14 +210,17 @@ export function loadConfig() {
   return value;
 }
 
-export const corsSettings = {
+export const corsSettings: CorsOptions = {
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   origin: (org, cb) => {
     //FIXME: Make this secure (:
     if (
-      ['http://localhost:3000', 'http://localhost:4200', undefined].includes(
-        org,
-      )
+      [
+        'http://localhost:3000',
+        'http://localhost:4200',
+        'https://electro-dash.vercel.app',
+        undefined,
+      ].includes(org)
     ) {
       cb(null, true);
     } else {
