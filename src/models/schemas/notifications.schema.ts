@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { AuthProviders } from '../';
 import {
   IMessageNotification,
-  MessageAuthor
+  MessageAuthor,
 } from '../intermediates/notification.intermediate';
 
 /** @ignore */
@@ -28,7 +28,7 @@ export class MessageNotification
   @Prop({ required: true, type: MessageAuthor })
   author: MessageAuthor;
   @Prop({ type: MongooseSchema.Types.Mixed })
-  extra: {};
+  extra: any;
 }
 
 /**

@@ -4,14 +4,14 @@ import { Namespace, Server, ServerOptions } from 'socket.io';
 import { isFunction, isNil } from '@nestjs/common/utils/shared.utils';
 import {
   AbstractWsAdapter,
-  MessageMappingProperties
+  MessageMappingProperties,
 } from '@nestjs/websockets';
 import { DISCONNECT_EVENT } from '@nestjs/websockets/constants';
 import { corsSettings } from './configuration';
 
 export class IoAdapter extends AbstractWsAdapter {
   public create(
-    port: number = 0,
+    port = 0,
     options?: { room?: string; socketIO?: Partial<ServerOptions> },
   ): Server | Namespace {
     if (!options) {
@@ -63,7 +63,7 @@ export class IoAdapter extends AbstractWsAdapter {
     });
   }
 
-  public mapPayload(payload: any): { data: any; ack?: Function } {
+  public mapPayload(payload: any): { data: any; ack?: () => void } {
     if (!Array.isArray(payload)) {
       if (isFunction(payload)) {
         return { data: undefined, ack: payload };

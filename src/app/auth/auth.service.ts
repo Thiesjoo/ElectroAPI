@@ -2,20 +2,19 @@ import { compare } from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { ApiConfigService } from 'src/config/configuration';
 import {
-  AuthRole,
   AuthTokenPayload,
   IUser,
   Provider,
   RefreshTokenPayload,
   Tokens,
-  User
+  User,
 } from 'src/models';
 import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  UnauthorizedException
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Oauth2RefreshService } from './auth-refresh.service';
@@ -62,7 +61,7 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    let prov = user.providers.findIndex(
+    const prov = user.providers.findIndex(
       (x) =>
         providerData.id === x.id &&
         providerData.providerName === x.providerName,

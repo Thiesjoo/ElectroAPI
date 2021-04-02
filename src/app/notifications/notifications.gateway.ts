@@ -10,7 +10,7 @@ import {
   NotificationSocketRoutes as Rout,
   Provider,
   ReturnTypeOfMethod,
-  ServerEventEmitter
+  ServerEventEmitter,
 } from 'src/models';
 import {
   BadRequestException,
@@ -19,14 +19,14 @@ import {
   UnauthorizedException,
   UseGuards,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
-  WsException
+  WsException,
 } from '@nestjs/websockets';
 import { AuthService, AuthUserService, JwtGuard } from '../auth';
 import { NotificationService } from '../notifications/notifications.service';

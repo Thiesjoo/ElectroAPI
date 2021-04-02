@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import { ApiConfigService } from 'src/config/configuration';
 import { forwardRef, Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
@@ -12,7 +11,7 @@ import {
   LocalRefreshController,
   LocalRefreshService,
   LocalStrategy,
-  PusherController
+  PusherController,
 } from './strategies';
 import { LocalAuthService } from './strategies/local/local.service';
 import { AuthUserModule } from './user/auth.user.module';

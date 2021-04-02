@@ -3,7 +3,7 @@ import {
   AuthTokenPayload,
   IMessageNotification,
   MessageNotification,
-  PaginateModel
+  PaginateModel,
 } from 'src/models';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';

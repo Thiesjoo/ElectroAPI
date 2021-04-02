@@ -10,7 +10,7 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
-  UnauthorizedException
+  UnauthorizedException,
 } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Reflector } from '@nestjs/core';
@@ -70,7 +70,7 @@ export class JwtGuard implements CanActivate {
           return true;
 
         case 'http':
-          let httpToken =
+          const httpToken =
             ExtractJwt.fromUrlQueryParameter('auth')(request) ||
             ExtractJwt.fromAuthHeaderAsBearerToken()(request) ||
             request.cookies[this.configService.cookieNames.access];

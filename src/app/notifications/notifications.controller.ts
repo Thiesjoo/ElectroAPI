@@ -5,7 +5,7 @@ import {
   ApiPaginatedResponse,
   AuthTokenPayload,
   IMessageNotification,
-  PaginatedDto
+  PaginatedDto,
 } from 'src/models';
 import {
   Body,
@@ -14,14 +14,14 @@ import {
   HttpStatus,
   Param,
   Post,
-  Query
+  Query,
 } from '@nestjs/common';
 import {
   ApiBody,
   ApiExtraModels,
   ApiQuery,
   ApiResponse,
-  ApiTags
+  ApiTags,
 } from '@nestjs/swagger';
 import { JwtGuard } from '../auth';
 import { NotificationService } from './notifications.service';
@@ -76,9 +76,9 @@ export class NotificationController {
   @ApiPaginatedResponse(IMessageNotification)
   async getPaginated(
     @UserToken() token: AuthTokenPayload,
-    @Query('query') query: string = '',
-    @Query('limit') limit: number = 10,
-    @Query('page') page: number = 1,
+    @Query('query') query = '',
+    @Query('limit') limit = 10,
+    @Query('page') page = 1,
   ): Promise<PaginatedDto<IMessageNotification>> {
     const res = await this.notificationService.getPaginated(
       token,

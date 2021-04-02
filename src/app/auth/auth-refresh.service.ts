@@ -49,7 +49,7 @@ export class Oauth2RefreshService {
     const clientName = provider.providerName;
     const client = oauthURLMap[clientName];
 
-    let tokens = this.configService.getProvider(provider.providerName);
+    const tokens = this.configService.getProvider(provider.providerName);
     const val = {
       client_id: tokens.clientID,
       client_secret: tokens.clientSecret,

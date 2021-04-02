@@ -2,7 +2,7 @@ import {
   IMessageNotification,
   IngestClient,
   NotificationAuthDto,
-  Provider
+  Provider,
 } from '../../';
 
 /** Events to publish */

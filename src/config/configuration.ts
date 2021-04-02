@@ -197,7 +197,7 @@ export function loadConfig() {
     data = readFileSync(cfgPath, 'utf8');
   }
 
-  let yamlLoaded = yaml.load(data) as object;
+  const yamlLoaded = yaml.load(data) as object;
   const allConfigs = { ...yamlLoaded, ...process.env };
 
   const { value, error } = configValidation.validate(allConfigs, {

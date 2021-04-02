@@ -4,14 +4,14 @@ import {
   AuthPrefixes,
   DeveloperOnly,
   ResponsePrefix,
-  UserToken
+  UserToken,
 } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
 import {
   AuthTokenPayload,
   UpdateUserDto,
   UserDTO,
-  userMapper
+  userMapper,
 } from 'src/models';
 import {
   Body,
@@ -21,7 +21,7 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put
+  Put,
 } from '@nestjs/common';
 import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth/jwt.guard';
@@ -68,7 +68,7 @@ export class UsersController {
   })
   @AuthedUser()
   async getMe(@UserToken('id') token: AuthTokenPayload) {
-    let user = userMapper(await this.usersService.findUserByUid(token.sub));
+    const user = userMapper(await this.usersService.findUserByUid(token.sub));
     user.gateway = this.configService.pusherConfig.key;
     return user;
   }
