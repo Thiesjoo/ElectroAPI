@@ -102,11 +102,9 @@ export class AuthUserService {
     filter: FilterQuery<User>,
     update: UpdateQuery<User>,
   ): Promise<User> {
-    let res = await this.userModel
-      .updateOne(filter, update, { returnOriginal: false })
+    return this.userModel
+      .findOneAndUpdate(filter, update, { new: true, useFindAndModify: true })
       .exec();
-    console.log(res);
-    return res;
   }
 
   /**

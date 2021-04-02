@@ -13,7 +13,6 @@
     "compose:start": "docker-compose up --build",
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "deploy": "npm run build && vercel",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start --watch",
     "start:env": "CONFIG=$(cat env.prod.yml) PRIVKEY=$(cat /home/vscode/.app/jwt.key) PUBKEY=$(cat /home/vscode/.app/jwt.key.pub); npm run start",
