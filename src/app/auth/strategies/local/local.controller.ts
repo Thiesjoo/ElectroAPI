@@ -1,4 +1,12 @@
-import { IsAlphanumeric, IsEmail, IsString, Length } from 'class-validator';
+import {
+  IsAlpha,
+  IsEmail,
+  IsString,
+  Length,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { Response } from 'express';
 import { ApiConfigService } from 'src/config/configuration';
 import { AuthNames, Tokens } from 'src/models';
@@ -16,7 +24,7 @@ import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LocalAuthService } from './local.service';
 
 /** DTO to validate users request */
-class UserLoginDTO {
+export class UserLoginDTO {
   /** Their email */
   @ApiProperty({
     description: 'The email of the user',
@@ -30,6 +38,20 @@ class UserLoginDTO {
     type: String,
   })
   @IsString()
+  @MinLength(8)
+  @MaxLength(64)
+  @Matches(/\d/, {
+    message: 'password must contain number',
+  })
+  @Matches(/^(?!\s*$).+/, {
+    message: 'password is required',
+  })
+  @Matches(/[A-Z]/, {
+    message: 'password must contain capital letter',
+  })
+  @Matches(/[A-Z]/, {
+    message: 'password must contain small letter',
+  })
   password: string;
 }
 
@@ -49,7 +71,7 @@ class RegisterDTO extends UserLoginDTO {
     description: 'The name of the user',
   })
   @IsString()
-  @IsAlphanumeric()
+  @IsAlpha()
   @Length(3)
   name: string;
 }
@@ -88,15 +110,15 @@ export class LocalController {
   @Post('login')
   login(
     @Req() req,
-    @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
     /** For validation purposes */
     //eslint-disable-next-line
     @Body() loginData: UserLoginDTO,
-  ): Tokens {
+  ): void {
     const tokens = req?.user as Tokens;
     this.setCookies(tokens, res);
 
-    return tokens;
+    res.json(tokens);
   }
 
   /** Register new user */
@@ -110,14 +132,14 @@ export class LocalController {
   @Post('register')
   async register(
     @Body() registerDTO: RegisterDTO,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<Tokens> {
+    @Res() res: Response,
+  ): Promise<void> {
     const tokens = await this.localService.register(
       registerDTO.name,
       registerDTO.email,
       registerDTO.password,
     );
     this.setCookies(tokens, res);
-    return tokens;
+    res.json(tokens);
   }
 }
