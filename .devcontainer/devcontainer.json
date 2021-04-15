@@ -12,15 +12,15 @@
     "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
   },
   "extensions": [
-	"dbaeumer.vscode-eslint",
-	"esbenp.prettier-vscode",
-	"mongodb.mongodb-vscode",
-	"eamodio.gitlens",
-	"ms-azuretools.vscode-docker",
-	"streetsidesoftware.code-spell-checker",
-	"gruntfuggly.todo-tree",
-	"mike-co.import-sorter"
-],
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "mongodb.mongodb-vscode",
+    "eamodio.gitlens",
+    "ms-azuretools.vscode-docker",
+    "streetsidesoftware.code-spell-checker",
+    "gruntfuggly.todo-tree",
+    "mike-co.import-sorter"
+  ],
   "postCreateCommand": "npm ci",
   "remoteUser": "vscode"
 }

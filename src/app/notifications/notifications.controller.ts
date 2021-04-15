@@ -6,23 +6,10 @@ import {
   AuthTokenPayload,
   IMessageNotification,
   PaginatedDto,
+  PaginatedRequestDTO,
 } from 'src/models';
-import {
-  Body,
-  Controller,
-  Get,
-  HttpStatus,
-  Param,
-  Post,
-  Query,
-} from '@nestjs/common';
-import {
-  ApiBody,
-  ApiExtraModels,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
+import { ApiBody, ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth';
 import { NotificationService } from './notifications.service';
 
@@ -54,34 +41,19 @@ export class NotificationController {
 
   /** Get notifications paginated */
   @Get('')
-  @ApiQuery({
-    name: 'query',
-    type: String,
-    description: "The string you are searching for. Default: ' '",
+  @ApiBody({
+    description: 'The string you are searching for',
     required: false,
-  })
-  @ApiQuery({
-    name: 'page',
-    type: Number,
-    description: "The page you are looking for. Default: '1'",
-    required: false,
-  })
-  @ApiQuery({
-    name: 'limit',
-    type: Number,
-    description:
-      "Maximum number of documents returned. Default: '1'. Max: '100'",
-    required: false,
+    type: PaginatedRequestDTO,
   })
   @ApiPaginatedResponse(IMessageNotification)
   async getPaginated(
     @UserToken() token: AuthTokenPayload,
-    @Query('query') query = '',
-    @Query('limit') limit = 10,
-    @Query('page') page = 1,
+    @Body('query') { query, options, limit, page }: PaginatedRequestDTO,
   ): Promise<PaginatedDto<IMessageNotification>> {
     const res = await this.notificationService.getPaginated(
       token,
+      options,
       query,
       page,
       limit,

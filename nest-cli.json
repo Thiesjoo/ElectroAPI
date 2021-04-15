@@ -3,5 +3,6 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "assets": ["**/*.yml", "**/*.css"]
-  }
+  },
+  "plugins": ["@nestjs/swagger"]
 }

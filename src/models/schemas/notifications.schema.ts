@@ -15,14 +15,14 @@ export class MessageNotification
   user: string;
   @Prop({ enum: AuthProviders, required: true })
   providerType: AuthProviders;
-  @Prop({ required: true })
+  @Prop({})
   image: string;
   @Prop({ required: true })
   title: string;
   @Prop({ required: true })
-  message: string;
-  @Prop({ required: true })
-  time: string;
+  message: string; // Should have variable substition
+  @Prop({ required: true, type: Date })
+  time: Date;
   @Prop({ required: true })
   color: string;
   @Prop({ required: true, type: MessageAuthor })

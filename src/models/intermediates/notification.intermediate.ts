@@ -37,10 +37,7 @@ export class IMessageNotification {
     description: 'The unique ID of the user',
   })
   user: string;
-  /** The provider type of the user */
-  @ApiProperty()
-  @IsEnum(AuthProviders)
-  providerType: AuthProviders;
+
   /** The image */
   @ApiProperty()
   @IsString()
@@ -56,7 +53,7 @@ export class IMessageNotification {
   /** The date as a string */
   @ApiProperty()
   @IsDateString()
-  time: string;
+  time: Date;
   /** The date as a string */
   @ApiProperty()
   @IsHexColor()
@@ -67,6 +64,12 @@ export class IMessageNotification {
   @ValidateNested()
   @Type(() => MessageAuthor)
   author: MessageAuthor;
+
+  /** The provider type of the user */
+  @ApiProperty()
+  @IsEnum(AuthProviders)
+  providerType: AuthProviders;
+
   /** Extra information */
   @IsObject()
   @ApiProperty()

@@ -1,9 +1,11 @@
+import { FilterQuery } from 'mongoose';
 import Pusher from 'pusher';
 import {
   AuthTokenPayload,
   IMessageNotification,
   MessageNotification,
   PaginateModel,
+  PaginateOptions,
 } from 'src/models';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -61,28 +63,34 @@ export class NotificationService {
   /**
    * Get paginated notifications from DB
    * @param token Token of user
+   * @param options Options for mongoose
    * @param query Query string to search for
-   * @param page What page to look for
+   * @param page What page to look for (1 indexed)
    * @param limit Amount of items per page
    */
   getPaginated(
     token: AuthTokenPayload,
-    query: string,
-    // Search in:
-    // - Title
-    // - Body
-    // - Author
+    options: PaginateOptions,
+    query: FilterQuery<MessageNotification>,
     page: number,
     limit: number,
   ) {
+    //FIXME: This is not safe
     return this.notfModel.paginate(
       {
+        ...query,
         user: token.sub,
       },
       {
+        ...options,
         page,
         limit: limit > 100 ? 100 : limit,
       },
     );
   }
+
+  //Add extra query route with text only. Search in:
+  // - Title
+  // - Body
+  // - Author
 }

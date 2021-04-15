@@ -18,7 +18,7 @@ interface ReadOptions {
 }
 
 /** @ignore */
-interface PaginateOptions {
+export interface PaginateOptions {
   select?: object | string;
   sort?: object | string;
   customLabels?: CustomLabels;
