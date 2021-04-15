@@ -1,5 +1,5 @@
 import * as mongooseUnique from 'mongoose-beautiful-unique-validation';
-import * as mongoosePaginate from 'mongoose-paginate-v2';
+import { mongoosePagination } from 'mongoose-paginate-ts';
 import * as Pusher from 'pusher';
 import { ConfigurationModule } from 'src/config/configuration.module';
 import { notificationSchema, userSchema } from 'src/models';
@@ -21,7 +21,7 @@ import { UsersModule } from './users/users.module';
           uri: configService.mongoURL,
           useCreateIndex: true,
           connectionFactory: (connection) => {
-            connection.plugin(mongoosePaginate);
+            connection.plugin(mongoosePagination);
             connection.plugin(mongooseUnique);
             return connection;
           },

@@ -1,7 +1,7 @@
 import {
   IMessageNotification,
   IngestClient,
-  NotificationAuthDto,
+  NotificationAuthDTO,
   Provider,
 } from '../../';
 
@@ -51,7 +51,7 @@ export interface NotificationSocketRequests extends NotificationRequests {
   /**
    * Authenticate to websocket api for sending data
    */
-  [NotificationSocketRoutes.AuthSend]: (data: NotificationAuthDto) => Provider;
+  [NotificationSocketRoutes.AuthSend]: (data: NotificationAuthDTO) => Provider;
   /**
    * Authenticate to receive data
    */

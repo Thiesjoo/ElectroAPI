@@ -1,10 +1,9 @@
 import { IsEnum, IsString } from 'class-validator';
-import { FilterQuery } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { AuthProviders, MessageNotification, PaginateOptions } from '../';
+import { AuthProviders } from '../';
 
 /** DTO for authenticating with the notification gateway */
-export class NotificationAuthDto {
+export class NotificationAuthDTO {
   /** Provider to authenticate with */
   @ApiProperty()
   @IsEnum(AuthProviders)
@@ -17,26 +16,24 @@ export class NotificationAuthDto {
 
 /** DTO for paginated requests */
 export class PaginatedRequestDTO {
-  //TODO: add typing for these
-  @ApiProperty({ required: false })
-  query?: FilterQuery<MessageNotification>;
-  @ApiProperty({ required: false })
-  options?: PaginateOptions;
+  fromTime?: number;
+  tillTime?: number;
+  fromKey?: string;
+  tillKey?: string;
 
   @ApiProperty({
-    description: "The page you are looking for (1-indexed). Default: '1'",
+    type: Number,
     required: false,
-    minimum: 1,
-    default: 1,
-  })
-  page: number;
-  @ApiProperty({
-    description:
-      "Maximum number of documents returned. Default: '1'. Max: '100'",
-    required: false,
-    minimum: 1,
-    default: 10,
+    default: 50,
     maximum: 100,
+    minimum: 1,
   })
-  limit: number;
+  // @IsNumber()
+  // @Max(100)
+  // @Min(1)
+  limit?: number;
+  page = 1;
+
+  /** Query string to search for */
+  queryString?: string;
 }

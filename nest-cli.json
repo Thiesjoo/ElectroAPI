@@ -2,7 +2,14 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "assets": ["**/*.yml", "**/*.css"]
-  },
-  "plugins": ["@nestjs/swagger"]
+    "assets": ["**/*.yml", "**/*.css"],
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "introspectComments": true
+        }
+      }
+    ]
+  }
 }

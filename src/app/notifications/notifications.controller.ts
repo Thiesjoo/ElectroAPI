@@ -5,11 +5,25 @@ import {
   ApiPaginatedResponse,
   AuthTokenPayload,
   IMessageNotification,
-  PaginatedDto,
   PaginatedRequestDTO,
+  PaginateResult,
 } from 'src/models';
-import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
-import { ApiBody, ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiBody,
+  ApiExtraModels,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtGuard } from '../auth';
 import { NotificationService } from './notifications.service';
 
@@ -41,30 +55,34 @@ export class NotificationController {
 
   /** Get notifications paginated */
   @Get('')
-  @ApiBody({
-    description: 'The string you are searching for',
-    required: false,
+  // @ApiParam({
+  //   name: "query"
+  //   description: 'The string you are searching for',
+  //   required: false,
+  //   type: PaginatedRequestDTO,
+  // })
+  @ApiQuery({
     type: PaginatedRequestDTO,
+    name: '',
   })
   @ApiPaginatedResponse(IMessageNotification)
   async getPaginated(
     @UserToken() token: AuthTokenPayload,
-    @Body('query') { query, options, limit, page }: PaginatedRequestDTO,
-  ): Promise<PaginatedDto<IMessageNotification>> {
-    const res = await this.notificationService.getPaginated(
-      token,
-      options,
-      query,
-      page,
-      limit,
-    );
+    @Query() request: PaginatedRequestDTO,
+    // ): Promise<string> {
+  ): Promise<PaginateResult<IMessageNotification>> {
+    console.log(request);
+    const res = await this.notificationService.getPaginated(token, request);
 
-    return {
-      docs: res.docs,
-      page: res.page,
-      limit: res.limit,
-      total: res.totalDocs,
-    };
+    //MAP result
+    return res;
+
+    // return {
+    //   docs: res.docs,
+    //   page: res.page,
+    //   limit: res.limit,
+    //   total: res.totalDocs,
+    // };
   }
 
   /** Add a notification to the database */
