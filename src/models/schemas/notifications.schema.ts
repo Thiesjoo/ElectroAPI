@@ -20,7 +20,7 @@ export class MessageNotification
   @Prop({ required: true })
   title: string;
   @Prop({ required: true })
-  message: string; // Should have variable substition
+  message: string;
   @Prop({ required: true, type: Date })
   time: Date;
   @Prop({ required: true })
@@ -35,6 +35,9 @@ export class MessageNotification
  * The notification schema
  */
 const schema = SchemaFactory.createForClass(MessageNotification);
+// TODO: Maybe implement this:
+// schema.index({ message: 'text', 'author.name': 'text', title: 'text' });
+// Disadvantage is that splitting(Searching only in message) isnt possible
 
 /**
  * The notification schema

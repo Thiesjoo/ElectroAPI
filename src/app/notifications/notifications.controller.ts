@@ -17,13 +17,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import {
-  ApiBody,
-  ApiExtraModels,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBody, ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth';
 import { NotificationService } from './notifications.service';
 
@@ -55,25 +49,12 @@ export class NotificationController {
 
   /** Get notifications paginated */
   @Get('')
-  // @ApiParam({
-  //   name: "query"
-  //   description: 'The string you are searching for',
-  //   required: false,
-  //   type: PaginatedRequestDTO,
-  // })
-  @ApiQuery({
-    type: PaginatedRequestDTO,
-    name: '',
-  })
   @ApiPaginatedResponse(IMessageNotification)
   async getPaginated(
     @UserToken() token: AuthTokenPayload,
     @Query() request: PaginatedRequestDTO,
-    // ): Promise<string> {
   ): Promise<PaginateResult<IMessageNotification>> {
-    console.log(request);
     const res = await this.notificationService.getPaginated(token, request);
-
     //MAP result
     return res;
 

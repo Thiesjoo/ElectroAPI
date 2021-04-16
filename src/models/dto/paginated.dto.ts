@@ -6,6 +6,7 @@ import { ApiOkResponse, ApiProperty, getSchemaPath } from '@nestjs/swagger';
  */
 export class PaginatedDto<T> {
   /** The docs that are provided */
+  @ApiProperty()
   docs: T[];
   /** Current page */
   @ApiProperty()

@@ -52,7 +52,7 @@ export class PusherController {
     }
 
     const parsed = body.channel_name.substring(prefix.length);
-    console.log(parsed);
+    console.log('Parsed from pusher', parsed);
 
     return this.pusher.authenticate(body.socket_id, body.channel_name);
   }

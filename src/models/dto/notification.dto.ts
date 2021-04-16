@@ -1,6 +1,6 @@
 import { IsEnum, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { AuthProviders } from '../';
+import { AuthProviders, QueryPlaces } from '../';
 
 /** DTO for authenticating with the notification gateway */
 export class NotificationAuthDTO {
@@ -16,24 +16,23 @@ export class NotificationAuthDTO {
 
 /** DTO for paginated requests */
 export class PaginatedRequestDTO {
-  fromTime?: number;
-  tillTime?: number;
-  fromKey?: string;
-  tillKey?: string;
+  /** Filter based on the time the notification was sent */
+  fromTime?: string;
+  /** Filter based on the time the notification was sent */
+  tillTime?: string;
+
+  startingAfter?: string;
+  endingBefore?: string;
 
   @ApiProperty({
-    type: Number,
     required: false,
-    default: 50,
     maximum: 100,
     minimum: 1,
   })
-  // @IsNumber()
-  // @Max(100)
-  // @Min(1)
   limit?: number;
-  page = 1;
+  page?: number;
 
+  queryPlace?: QueryPlaces = QueryPlaces.All;
   /** Query string to search for */
   queryString?: string;
 }

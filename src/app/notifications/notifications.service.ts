@@ -1,3 +1,4 @@
+import { FilterQuery } from 'mongoose';
 import Pusher from 'pusher';
 import {
   AuthTokenPayload,
@@ -5,7 +6,9 @@ import {
   MessageNotification,
   PaginatedRequestDTO,
   PaginateModel,
+  PaginateOptions,
 } from 'src/models';
+import { QueryPlaces } from 'src/models/enums/query';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -35,7 +38,9 @@ export class NotificationService {
       user: token.sub,
     });
 
-    //push
+    this.pusher.trigger('private-user', 'add', notification);
+
+    //TODO: push to pusher
 
     return notification;
   }
@@ -53,8 +58,8 @@ export class NotificationService {
     token: AuthTokenPayload,
     id: string,
   ): Promise<MessageNotification> {
-    console.log('trigger?');
-    this.pusher.trigger('private-user', 'test', { msg: 'goi' });
+    console.log('Triggering pusher?');
+    this.pusher.trigger('private-user', 'lmao', { msg: 'goi' });
 
     return this.notfModel.findOne({ _id: id, user: token.sub }).exec();
   }
@@ -68,19 +73,51 @@ export class NotificationService {
    * @param limit Amount of items per page
    */
   getPaginated(token: AuthTokenPayload, options: PaginatedRequestDTO) {
-    //FIXME: This is not safe
+    const query: FilterQuery<MessageNotification> = {};
 
-    // let paginateOptions = {};
-    console.log(options.limit);
+    if (options.queryString) {
+      //FIXME: User input in regex is NOT OKAY
+      const val = new RegExp(options.queryString, 'gi');
+      switch (options.queryPlace || QueryPlaces.All) {
+        case QueryPlaces.All: {
+          query.$or = [
+            { message: val },
+            { 'author.name': val },
+            { title: val },
+          ];
+          break;
+        }
+        case QueryPlaces.Message: {
+          query.message = val;
+          break;
+        }
+        case QueryPlaces.Title: {
+          query.title = val;
+          break;
+        }
+        case QueryPlaces.Author: {
+          query['author.name'] = val;
+          break;
+        }
+      }
+    }
 
-    return this.notfModel.paginate({
-      limit: options.limit > 100 ? 100 : options.limit,
-      page: options.page,
-    });
+    if (options.fromTime) {
+      query.time = { $gte: new Date(options.fromTime) };
+    }
+    if (options.tillTime) {
+      query.time = { $lte: new Date(options.tillTime) };
+    }
+
+    const paginateOptions: PaginateOptions<MessageNotification> = {
+      limit: options.limit ? (options.limit > 100 ? 100 : options.limit) : 25,
+      page: options.page || 1,
+      sort: { time: -1 },
+      startingAfter: options.startingAfter,
+      endingBefore: options.endingBefore,
+      query,
+    };
+
+    return this.notfModel.paginate(paginateOptions);
   }
-
-  //Add extra query route with text only. Search in:
-  // - Title
-  // - Body
-  // - Author
 }
