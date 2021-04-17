@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 /** Provider Types */
 export enum AuthProviders {
   Discord = 'discord',
+  Twitch = 'twitch',
 }
 
 /** Extra types that are local and do not have refresh services */

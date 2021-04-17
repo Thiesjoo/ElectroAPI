@@ -15,7 +15,7 @@ import {
 import {
   MessageNotificationDTO,
   messageNotificationMapper,
-} from 'src/models/dto/notification.dto';
+} from 'src/models/dto/message-notification.dto';
 import {
   Body,
   Controller,
