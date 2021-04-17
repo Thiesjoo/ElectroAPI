@@ -3,47 +3,36 @@ import {
   IngestClient,
   NotificationAuthDTO,
   Provider,
-} from '../../';
+} from '../../../models';
 
 /** Events to publish */
 export enum NotificationRoutes {
-  Ingest = 'ingest',
   Update = 'update',
+  Add = 'add',
 }
 
-/** Publisch event types */
+/** Events to subscribe to */
 export interface NotificationRequests {
-  /** */
-  [NotificationRoutes.Ingest]: (data: IMessageNotification) => boolean;
-
-  /** */
-  [NotificationRoutes.Update]: (data: IMessageNotification) => boolean;
+  /** Updated notification is returned (Same _id)*/
+  [NotificationRoutes.Update]: IMessageNotification;
+  /** New notification added */
+  [NotificationRoutes.Add]: IMessageNotification;
 }
 
-/** Events to receive */
+/** Events to EMIT */
 export interface NotificationEvents {
   /** Emitted on new notification. */
   newNotification: (data: IMessageNotification) => boolean;
-  /** Route used for any expections */
-  exception: (data: {
-    reponse: {
-      statusCode: number;
-      message: string;
-      error: string;
-    };
-    status: number;
-    message: string;
-  }) => void;
 }
 
-/******/
-// All the socket routes
+/** FOR SOCKET-IO **/
 /** The routes available to a websocket client */
 export enum NotificationSocketRoutes {
   AuthSend = 'authenticateSending',
   AuthReceive = 'autenticateReceiving',
   Identity = 'identity',
   GetSample = 'getSampleData',
+  Ingest = 'ingest',
 }
 
 /** Map of socket routes and their responses */
@@ -59,8 +48,9 @@ export interface NotificationSocketRequests extends NotificationRequests {
 
   [NotificationSocketRoutes.Identity]: () => IngestClient;
   [NotificationSocketRoutes.GetSample]: (id: string) => IMessageNotification;
+  /** */
+  [NotificationSocketRoutes.Ingest]: (data: IMessageNotification) => boolean;
 }
-
 export interface NotificationSocketEvents extends NotificationEvents {
   /** Connected to server */
   connect: () => void;
@@ -69,4 +59,14 @@ export interface NotificationSocketEvents extends NotificationEvents {
 
   /** Disconnected from server */
   disconnect: () => void;
+  /** Route used for any exceptions */
+  exception: (data: {
+    response: {
+      statusCode: number;
+      message: string;
+      error: string;
+    };
+    status: number;
+    message: string;
+  }) => void;
 }
