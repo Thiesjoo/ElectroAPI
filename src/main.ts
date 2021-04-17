@@ -5,12 +5,12 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
+import { enumKeys } from './common';
 import filters from './common/errors';
 import interceptors from './common/interceptors';
 import { ApiConfigService, corsSettings } from './config/configuration';
 import { IoAdapter } from './config/gateway.config';
 import { logLevels } from './models/enums/loglevels';
-import { enumKeys } from './utils';
 
 /** Log levels in order */
 const levels = enumKeys(logLevels);
@@ -40,7 +40,7 @@ async function bootstrap() {
   app.enableCors(corsSettings);
 
   //Global stuff
-  app.useGlobalPipes(new ValidationPipe({}));
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(...filters);
   app.useGlobalInterceptors(...interceptors);
 

@@ -1,38 +1,64 @@
-import { IsEnum, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { AuthProviders, QueryPlaces } from '../';
+import { Type } from 'class-transformer';
+import {
+  IsDateString,
+  IsEnum,
+  IsHexColor,
+  IsObject,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { AuthProviders } from '../';
+import { IMessageNotification } from '../intermediates';
+import { MessageAuthorDTO, messageAuthorMapper } from './message-author.dto';
 
-/** DTO for authenticating with the notification gateway */
-export class NotificationAuthDTO {
-  /** Provider to authenticate with */
-  @ApiProperty()
-  @IsEnum(AuthProviders)
-  provider: AuthProviders;
-  /** Uid of user */
+export class MessageNotificationDTO {
+  /** The unique ID of the notification */
+  _id: string;
+  /** The id of the user */
+  user: string;
+  /** The image */
   @IsString()
-  @ApiProperty()
-  id: string;
+  image: string;
+  /** The title */
+  @IsString()
+  title: string;
+  /** The message  */
+  @IsString()
+  message: string;
+  /** The date as a string */
+  @IsDateString()
+  time: Date;
+  /** The date as a string */
+  @IsHexColor()
+  color: string;
+  /** The author of the message */
+  @IsObject()
+  @ValidateNested()
+  @Type(() => MessageAuthorDTO)
+  author: MessageAuthorDTO;
+
+  /** The provider type of the user */
+  @IsEnum(AuthProviders)
+  providerType: AuthProviders;
+
+  /** Extra information */
+  @IsObject()
+  extra: any;
 }
 
-/** DTO for paginated requests */
-export class PaginatedRequestDTO {
-  /** Filter based on the time the notification was sent */
-  fromTime?: string;
-  /** Filter based on the time the notification was sent */
-  tillTime?: string;
-
-  startingAfter?: string;
-  endingBefore?: string;
-
-  @ApiProperty({
-    required: false,
-    maximum: 100,
-    minimum: 1,
-  })
-  limit?: number;
-  page?: number;
-
-  queryPlace?: QueryPlaces = QueryPlaces.All;
-  /** Query string to search for */
-  queryString?: string;
+export function messageNotificationMapper(
+  notf: IMessageNotification,
+): MessageNotificationDTO {
+  return {
+    author: messageAuthorMapper(notf.author),
+    _id: notf?._id,
+    user: notf?.user,
+    image: notf?.image,
+    time: notf?.time,
+    title: notf?.title,
+    providerType: notf?.providerType,
+    extra: notf?.extra,
+    color: notf?.color,
+    message: notf?.message,
+  };
 }

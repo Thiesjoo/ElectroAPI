@@ -1,12 +1,8 @@
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { AuthProviders } from '../';
-import {
-  IMessageNotification,
-  MessageAuthor,
-} from '../intermediates/notification.intermediate';
+import { IMessageAuthor, IMessageNotification } from '../intermediates/';
 
-/** @ignore */
 @Schema()
 export class MessageNotification
   extends Document
@@ -25,8 +21,8 @@ export class MessageNotification
   time: Date;
   @Prop({ required: true })
   color: string;
-  @Prop({ required: true, type: MessageAuthor })
-  author: MessageAuthor;
+  @Prop({ required: true, type: IMessageAuthor })
+  author: IMessageAuthor;
   @Prop({ type: MongooseSchema.Types.Mixed })
   extra: any;
 }

@@ -5,7 +5,7 @@ import {
   IngestClient,
   MasterEnums,
   NotificationAuthDTO,
-  PaginatedDto,
+  PaginatedDTO,
   Provider,
   RefreshToken,
   RefreshTokenPayload,
@@ -17,7 +17,7 @@ import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';
 @Controller('/')
 @ResponsePrefix()
 @ApiExtraModels(
-  PaginatedDto,
+  PaginatedDTO,
   Provider,
   MasterEnums,
   IngestClient,

@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { Request, Response } from 'express';
 import { of } from 'rxjs';
 import { HttpStatus, NotFoundException } from '@nestjs/common';
-import { AuthTokenPayload } from './models';
+import { AuthTokenPayload } from '../models';
 
 /**
  * Extract possible values of an enumeration as a array of strings

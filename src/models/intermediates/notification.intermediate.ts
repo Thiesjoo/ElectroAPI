@@ -1,77 +1,27 @@
-import { Type } from 'class-transformer';
-import {
-  IsDateString,
-  IsEnum,
-  IsHexColor,
-  IsObject,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 import { AuthProviders } from '../';
-
-/**
- * General notification author
- */
-export class MessageAuthor {
-  /** Name of the author */
-  @ApiProperty()
-  @IsString()
-  name: string;
-  /** Profile picture of the author */
-  @ApiProperty()
-  @IsString()
-  image: string;
-}
+//TODO?: Fix this. Importing could go into ../, but nestjs thinks it has circular dependencies
+import { IMessageAuthor } from '../intermediates/message-author.intermediate';
 
 /**
  * General notification class
  */
 export class IMessageNotification {
-  @ApiProperty({
-    description: 'The unique ID of the notification',
-  })
   _id?: string;
-  /** The id of the user */
-  @ApiProperty({
-    description: 'The unique ID of the user',
-  })
-  user: string;
-
+  user?: string;
   /** The image */
-  @ApiProperty()
-  @IsString()
-  image: string;
-  /** The title */
-  @ApiProperty()
-  @IsString()
-  title: string;
+  image?: string;
+  /** The title of the notification */
+  title?: string;
   /** The message  */
-  @ApiProperty()
-  @IsString()
-  message: string;
+  message?: string;
   /** The date as a string */
-  @ApiProperty()
-  @IsDateString()
-  time: Date;
+  time?: Date;
   /** The date as a string */
-  @ApiProperty()
-  @IsHexColor()
-  color: string;
+  color?: string;
   /** The author of the message */
-  @ApiProperty()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => MessageAuthor)
-  author: MessageAuthor;
-
+  author?: IMessageAuthor;
   /** The provider type of the user */
-  @ApiProperty()
-  @IsEnum(AuthProviders)
-  providerType: AuthProviders;
-
+  providerType?: AuthProviders;
   /** Extra information */
-  @IsObject()
-  @ApiProperty()
-  extra: any;
+  extra?: any;
 }

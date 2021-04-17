@@ -1,13 +1,21 @@
-import { AuthedUser, AuthPrefixes, ResponsePrefix } from 'src/common';
-import { UserToken } from 'src/common/decorators/user';
-import { ApiConfigService } from 'src/config/configuration';
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import {
   ApiPaginatedResponse,
+  AuthedUser,
+  AuthPrefixes,
+  ResponsePrefix,
+} from 'src/common';
+import { UserToken } from 'src/common/decorators/user';
+import {
   AuthTokenPayload,
-  IMessageNotification,
+  PaginatedDTO,
   PaginatedRequestDTO,
-  PaginateResult,
 } from 'src/models';
+import {
+  MessageNotificationDTO,
+  messageNotificationMapper,
+} from 'src/models/dto/notification.dto';
 import {
   Body,
   Controller,
@@ -26,56 +34,59 @@ import { NotificationService } from './notifications.service';
 @ResponsePrefix()
 @AuthPrefixes(JwtGuard, [AuthedUser()])
 @ApiTags('Notification')
-@ApiExtraModels(IMessageNotification)
+// For paginated requests
+@ApiExtraModels(MessageNotificationDTO)
 export class NotificationController {
-  constructor(
-    private notificationService: NotificationService,
-    private configService: ApiConfigService,
-  ) {}
+  constructor(private notificationService: NotificationService) {}
 
   /** Get notification with ID */
   @Get(':id/')
   @ApiResponse({
     status: HttpStatus.OK,
-    type: IMessageNotification,
+    type: MessageNotificationDTO,
     description: 'The requested notification',
   })
-  async getWithId(
+  getWithId(
     @Param('id') id: string,
     @UserToken() token: AuthTokenPayload,
-  ) {
-    return this.notificationService.getWithID(token, id);
+  ): Observable<MessageNotificationDTO> {
+    return from(this.notificationService.getWithID(token, id)).pipe(
+      map(messageNotificationMapper),
+    );
   }
 
   /** Get notifications paginated */
   @Get('')
-  @ApiPaginatedResponse(IMessageNotification)
-  async getPaginated(
+  @ApiPaginatedResponse(MessageNotificationDTO)
+  getPaginated(
     @UserToken() token: AuthTokenPayload,
     @Query() request: PaginatedRequestDTO,
-  ): Promise<PaginateResult<IMessageNotification>> {
-    const res = await this.notificationService.getPaginated(token, request);
-    //MAP result
-    return res;
-
-    // return {
-    //   docs: res.docs,
-    //   page: res.page,
-    //   limit: res.limit,
-    //   total: res.totalDocs,
-    // };
+  ): Observable<PaginatedDTO<MessageNotificationDTO>> {
+    return from(this.notificationService.getPaginated(token, request)).pipe(
+      map((x) => {
+        return {
+          docs: x.docs.map(messageNotificationMapper),
+          page: x.page,
+          limit: x.limit,
+          totalDocs: x.totalDocs,
+          totalPages: x.totalPages,
+        };
+      }),
+    );
   }
 
   /** Add a notification to the database */
   @Post('')
   @ApiBody({
-    type: IMessageNotification,
+    type: MessageNotificationDTO,
     description: 'A complete notification object',
   })
   createNotification(
     @UserToken() token: AuthTokenPayload,
-    @Body() notf: IMessageNotification,
-  ) {
-    return this.notificationService.add(token, notf);
+    @Body() notf: MessageNotificationDTO,
+  ): Observable<MessageNotificationDTO> {
+    return from(this.notificationService.add(token, notf)).pipe(
+      map(messageNotificationMapper),
+    );
   }
 }

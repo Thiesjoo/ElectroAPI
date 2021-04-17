@@ -1,6 +1,6 @@
+import { axiosInst } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
 import { AuthProviders, Provider } from 'src/models';
-import { axiosInst } from 'src/utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { DiscordUser } from './';
 import discordMapper from './strategies/discord/discord.mapper';

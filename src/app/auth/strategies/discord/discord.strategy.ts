@@ -1,9 +1,9 @@
 import { Request } from 'express';
 import { Strategy } from 'passport-discord';
 import { AuthService } from 'src/app/auth/auth.service';
+import { extractUid } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
 import { AuthNames, AuthProviders } from 'src/models';
-import { extractUid } from 'src/utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { DiscordUser } from './discord.enums';

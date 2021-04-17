@@ -7,6 +7,7 @@ import {
   PaginatedRequestDTO,
   PaginateModel,
   PaginateOptions,
+  PaginateResult,
 } from 'src/models';
 import { QueryPlaces } from 'src/models/enums/query';
 import { Inject, Injectable } from '@nestjs/common';
@@ -32,7 +33,7 @@ export class NotificationService {
   async add(
     token: AuthTokenPayload,
     notf: IMessageNotification,
-  ): Promise<MessageNotification> {
+  ): Promise<IMessageNotification> {
     const notification = await this.notfModel.create({
       ...notf,
       user: token.sub,
@@ -57,7 +58,7 @@ export class NotificationService {
   async getWithID(
     token: AuthTokenPayload,
     id: string,
-  ): Promise<MessageNotification> {
+  ): Promise<IMessageNotification> {
     console.log('Triggering pusher?');
     this.pusher.trigger('private-user', 'lmao', { msg: 'goi' });
 
@@ -72,7 +73,10 @@ export class NotificationService {
    * @param page What page to look for (1 indexed)
    * @param limit Amount of items per page
    */
-  getPaginated(token: AuthTokenPayload, options: PaginatedRequestDTO) {
+  getPaginated(
+    token: AuthTokenPayload,
+    options: PaginatedRequestDTO,
+  ): Promise<PaginateResult<IMessageNotification>> {
     const query: FilterQuery<MessageNotification> = {};
 
     if (options.queryString) {
