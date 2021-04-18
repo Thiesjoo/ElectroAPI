@@ -117,10 +117,17 @@ export class NotificationService {
       limit: options.limit ? (options.limit > 100 ? 100 : options.limit) : 25,
       page: options.page || 1,
       sort: { time: -1 },
-      startingAfter: options.startingAfter,
-      endingBefore: options.endingBefore,
+      // startingAfter: options.startingAfter,
+      // endingBefore: options.endingBefore,
       query,
     };
+    if (options.startingAfter) {
+      paginateOptions.startingAfter = options.startingAfter;
+    }
+    if (options.endingBefore) {
+      paginateOptions.endingBefore = options.endingBefore;
+    }
+    console.log(options);
 
     return this.notfModel.paginate(paginateOptions);
   }

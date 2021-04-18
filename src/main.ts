@@ -40,7 +40,7 @@ async function bootstrap() {
   app.enableCors(corsSettings);
 
   //Global stuff
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalPipes(new ValidationPipe({}));
   app.useGlobalFilters(...filters);
   app.useGlobalInterceptors(...interceptors);
 

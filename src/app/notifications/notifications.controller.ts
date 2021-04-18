@@ -65,11 +65,11 @@ export class NotificationController {
     return from(this.notificationService.getPaginated(token, request)).pipe(
       map((x) => {
         return {
-          docs: x.docs.map(messageNotificationMapper),
-          page: x.page,
-          limit: x.limit,
-          totalDocs: x.totalDocs,
-          totalPages: x.totalPages,
+          docs: x?.docs.map(messageNotificationMapper),
+          page: x?.page,
+          limit: x?.limit,
+          totalDocs: x?.totalDocs,
+          totalPages: x?.totalPages,
         };
       }),
     );
