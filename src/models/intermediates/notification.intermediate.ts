@@ -22,6 +22,10 @@ export class IMessageNotification {
   author?: IMessageAuthor;
   /** The provider type of the user */
   providerType?: AuthProviders;
+  /** Pinned index, -1 for not pinned */
+  pinned: number;
+  /** If the notification should be shown in a short fashion */
+  action: boolean;
   /** Extra information */
   extra?: any;
 }

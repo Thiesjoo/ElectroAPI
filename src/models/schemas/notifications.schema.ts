@@ -23,6 +23,10 @@ export class MessageNotification
   color: string;
   @Prop({ required: true, type: IMessageAuthor })
   author: IMessageAuthor;
+  @Prop({})
+  pinned: number;
+  @Prop({ default: false })
+  action: boolean;
   @Prop({ type: MongooseSchema.Types.Mixed })
   extra: any;
 }

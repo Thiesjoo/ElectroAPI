@@ -41,6 +41,12 @@ export class MessageNotificationDTO {
   @IsEnum(AuthProviders)
   providerType: AuthProviders;
 
+  /** Pinned index, -1 for not pinned */
+  pinned: number;
+
+  /** If the notification should be shown in a short fashion */
+  action: boolean;
+
   /** Extra information */
   @IsObject()
   extra: any;
@@ -60,5 +66,7 @@ export function messageNotificationMapper(
     extra: notf?.extra,
     color: notf?.color,
     message: notf?.message,
+    pinned: notf?.pinned,
+    action: notf?.action,
   };
 }
