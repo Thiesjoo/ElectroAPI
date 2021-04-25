@@ -12,6 +12,7 @@ import {
 import { QueryPlaces } from 'src/models/enums/query';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { pusherPrivatePrefix } from '../';
 
 /** Service for notification controller */
 @Injectable()
@@ -39,15 +40,19 @@ export class NotificationService {
       user: token.sub,
     });
 
-    this.pusher.trigger('private-user', 'add', notification);
-
-    //TODO: push to pusher
+    this.pusher.trigger(
+      `${pusherPrivatePrefix}${token.sub}`,
+      'add',
+      notification,
+    );
 
     return notification;
   }
 
   /** Remove notification from DB */
-  dismiss() {}
+  dismiss(token: AuthTokenPayload, id: string) {
+    return this.notfModel.deleteOne({ id });
+  }
 
   /** Get all notifications from DB. (Not used) */
   getAll(token: AuthTokenPayload) {
@@ -68,10 +73,7 @@ export class NotificationService {
   /**
    * Get paginated notifications from DB
    * @param token Token of user
-   * @param options Options for mongoose
-   * @param query Query string to search for
-   * @param page What page to look for (1 indexed)
-   * @param limit Amount of items per page
+   * @param options Options for the query
    */
   getPaginated(
     token: AuthTokenPayload,
@@ -106,6 +108,7 @@ export class NotificationService {
       }
     }
 
+    //TODO: test this
     if (options.fromTime) {
       query.time = { $gte: new Date(options.fromTime) };
     }

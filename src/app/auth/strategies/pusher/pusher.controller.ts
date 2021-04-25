@@ -29,7 +29,7 @@ class PusherResponse {
   shared_secret?: string;
 }
 
-const prefix = 'private-';
+export const pusherPrivatePrefix = 'private-';
 
 @Controller('auth/pusher')
 @AuthPrefixes(JwtGuard, [AuthedUser()])
@@ -47,11 +47,11 @@ export class PusherController {
   })
   async pusherAuth(@Body() body: PusherAuthBody): Promise<PusherResponse> {
     console.log(body);
-    if (!body.channel_name.startsWith(prefix)) {
+    if (!body.channel_name.startsWith(pusherPrivatePrefix)) {
       throw new BadRequestException('Invalid channel name');
     }
 
-    const parsed = body.channel_name.substring(prefix.length);
+    const parsed = body.channel_name.substring(pusherPrivatePrefix.length);
     console.log('Parsed from pusher', parsed);
 
     return this.pusher.authenticate(body.socket_id, body.channel_name);
