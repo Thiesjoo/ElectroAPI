@@ -1,28 +1,31 @@
+import { CreateMessageNotificationDTO } from 'src/models/dto';
 import {
-  IMessageNotification,
   IngestClient,
+  MessageNotificationDTO,
   NotificationAuthDTO,
   Provider,
-} from '../../../models';
+} from '../..';
 
 /** Events to publish */
 export enum NotificationRoutes {
   Update = 'update',
   Add = 'add',
+  Remove = 'Remove',
 }
 
 /** Events to subscribe to */
 export interface NotificationRequests {
   /** Updated notification is returned (Same _id)*/
-  [NotificationRoutes.Update]: IMessageNotification;
+  [NotificationRoutes.Update]: MessageNotificationDTO;
   /** New notification added */
-  [NotificationRoutes.Add]: IMessageNotification;
+  [NotificationRoutes.Add]: MessageNotificationDTO;
+  [NotificationRoutes.Remove]: { _id: string };
 }
 
 /** Events to EMIT */
 export interface NotificationEvents {
   /** Emitted on new notification. */
-  newNotification: (data: IMessageNotification) => boolean;
+  newNotification: (data: MessageNotificationDTO) => boolean;
 }
 
 /** FOR SOCKET-IO **/
@@ -36,7 +39,7 @@ export enum NotificationSocketRoutes {
 }
 
 /** Map of socket routes and their responses */
-export interface NotificationSocketRequests extends NotificationRequests {
+export interface NotificationSocketRequests {
   /**
    * Authenticate to websocket api for sending data
    */
@@ -47,9 +50,10 @@ export interface NotificationSocketRequests extends NotificationRequests {
   [NotificationSocketRoutes.AuthReceive]: (userUid: string) => boolean;
 
   [NotificationSocketRoutes.Identity]: () => IngestClient;
-  [NotificationSocketRoutes.GetSample]: (id: string) => IMessageNotification;
-  /** */
-  [NotificationSocketRoutes.Ingest]: (data: IMessageNotification) => boolean;
+  [NotificationSocketRoutes.GetSample]: (id: string) => MessageNotificationDTO;
+  [NotificationSocketRoutes.Ingest]: (
+    notf: CreateMessageNotificationDTO,
+  ) => MessageNotificationDTO;
 }
 export interface NotificationSocketEvents extends NotificationEvents {
   /** Connected to server */

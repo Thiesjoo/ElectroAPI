@@ -4,6 +4,7 @@ import {
   AuthTokenPayload,
   IngestClient,
   ListenerType,
+  messageNotificationMapper,
   NotificationSocketEvents as Eve,
   NotificationSocketRequests as Requ,
   NotificationSocketRoutes as Rout,
@@ -172,7 +173,7 @@ export class NotificationGateway {
 
     this.logger.debug(`Ingest: received data`);
 
-    return Boolean(
+    return messageNotificationMapper(
       await this.notificationService.add(token, {
         ...data,
         providerType: this.sendClients[client.id].dataProvider,
@@ -190,7 +191,9 @@ export class NotificationGateway {
     ...[data]: Parameters<Requ[Rout.GetSample]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.GetSample]>> {
     this.logger.debug('Request data: ', data);
-    return this.notificationService.getWithID(token, data);
+    return messageNotificationMapper(
+      await this.notificationService.getWithID(token, data),
+    );
   }
 
   broadcast<T extends keyof Eve>(

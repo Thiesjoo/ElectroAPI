@@ -13,12 +13,14 @@ import {
   PaginatedRequestDTO,
 } from 'src/models';
 import {
+  CreateMessageNotificationDTO,
   MessageNotificationDTO,
   messageNotificationMapper,
 } from 'src/models/dto/message-notification.dto';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -78,15 +80,32 @@ export class NotificationController {
   /** Add a notification to the database */
   @Post('')
   @ApiBody({
-    type: MessageNotificationDTO,
+    type: CreateMessageNotificationDTO,
     description: 'A complete notification object',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: MessageNotificationDTO,
+    description: 'The new notification',
   })
   createNotification(
     @UserToken() token: AuthTokenPayload,
-    @Body() notf: MessageNotificationDTO,
+    @Body() notf: CreateMessageNotificationDTO,
   ): Observable<MessageNotificationDTO> {
     return from(this.notificationService.add(token, notf)).pipe(
       map(messageNotificationMapper),
     );
+  }
+
+  /** Get notification with ID */
+  @Delete(':id/')
+  @ApiResponse({
+    status: HttpStatus.OK,
+  })
+  removeWithId(
+    @Param('id') id: string,
+    @UserToken() token: AuthTokenPayload,
+  ): Observable<{ _id: string }> {
+    return from(this.notificationService.remove(token, id));
   }
 }

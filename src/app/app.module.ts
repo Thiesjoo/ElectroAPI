@@ -1,6 +1,7 @@
 import * as mongooseUnique from 'mongoose-beautiful-unique-validation';
 import { mongoosePagination } from 'mongoose-paginate-ts';
 import * as Pusher from 'pusher';
+import { InjectionTokens } from 'src/common/injection.tokens';
 import { ConfigurationModule } from 'src/config/configuration.module';
 import { notificationSchema, userSchema } from 'src/models';
 import { Module } from '@nestjs/common';
@@ -36,7 +37,7 @@ import { UsersModule } from './users/users.module';
   ],
   providers: [
     {
-      provide: 'Pusher',
+      provide: InjectionTokens.Pusher,
       useFactory: (configService: ApiConfigService) => {
         return new Pusher({
           ...configService.pusherConfig,
@@ -48,6 +49,6 @@ import { UsersModule } from './users/users.module';
     },
   ],
   controllers: [AppController],
-  exports: [MongooseModule, 'Pusher'],
+  exports: [MongooseModule, InjectionTokens.Pusher],
 })
 export class AppModule {}

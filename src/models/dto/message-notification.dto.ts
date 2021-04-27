@@ -7,7 +7,9 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { AuthProviders } from '../';
+import { NotFoundException } from '@nestjs/common';
+import { OmitType } from '@nestjs/swagger';
+import { AuthProviders } from '../enums/provider';
 import { IMessageNotification } from '../intermediates';
 import { MessageAuthorDTO, messageAuthorMapper } from './message-author.dto';
 
@@ -52,11 +54,18 @@ export class MessageNotificationDTO {
   extra: any;
 }
 
+export class CreateMessageNotificationDTO extends OmitType(
+  MessageNotificationDTO,
+  ['_id', 'user'],
+) {}
+
 export function messageNotificationMapper(
-  notf: IMessageNotification,
+  notf: IMessageNotification | undefined,
 ): MessageNotificationDTO {
+  if (!notf) throw new NotFoundException();
+
   return {
-    author: messageAuthorMapper(notf.author),
+    author: messageAuthorMapper(notf?.author),
     _id: notf?._id,
     user: notf?.user,
     image: notf?.image,

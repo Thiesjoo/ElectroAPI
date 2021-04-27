@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { QueryPlaces } from '../';
+import { QueryPlaces } from '../enums/query';
 
 /** DTO for paginated requests */
 export class PaginatedRequestDTO {
@@ -19,7 +19,12 @@ export class PaginatedRequestDTO {
   limit?: number;
   page?: number;
 
-  queryPlace?: QueryPlaces = QueryPlaces.All;
+  @ApiProperty({
+    required: false,
+    enum: QueryPlaces,
+    default: QueryPlaces.All,
+  })
+  queryPlace?: QueryPlaces;
   /** Query string to search for */
   queryString?: string;
 }

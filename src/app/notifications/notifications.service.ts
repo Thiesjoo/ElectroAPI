@@ -1,16 +1,19 @@
 import { FilterQuery } from 'mongoose';
-import Pusher from 'pusher';
+import { InjectionTokens } from 'src/common/injection.tokens';
 import {
   AuthTokenPayload,
   IMessageNotification,
   MessageNotification,
+  messageNotificationMapper,
+  MyPusher,
+  NotificationRoutes,
   PaginatedRequestDTO,
   PaginateModel,
   PaginateOptions,
   PaginateResult,
 } from 'src/models';
 import { QueryPlaces } from 'src/models/enums/query';
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { pusherPrivatePrefix } from '../';
 
@@ -21,7 +24,7 @@ export class NotificationService {
   constructor(
     @InjectModel(MessageNotification.name)
     private notfModel: PaginateModel<MessageNotification>,
-    @Inject('Pusher') private pusher: Pusher,
+    @Inject(InjectionTokens.Pusher) private pusher: MyPusher,
   ) {}
 
   //Add, dismiss? (Do we want history), get (Paginated. By ID.  All is only for dev?)
@@ -42,19 +45,29 @@ export class NotificationService {
 
     this.pusher.trigger(
       `${pusherPrivatePrefix}${token.sub}`,
-      'add',
-      notification,
+      NotificationRoutes.Add,
+      messageNotificationMapper(notification),
     );
 
     return notification;
   }
 
   /** Remove notification from DB */
-  dismiss(token: AuthTokenPayload, id: string) {
-    return this.notfModel.deleteOne({ id });
+  async remove(token: AuthTokenPayload, id: string) {
+    const notf = await this.notfModel.deleteOne({ user: token.sub, _id: id });
+    if (notf.deletedCount !== 1)
+      throw new BadRequestException("Notification doesn't exist");
+
+    this.pusher.trigger(
+      `${pusherPrivatePrefix}${token.sub}`,
+      NotificationRoutes.Remove,
+      { _id: id },
+    );
+
+    return { _id: id };
   }
 
-  /** Get all notifications from DB. (Not used) */
+  /** Get all notifications from DB. (Not PUBLIC) */
   getAll(token: AuthTokenPayload) {
     return this.notfModel.find({ user: token.sub });
   }
@@ -64,9 +77,6 @@ export class NotificationService {
     token: AuthTokenPayload,
     id: string,
   ): Promise<IMessageNotification> {
-    console.log('Triggering pusher?');
-    this.pusher.trigger('private-user', 'lmao', { msg: 'goi' });
-
     return this.notfModel.findOne({ _id: id, user: token.sub }).exec();
   }
 

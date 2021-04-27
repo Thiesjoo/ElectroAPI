@@ -2,6 +2,7 @@ import { IsString } from 'class-validator';
 import Pusher from 'pusher';
 import { JwtGuard } from 'src/app';
 import { AuthedUser, AuthPrefixes } from 'src/common';
+import { InjectionTokens } from 'src/common/injection.tokens';
 import {
   BadRequestException,
   Body,
@@ -35,7 +36,7 @@ export const pusherPrivatePrefix = 'private-';
 @AuthPrefixes(JwtGuard, [AuthedUser()])
 @ApiTags('Auth')
 export class PusherController {
-  constructor(@Inject('Pusher') private pusher: Pusher) {}
+  constructor(@Inject(InjectionTokens.Pusher) private pusher: Pusher) {}
 
   @Post('/login')
   @ApiBody({ type: PusherAuthBody })
