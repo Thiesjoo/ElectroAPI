@@ -3,3 +3,5 @@ export * from './schemas';
 export * from './types';
 export * from './dto';
 export * from './intermediates';
+
+export const pusherPrivatePrefix = 'private-';

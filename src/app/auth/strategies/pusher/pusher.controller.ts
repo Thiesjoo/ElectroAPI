@@ -3,6 +3,7 @@ import Pusher from 'pusher';
 import { JwtGuard } from 'src/app';
 import { AuthedUser, AuthPrefixes } from 'src/common';
 import { InjectionTokens } from 'src/common/injection.tokens';
+import { pusherPrivatePrefix } from 'src/models';
 import {
   BadRequestException,
   Body,
@@ -29,8 +30,6 @@ class PusherResponse {
   @ApiProperty()
   shared_secret?: string;
 }
-
-export const pusherPrivatePrefix = 'private-';
 
 @Controller('auth/pusher')
 @AuthPrefixes(JwtGuard, [AuthedUser()])

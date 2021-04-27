@@ -11,11 +11,12 @@ import {
   PaginateModel,
   PaginateOptions,
   PaginateResult,
+  pusherPrivatePrefix,
+  UpdateMessageNotificationDTO,
 } from 'src/models';
 import { QueryPlaces } from 'src/models/enums/query';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { pusherPrivatePrefix } from '../';
 
 /** Service for notification controller */
 @Injectable()
@@ -52,8 +53,29 @@ export class NotificationService {
     return notification;
   }
 
+  async update(
+    token: AuthTokenPayload,
+    id: string,
+    updated: UpdateMessageNotificationDTO,
+  ): Promise<IMessageNotification> {
+    console.log(updated);
+    const notification = await this.notfModel.findOneAndUpdate(
+      { _id: id, user: token.sub },
+      { $set: { ...updated, user: token.sub } },
+      { useFindAndModify: false, new: true },
+    );
+
+    this.pusher.trigger(
+      `${pusherPrivatePrefix}${token.sub}`,
+      NotificationRoutes.Update,
+      messageNotificationMapper(notification),
+    );
+
+    return notification;
+  }
+
   /** Remove notification from DB */
-  async remove(token: AuthTokenPayload, id: string) {
+  async remove(token: AuthTokenPayload, id: string): Promise<{ _id: string }> {
     const notf = await this.notfModel.deleteOne({ user: token.sub, _id: id });
     if (notf.deletedCount !== 1)
       throw new BadRequestException("Notification doesn't exist");

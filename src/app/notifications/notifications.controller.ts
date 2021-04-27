@@ -16,6 +16,7 @@ import {
   CreateMessageNotificationDTO,
   MessageNotificationDTO,
   messageNotificationMapper,
+  UpdateMessageNotificationDTO,
 } from 'src/models/dto/message-notification.dto';
 import {
   Body,
@@ -24,6 +25,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -40,22 +42,6 @@ import { NotificationService } from './notifications.service';
 @ApiExtraModels(MessageNotificationDTO)
 export class NotificationController {
   constructor(private notificationService: NotificationService) {}
-
-  /** Get notification with ID */
-  @Get(':id/')
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: MessageNotificationDTO,
-    description: 'The requested notification',
-  })
-  getWithId(
-    @Param('id') id: string,
-    @UserToken() token: AuthTokenPayload,
-  ): Observable<MessageNotificationDTO> {
-    return from(this.notificationService.getWithID(token, id)).pipe(
-      map(messageNotificationMapper),
-    );
-  }
 
   /** Get notifications paginated */
   @Get('')
@@ -97,6 +83,42 @@ export class NotificationController {
     );
   }
 
+  /** Get notification with ID */
+  @Get(':id/')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: MessageNotificationDTO,
+    description: 'The requested notification',
+  })
+  getWithId(
+    @Param('id') id: string,
+    @UserToken() token: AuthTokenPayload,
+  ): Observable<MessageNotificationDTO> {
+    return from(this.notificationService.getWithID(token, id)).pipe(
+      map(messageNotificationMapper),
+    );
+  }
+
+  /** Add a notification to the database */
+  @Patch(':id/')
+  @ApiBody({
+    type: UpdateMessageNotificationDTO,
+    description: 'A complete notification object',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: MessageNotificationDTO,
+    description: 'The new notification',
+  })
+  updateWithId(
+    @UserToken() token: AuthTokenPayload,
+    @Param('id') id: string,
+    @Body() notf: UpdateMessageNotificationDTO,
+  ): Observable<MessageNotificationDTO> {
+    return from(this.notificationService.update(token, id, notf)).pipe(
+      map(messageNotificationMapper),
+    );
+  }
   /** Get notification with ID */
   @Delete(':id/')
   @ApiResponse({

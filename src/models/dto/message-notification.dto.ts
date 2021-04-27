@@ -8,7 +8,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { NotFoundException } from '@nestjs/common';
-import { OmitType } from '@nestjs/swagger';
+import { OmitType, PartialType } from '@nestjs/swagger';
 import { AuthProviders } from '../enums/provider';
 import { IMessageNotification } from '../intermediates';
 import { MessageAuthorDTO, messageAuthorMapper } from './message-author.dto';
@@ -54,11 +54,18 @@ export class MessageNotificationDTO {
   extra: any;
 }
 
+/** Standard DTO, but without _id and user */
 export class CreateMessageNotificationDTO extends OmitType(
   MessageNotificationDTO,
   ['_id', 'user'],
 ) {}
 
+/** Create DTO, but every key is optional */
+export class UpdateMessageNotificationDTO extends PartialType(
+  CreateMessageNotificationDTO,
+) {}
+
+/** Map intermediate notification to the DTO */
 export function messageNotificationMapper(
   notf: IMessageNotification | undefined,
 ): MessageNotificationDTO {
