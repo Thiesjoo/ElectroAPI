@@ -231,21 +231,19 @@ export const corsSettings: CorsOptions = {
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   origin: (org, cb) => {
     console.log('Allowed request form org:', org);
-    cb(null, true);
-    //FIXME: Make this secure (:
-    // if (
-    //   [
-    //     'http://localhost:3000',
-    //     'http://localhost:3001',
-    //     'http://localhost:4200',
-    //     'https://electro-dash.vercel.app',
-    //     undefined,
-    //   ].includes(org)
-    // ) {
-    //   cb(null, true);
-    // } else {
-    //   cb(new Error(`Origin: ${org} is not whitelisted`));
-    // }
+
+    //FIXME: Make CORS work
+    // 1 easy way to fix it would be to host API and Frontend on same domain.
+    // This solution is more security through obscurity, because anyone can register a domain on vercel
+    if (
+      !org || // This is for non CORS requests
+      (org.includes('vercel.app') && org.includes('https://electro-dash')) || // This is semi safe, because the frontend will *always* be here
+      org.includes('http://localhost:') // Localhost is safe because the user owns it
+    ) {
+      cb(null, org);
+    } else {
+      cb(new Error(`Origin: ${org} is not whitelisted`));
+    }
   },
   credentials: true,
 };
