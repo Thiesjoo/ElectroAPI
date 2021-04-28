@@ -1,6 +1,7 @@
 import { validate } from 'class-validator';
 import { Strategy } from 'passport-local';
 import { AuthNames } from 'src/models';
+import { UserLoginDTO } from 'src/models/dto/user.login.dto';
 import {
   BadRequestException,
   Injectable,
@@ -8,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { AuthService } from '../../auth.service';
-import { UserLoginDTO } from './';
 
 /** The local Strategy */
 @Injectable()

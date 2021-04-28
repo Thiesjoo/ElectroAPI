@@ -2,11 +2,11 @@ import { FilterQuery } from 'mongoose';
 import { InjectionTokens } from 'src/common/injection.tokens';
 import {
   AuthTokenPayload,
+  DeleteMessageNotificationDTO,
   IMessageNotification,
   MessageNotification,
   messageNotificationMapper,
   MyPusher,
-  NotificationRoutes,
   PaginatedRequestDTO,
   PaginateModel,
   PaginateOptions,
@@ -15,6 +15,7 @@ import {
   UpdateMessageNotificationDTO,
 } from 'src/models';
 import { QueryPlaces } from 'src/models/enums/query';
+import { NotificationRoutes } from 'src/sockets';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -75,7 +76,10 @@ export class NotificationService {
   }
 
   /** Remove notification from DB */
-  async remove(token: AuthTokenPayload, id: string): Promise<{ _id: string }> {
+  async remove(
+    token: AuthTokenPayload,
+    id: string,
+  ): Promise<DeleteMessageNotificationDTO> {
     const notf = await this.notfModel.deleteOne({ user: token.sub, _id: id });
     if (notf.deletedCount !== 1)
       throw new BadRequestException("Notification doesn't exist");

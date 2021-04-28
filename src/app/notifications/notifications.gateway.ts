@@ -2,16 +2,18 @@ import { Socket } from 'socket.io';
 import { AuthedUser, UserToken } from 'src/common';
 import {
   AuthTokenPayload,
-  IngestClient,
   ListenerType,
   messageNotificationMapper,
-  NotificationSocketEvents as Eve,
-  NotificationSocketRequests as Requ,
-  NotificationSocketRoutes as Rout,
   Provider,
   ReturnTypeOfMethod,
   ServerEventEmitter,
 } from 'src/models';
+import {
+  IngestClientDTO,
+  NotificationSocketEventsDTO as Eve,
+  NotificationSocketRequestsDTO as Requ,
+  NotificationSocketRoutes as Rout,
+} from 'src/sockets';
 import {
   BadRequestException,
   Logger,
@@ -36,11 +38,8 @@ import { NotificationService } from '../notifications/notifications.service';
 @WebSocketGateway()
 @UseGuards(JwtGuard)
 export class NotificationGateway {
-  /** The websocket server */
-  // @WebSocketServer()
-  // server: Server;
   /** Map of every client, mapped to the data about client */
-  private sendClients: Record<string, IngestClient> = {};
+  private sendClients: Record<string, IngestClientDTO> = {};
   private receiveClients: Record<string, ServerEventEmitter<Socket, Eve>> = {};
   /** Logger of this service */
   private logger: Logger = new Logger(NotificationGateway.name);
@@ -155,7 +154,7 @@ export class NotificationGateway {
     return this.sendClients[client.id];
   }
 
-  /** TODO: Make this
+  /**
    * Simple ingest function
    */
   @AuthedUser()

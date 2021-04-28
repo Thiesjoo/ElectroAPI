@@ -1,10 +1,10 @@
 import * as Pusher from 'pusher';
-import { NotificationRequests, NotificationRoutes } from '../';
+import { NotificationEventsDTO, NotificationRoutes } from 'src/sockets';
 
 export class MyPusher extends Pusher {
   trigger: <T extends NotificationRoutes>(
     channel: string,
     event: T,
-    data: NotificationRequests[T],
+    data: NotificationEventsDTO[T],
   ) => Promise<any>;
 }

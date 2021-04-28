@@ -47,7 +47,7 @@ export class MessageNotificationDTO {
   pinned: number;
 
   /** If the notification should be shown in a short fashion */
-  action: boolean;
+  action = false;
 
   /** Extra information */
   @IsObject()
@@ -64,6 +64,10 @@ export class CreateMessageNotificationDTO extends OmitType(
 export class UpdateMessageNotificationDTO extends PartialType(
   CreateMessageNotificationDTO,
 ) {}
+
+export class DeleteMessageNotificationDTO {
+  _id: string;
+}
 
 /** Map intermediate notification to the DTO */
 export function messageNotificationMapper(

@@ -2,14 +2,13 @@ import { ResponsePrefix } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
 import {
   AuthTokenPayload,
-  IngestClient,
   MasterEnums,
-  NotificationAuthDTO,
   PaginatedDTO,
   Provider,
   RefreshToken,
   RefreshTokenPayload,
 } from 'src/models';
+import { allRoutes } from 'src/sockets';
 import { Controller, Get, HttpStatus, Redirect } from '@nestjs/common';
 import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';
 
@@ -17,11 +16,17 @@ import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';
 @Controller('/')
 @ResponsePrefix()
 @ApiExtraModels(
+  // General paginated request
   PaginatedDTO,
+  //Is not mentioned in a controller, but used in websockets and pushser
   Provider,
+  // Socket stuff
+  ...allRoutes,
+
+  // A lot of extra enums
   MasterEnums,
-  IngestClient,
-  NotificationAuthDTO,
+
+  // JWT mapping so client can identify it's own JWT's
   AuthTokenPayload,
   RefreshToken,
   RefreshTokenPayload,

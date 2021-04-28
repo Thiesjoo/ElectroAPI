@@ -1,3 +1,4 @@
+import { NotificationRoutes } from 'src/sockets';
 import { ApiProperty } from '@nestjs/swagger';
 import { AuthRole } from './authroles';
 import { logLevels } from './loglevels';
@@ -7,7 +8,6 @@ export * from './authroles';
 export * from './provider';
 export * from './loglevels';
 export * from './token-payload';
-export * from './websockets/';
 export * from './query';
 
 export class MasterEnums {
@@ -17,4 +17,6 @@ export class MasterEnums {
   logLevels: logLevels;
   @ApiProperty({ enumName: 'AuthProviders', enum: AuthProviders })
   provider: AuthProviders;
+  @ApiProperty({ enumName: 'NotificationRoutes', enum: NotificationRoutes })
+  routes: NotificationRoutes;
 }

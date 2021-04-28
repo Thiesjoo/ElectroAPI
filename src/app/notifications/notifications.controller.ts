@@ -9,15 +9,14 @@ import {
 import { UserToken } from 'src/common/decorators/user';
 import {
   AuthTokenPayload,
-  PaginatedDTO,
-  PaginatedRequestDTO,
-} from 'src/models';
-import {
   CreateMessageNotificationDTO,
+  DeleteMessageNotificationDTO,
   MessageNotificationDTO,
   messageNotificationMapper,
+  PaginatedDTO,
+  PaginatedRequestDTO,
   UpdateMessageNotificationDTO,
-} from 'src/models/dto/message-notification.dto';
+} from 'src/models';
 import {
   Body,
   Controller,
@@ -123,11 +122,12 @@ export class NotificationController {
   @Delete(':id/')
   @ApiResponse({
     status: HttpStatus.OK,
+    type: DeleteMessageNotificationDTO,
   })
   removeWithId(
     @Param('id') id: string,
     @UserToken() token: AuthTokenPayload,
-  ): Observable<{ _id: string }> {
+  ): Observable<DeleteMessageNotificationDTO> {
     return from(this.notificationService.remove(token, id));
   }
 }

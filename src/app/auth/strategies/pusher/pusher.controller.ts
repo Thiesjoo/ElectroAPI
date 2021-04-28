@@ -16,8 +16,10 @@ import {
 import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 class PusherAuthBody {
+  @ApiProperty()
   @IsString()
   socket_id: string;
+  @ApiProperty()
   @IsString()
   channel_name: string;
 }

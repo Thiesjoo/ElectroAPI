@@ -1,15 +1,7 @@
-import {
-  IsAlpha,
-  IsEmail,
-  IsString,
-  Length,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
 import { Response } from 'express';
 import { ApiConfigService } from 'src/config/configuration';
 import { AuthNames, Tokens } from 'src/models';
+import { UserLoginDTO, UserRegisterDTO } from 'src/models/dto/user.login.dto';
 import {
   Body,
   Controller,
@@ -23,38 +15,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LocalAuthService } from './local.service';
 
-/** DTO to validate users request */
-export class UserLoginDTO {
-  /** Their email */
-  @ApiProperty({
-    description: 'The email of the user',
-    type: String,
-  })
-  @IsEmail()
-  email: string;
-  /** Their password */
-  @ApiProperty({
-    description: 'The password of the user',
-    type: String,
-  })
-  @IsString()
-  @MinLength(8)
-  @MaxLength(64)
-  @Matches(/\d/, {
-    message: 'password must contain number',
-  })
-  @Matches(/^(?!\s*$).+/, {
-    message: 'password is required',
-  })
-  @Matches(/[A-Z]/, {
-    message: 'password must contain capital letter',
-  })
-  @Matches(/[A-Z]/, {
-    message: 'password must contain small letter',
-  })
-  password: string;
-}
-
 /** The response of local api */
 class UserLoginResponse implements Tokens {
   /** Access token */
@@ -63,17 +23,6 @@ class UserLoginResponse implements Tokens {
   /** Refresh token */
   @ApiProperty()
   refresh: string;
-}
-
-class RegisterDTO extends UserLoginDTO {
-  /** Name of user */
-  @ApiProperty({
-    description: 'The name of the user',
-  })
-  @IsString()
-  @IsAlpha()
-  @Length(3)
-  name: string;
 }
 
 /** Controller for authenticating with this API */
@@ -122,7 +71,7 @@ export class LocalController {
   }
 
   /** Register new user */
-  @ApiBody({ type: RegisterDTO })
+  @ApiBody({ type: UserRegisterDTO })
   @ApiResponse({
     description:
       'The accesstoken is returned, and all the required cookies are set',
@@ -131,7 +80,7 @@ export class LocalController {
   })
   @Post('register')
   async register(
-    @Body() registerDTO: RegisterDTO,
+    @Body() registerDTO: UserRegisterDTO,
     @Res() res: Response,
   ): Promise<void> {
     const tokens = await this.localService.register(
