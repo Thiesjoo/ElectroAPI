@@ -3,8 +3,7 @@
 /node_modules
 
 # ENV
-env.yml
-env.prod.yml
+env*.yml
 documentation/
 mongoPlaygrounds/
 
