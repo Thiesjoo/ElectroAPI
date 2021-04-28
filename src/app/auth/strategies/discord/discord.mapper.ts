@@ -1,5 +1,5 @@
 import { AuthProviders } from 'src/models';
-import { DiscordUser } from './discord.enums';
+import { DiscordUser } from './discord.types';
 
 export default function (
   accessToken: string,

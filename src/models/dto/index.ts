@@ -1,3 +1,5 @@
-export * from './paginated.dto';
-export * from './notification.dto';
+export * from './paginated-response.dto';
 export * from './user.dto';
+export * from './paginated-request.dto';
+export * from './message-author.dto';
+export * from './message-notification.dto';

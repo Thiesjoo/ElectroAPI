@@ -1,83 +1,38 @@
 import { Document, FilterQuery, Model } from 'mongoose';
 
-/** @ignore */
-interface CustomLabels {
-  totalDocs?: string;
-  limit?: string;
-  page?: string;
-  totalPages?: string;
-  docs?: string;
-  nextPage?: string;
-  prevPage?: string;
-}
-
-/** @ignore */
-interface ReadOptions {
-  pref: string;
-  tags?: any[];
-}
-
-/** @ignore */
-interface PaginateOptions {
+export interface PaginateOptions<T> {
+  query?: FilterQuery<T>;
   select?: object | string;
   sort?: object | string;
-  customLabels?: CustomLabels;
-  populate?: object[] | string[] | object | string | QueryPopulateOptions;
-  lean?: boolean;
-  leanWithId?: boolean;
-  offset?: number;
+  populate?: object[] | string[] | object | string;
   page?: number;
   limit?: number;
-  read?: ReadOptions;
-  /* If pagination is set to `false`, it will return all docs without adding limit condition. (Default: `true`) */
-  pagination?: boolean;
-  projection?: any;
-  options?: QueryFindOptions;
+  //Default: _id
+  key?: string;
+  /**
+   *  A cursor for use in pagination. startingAfter is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include startingAfter=obj_foo in order to fetch the next page of the list.
+   */
+  startingAfter?: string;
+  /**
+   * A cursor for use in pagination. endingBefore is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_bar, your subsequent call can include endingBefore=obj_bar in order to fetch the previous page of the list.
+   */
+  endingBefore?: string;
+  // Set this to true, if you need to support $geo queries.
+  forceCountFunction?: boolean;
 }
 
-/** @ignore */
-interface QueryFindOptions {
-  batchSize?: number;
-  comment?: any;
-  hint?: any;
-  limit?: number;
-  maxscan?: number;
-  skip?: number;
-  snapshot?: any;
-  sort?: any;
-  tailable?: any;
-}
-
-/** @ignore */
-interface QueryPopulateOptions {
-  /** space delimited path(s) to populate */
-  path: string;
-  /** optional fields to select */
-  select?: any;
-  /** optional query conditions to match */
-  match?: any;
-  /** optional model to use for population */
-  model?: string | Model<any>;
-  /** optional query options like sort, limit, etc */
-  options?: any;
-  /** deep populate */
-  populate?: QueryPopulateOptions | QueryPopulateOptions[];
-}
-
-/** @ignore */
 export interface PaginateResult<T> {
   docs: T[];
-  totalDocs: number;
-  limit: number;
+  totalDocs?: number;
+  limit?: number;
+  totalPages?: number;
   page?: number;
-  totalPages: number;
-  nextPage?: number | null;
-  prevPage?: number | null;
-  pagingCounter: number;
-  hasPrevPage: boolean;
-  hasNextPage: boolean;
-  meta?: any;
-  [customLabel: string]: T[] | number | boolean | null | undefined;
+  pagingCounter?: number;
+  hasPrevPage?: Boolean;
+  hasNextPage?: Boolean;
+  prevPage?: number;
+  nextPage?: number;
+  hasMore?: Boolean;
 }
 
 /**
@@ -86,8 +41,7 @@ export interface PaginateResult<T> {
 export interface PaginateModel<T extends Document> extends Model<T> {
   /** Paginate function */
   paginate(
-    query?: FilterQuery<T>,
-    options?: PaginateOptions,
+    options?: PaginateOptions<T>,
     callback?: (err: any, result: PaginateResult<T>) => void,
   ): Promise<PaginateResult<T>>;
 }

@@ -75,12 +75,12 @@ export class AuthService {
       user.providers.push(providerData);
     }
     user.markModified('providers');
-    await user.save();
-
     console.log(
       'User pre: ',
       await this.authUsersService.findUserByUid(user._id),
     );
+    await user.save();
+
     console.log('User post: ', user);
     //TODO: Emit user update event(To get extra data from provider)
 

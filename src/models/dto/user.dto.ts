@@ -1,6 +1,6 @@
 import { IsEmail, IsString } from 'class-validator';
 import { NotFoundException } from '@nestjs/common';
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { IUser } from '../';
 
 /** The user DTO */
@@ -45,5 +45,11 @@ export function userMapper(user: IUser): UserDTO {
   };
 }
 
-/** Update DTO is a partial of the DTO */
-export class UpdateUserDto extends PartialType(UserDTO) {}
+/** Create DTO, but every key is optional */
+export class UpdateUserDto extends PartialType(
+  OmitType(UserDTO, ['uid', 'gateway']),
+) {}
+
+export class DeleteUserDTO {
+  _id: string;
+}

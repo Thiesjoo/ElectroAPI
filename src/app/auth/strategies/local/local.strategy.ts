@@ -1,6 +1,7 @@
-import { isEmail, isString } from 'class-validator';
+import { validate } from 'class-validator';
 import { Strategy } from 'passport-local';
 import { AuthNames } from 'src/models';
+import { UserLoginDTO } from 'src/models/dto/user.login.dto';
 import {
   BadRequestException,
   Injectable,
@@ -22,8 +23,16 @@ export class LocalStrategy extends PassportStrategy(Strategy, AuthNames.Local) {
     email: string,
     password: string,
   ): Promise<{ access: string; refresh: string }> {
-    if (!isEmail(email) || !isString(password)) {
-      throw new BadRequestException();
+    const userData = new UserLoginDTO();
+    userData.email = email;
+    userData.password = password;
+
+    const res = await validate(userData, {
+      validationError: { target: false },
+    });
+
+    if (res.length > 0) {
+      throw new BadRequestException(res);
     }
     const token = await this.authService.validateLocalUser(email, password);
     if (!token?.access || !token?.refresh) {

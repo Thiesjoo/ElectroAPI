@@ -2,8 +2,8 @@ import { Request } from 'express';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { ExtractJwt } from 'passport-jwt';
 import { Socket } from 'socket.io';
+import { enumValues } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
-import { enumValues } from 'src/utils';
 import {
   CanActivate,
   ExecutionContext,

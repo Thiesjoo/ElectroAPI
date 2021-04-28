@@ -1,10 +1,8 @@
 import { Document } from 'mongoose';
+import { enumValues } from 'src/common';
+import { AuthRole, IUser, Provider, RefreshToken } from 'src/models';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { IUser } from '../';
-import { enumValues } from '../../utils';
-import { AuthRole, Provider, RefreshToken } from '../enums';
 
-/** @ignore */
 @Schema()
 export class User extends Document implements IUser {
   @Prop({ required: true })

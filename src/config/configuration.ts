@@ -10,6 +10,12 @@ import { Injectable } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ConfigService } from '@nestjs/config';
 
+type ProviderConfig = {
+  clientID: string;
+  clientSecret: string;
+  callbackURL: string;
+};
+
 const pkgJSON = loadPkg.sync();
 
 /** Nested validation */
@@ -93,6 +99,8 @@ export class ApiConfigService {
   private getJWT(pub: boolean): string {
     let jwtPath = this.get('app.jwtPath');
     console.log('LOADING JWT KEYS FROM PATH: ', jwtPath);
+
+    //JWT's can also be loaded from env
     if (jwtPath === 'ENV') {
       if (!process.env.PUBKEY || !process.env.PRIVKEY)
         throw new Error('Please set PUBKEY and PRIVKEY in env variables');
@@ -121,14 +129,23 @@ export class ApiConfigService {
   }
 
   /** Get information about provider */
-  getProvider(
-    providerType: AuthProviders,
-  ): {
-    clientID: string;
-    clientSecret: string;
-    callbackURL: string;
-  } {
-    return this.get(`providers.${providerType}`);
+  getProvider(providerType: AuthProviders): ProviderConfig {
+    const conf = this.get(`providers.${providerType}`) as ProviderConfig;
+
+    if (conf.callbackURL.includes('{{BASEURL}}')) {
+      if (process.env.VERCEL_URL) {
+        conf.callbackURL = conf.callbackURL.replace(
+          '{{BASEURL}}',
+          process.env.VERCEL_URL,
+        );
+        console.log('Replaced callback URL', conf.callbackURL);
+      } else {
+        throw new Error(
+          'Trying to get BASEURL from env, but it is not defined. Please define `VERCEL_URL`',
+        );
+      }
+    }
+    return conf;
   }
 
   /** Get expiry of access and refresh token */
@@ -213,16 +230,17 @@ export function loadConfig() {
 export const corsSettings: CorsOptions = {
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   origin: (org, cb) => {
-    //FIXME: Make this secure (:
+    console.log('Allowed request form org:', org);
+
+    //FIXME: Make CORS work
+    // 1 easy way to fix it would be to host API and Frontend on same domain.
+    // This solution is more security through obscurity, because anyone can register a domain on vercel
     if (
-      [
-        'http://localhost:3000',
-        'http://localhost:4200',
-        'https://electro-dash.vercel.app',
-        undefined,
-      ].includes(org)
+      !org || // This is for non CORS requests
+      (org.includes('vercel.app') && org.includes('https://electro-dash')) || // This is semi safe, because the frontend will *always* be here
+      org.includes('http://localhost:') // Localhost is safe because the user owns it
     ) {
-      cb(null, true);
+      cb(null, org);
     } else {
       cb(new Error(`Origin: ${org} is not whitelisted`));
     }

@@ -28,18 +28,20 @@ Users will be able to register new client applications use client id and key. Th
 ## Configuration
 
 Main config is in a YAML file called `env.yml`. It's automatically loaded from project root but can be loaded from different path (See ENV Variables).
-`env.yml` can also be provided with ENV variables( Specify env variable `CONFIG` with the file as a string).
+`env.yml` can also be provided with ENV variables (Specify env variable `CONFIG` with the file as a string).
 
 ### env.yml
 
 For configuration see: `sample.env.yml`
 
 If you set `jwtPath` to `ENV` the JWT keys will be loaded from env (`PRIVKEY` for the private key and `PUBKEY` for the public one).
+If you include `{{BASEURL}}` in any callback URL, it will be replaced with the env variable `VERCEL_URL`
 
 ### ENV Variables
 
 - LOG_LEVEL = Log level of the entire application. Defaults to `verbose`
-- CONFIG_PATH - The path of your `env.yml`. Defaults to `env.yml`
+- CONFIG_PATH = The path of your `env.yml`. Defaults to `env.yml`
+- CONFIG = The entire config file as a string (Overwrites the file)
 
 ## Installation
 

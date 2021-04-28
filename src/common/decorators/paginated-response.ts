@@ -1,22 +1,5 @@
 import { applyDecorators, Type } from '@nestjs/common';
-import { ApiOkResponse, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-
-/**
- * DTO for paginated response
- */
-export class PaginatedDto<T> {
-  /** The docs that are provided */
-  docs: T[];
-  /** Current page */
-  @ApiProperty()
-  page: number;
-  /** Amount of docs per page */
-  @ApiProperty()
-  limit: number;
-  /** Total number of docs */
-  @ApiProperty()
-  total: number;
-}
+import { ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
 
 /**
  * Add schema to swagger and add the ApiOk response
@@ -30,7 +13,7 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(
       schema: {
         title: `Paginated${model.name}`,
         type: 'object',
-        required: ['docs', 'page', 'limit', 'total'],
+        required: ['docs', 'page', 'limit', 'totalDocs', 'totalPages'],
         properties: {
           docs: {
             type: 'array',
@@ -42,7 +25,10 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(
           limit: {
             type: 'number',
           },
-          total: {
+          totalDocs: {
+            type: 'number',
+          },
+          totalPages: {
             type: 'number',
           },
         },

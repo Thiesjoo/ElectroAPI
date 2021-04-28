@@ -1,12 +1,15 @@
+import { axiosInst } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
 import { AuthProviders, Provider } from 'src/models';
-import { axiosInst } from 'src/utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { DiscordUser } from './';
 import discordMapper from './strategies/discord/discord.mapper';
+import twitchMapper from './strategies/twitch/twitch.mapper';
+import { TwitchUser } from './strategies/twitch/twitch.types';
 
 type UserTypes = {
   [AuthProviders.Discord]: DiscordUser;
+  [AuthProviders.Twitch]: TwitchUser;
 };
 
 /**
@@ -29,6 +32,11 @@ const oauthURLMap: {
     tokenURL: 'https://discord.com/api/v8/oauth2/token',
     mapper: discordMapper,
   },
+  [AuthProviders.Twitch]: {
+    userURL: 'https://discord.com/api/v8/users/@me',
+    tokenURL: 'https://discord.com/api/v8/oauth2/token',
+    mapper: twitchMapper,
+  },
 };
 
 /**
@@ -46,7 +54,7 @@ export class Oauth2RefreshService {
    * @param provider The provider
    */
   async refreshTokens(provider: Provider): Promise<Provider> {
-    const clientName = provider.providerName;
+    const clientName = provider.providerName as AuthProviders;
     const client = oauthURLMap[clientName];
 
     const tokens = this.configService.getProvider(provider.providerName);
@@ -76,6 +84,7 @@ export class Oauth2RefreshService {
       const newProvider = client.mapper(
         provider.accessToken,
         provider.refreshToken,
+        //@ts-ignore TODO: Check if this works?
         resp.data,
         provider.scopes,
       );
