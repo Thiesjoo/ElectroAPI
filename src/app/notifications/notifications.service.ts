@@ -59,7 +59,6 @@ export class NotificationService {
     id: string,
     updated: UpdateMessageNotificationDTO,
   ): Promise<IMessageNotification> {
-    console.log(updated);
     const notification = await this.notfModel.findOneAndUpdate(
       { _id: id, user: token.sub },
       { $set: { ...updated, user: token.sub } },

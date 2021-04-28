@@ -1,9 +1,9 @@
 import { IsString } from 'class-validator';
 import Pusher from 'pusher';
 import { JwtGuard } from 'src/app';
-import { AuthedUser, AuthPrefixes } from 'src/common';
+import { AuthedUser, AuthPrefixes, UserToken } from 'src/common';
 import { InjectionTokens } from 'src/common/injection.tokens';
-import { pusherPrivatePrefix } from 'src/models';
+import { AuthTokenPayload, pusherPrivatePrefix } from 'src/models';
 import {
   BadRequestException,
   Body,
@@ -12,6 +12,7 @@ import {
   HttpStatus,
   Inject,
   Post,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -47,14 +48,22 @@ export class PusherController {
     description: 'The auth code for pusher',
     type: PusherResponse,
   })
-  async pusherAuth(@Body() body: PusherAuthBody): Promise<PusherResponse> {
-    console.log(body);
+  async pusherAuth(
+    @Body() body: PusherAuthBody,
+    @UserToken() token: AuthTokenPayload,
+  ): Promise<PusherResponse> {
     if (!body.channel_name.startsWith(pusherPrivatePrefix)) {
       throw new BadRequestException('Invalid channel name');
     }
 
     const parsed = body.channel_name.substring(pusherPrivatePrefix.length);
-    console.log('Parsed from pusher', parsed);
+
+    if (parsed !== token.sub) {
+      console.warn('Unauthorized Pusher access:', token);
+      throw new UnauthorizedException();
+    }
+
+    //TODO: Check if user authorized this browser/client
 
     return this.pusher.authenticate(body.socket_id, body.channel_name);
   }
