@@ -48,6 +48,7 @@ export class LocalController {
   }
 
   /** Setup cookies for users login request */
+  @Post('login')
   @UseGuards(AuthGuard(AuthNames.Local))
   @ApiBody({ type: UserLoginDTO })
   @ApiResponse({
@@ -56,21 +57,21 @@ export class LocalController {
     status: HttpStatus.CREATED,
     type: UserLoginResponse,
   })
-  @Post('login')
   login(
     @Req() req,
-    @Res() res: Response,
+    @Res({ passthrough: true }) res: Response,
     /** For validation purposes */
     //eslint-disable-next-line
     @Body() loginData: UserLoginDTO,
-  ): void {
+  ): Tokens {
     const tokens = req?.user as Tokens;
     this.setCookies(tokens, res);
 
-    res.json(tokens);
+    return tokens;
   }
 
   /** Register new user */
+  @Post('register')
   @ApiBody({ type: UserRegisterDTO })
   @ApiResponse({
     description:
@@ -78,17 +79,16 @@ export class LocalController {
     status: HttpStatus.CREATED,
     type: UserLoginResponse,
   })
-  @Post('register')
   async register(
     @Body() registerDTO: UserRegisterDTO,
-    @Res() res: Response,
-  ): Promise<void> {
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<Tokens> {
     const tokens = await this.localService.register(
       registerDTO.name,
       registerDTO.email,
       registerDTO.password,
     );
     this.setCookies(tokens, res);
-    res.json(tokens);
+    return tokens;
   }
 }

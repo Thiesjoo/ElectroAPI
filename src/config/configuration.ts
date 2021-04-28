@@ -230,20 +230,22 @@ export function loadConfig() {
 export const corsSettings: CorsOptions = {
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   origin: (org, cb) => {
+    console.log('Allowed request form org:', org);
+    cb(null, true);
     //FIXME: Make this secure (:
-    if (
-      [
-        'http://localhost:3000',
-        'http://localhost:3001',
-        'http://localhost:4200',
-        'https://electro-dash.vercel.app',
-        undefined,
-      ].includes(org)
-    ) {
-      cb(null, true);
-    } else {
-      cb(new Error(`Origin: ${org} is not whitelisted`));
-    }
+    // if (
+    //   [
+    //     'http://localhost:3000',
+    //     'http://localhost:3001',
+    //     'http://localhost:4200',
+    //     'https://electro-dash.vercel.app',
+    //     undefined,
+    //   ].includes(org)
+    // ) {
+    //   cb(null, true);
+    // } else {
+    //   cb(new Error(`Origin: ${org} is not whitelisted`));
+    // }
   },
   credentials: true,
 };
