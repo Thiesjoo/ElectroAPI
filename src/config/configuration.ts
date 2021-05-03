@@ -230,8 +230,6 @@ export function loadConfig() {
 export const corsSettings: CorsOptions = {
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   origin: (org, cb) => {
-    console.log('Allowed request form org:', org);
-
     //FIXME: Make CORS work
     // 1 easy way to fix it would be to host API and Frontend on same domain.
     // This solution is more security through obscurity, because anyone can register a domain on vercel

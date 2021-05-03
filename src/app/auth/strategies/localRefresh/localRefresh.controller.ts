@@ -26,10 +26,7 @@ export class LocalRefreshController {
   @Get('logout')
   @UseGuards(JwtGuard)
   @AuthedUser()
-  async logout(
-    @Req() req: Request,
-    @Res({ passthrough: false }) res: Response,
-  ) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     // Expiry time is not allowed in clearCookie
     const {
       expires: _, // eslint-disable-line
@@ -45,7 +42,7 @@ export class LocalRefreshController {
     res.clearCookie(this.configService.cookieNames.refresh, restRefresh);
     await this.localRefreshService.revokeToken(token);
 
-    res.json({ ok: true });
+    return { ok: true };
   }
 
   /** Refresh the users token */
@@ -58,8 +55,8 @@ export class LocalRefreshController {
   })
   async refreshTokens(
     @Req() req: Request,
-    @Res({ passthrough: false }) res: Response,
-  ): Promise<void> {
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const newToken = await this.localRefreshService.getAccessToken(
       extractToken(req, this.configService, 'refresh'),
     );
@@ -69,6 +66,6 @@ export class LocalRefreshController {
       this.configService.cookieSettings.access,
     );
 
-    res.json({ ok: true, token: newToken });
+    return { ok: true, token: newToken };
   }
 }
