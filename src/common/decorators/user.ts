@@ -1,10 +1,10 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { AuthTokenPayload } from '../../models/enums';
+import { AuthTokenPayloadDTO } from '../../models/enums';
 
 /** Get the user AuthTokenPayload from request */
 export const UserToken = createParamDecorator(
-  (_, ctx: ExecutionContext): AuthTokenPayload => {
+  (_, ctx: ExecutionContext): AuthTokenPayloadDTO => {
     const request = ctx.switchToHttp().getRequest();
-    return <AuthTokenPayload>request.user;
+    return <AuthTokenPayloadDTO>request.user;
   },
 );

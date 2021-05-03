@@ -8,7 +8,7 @@ import {
 } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
 import {
-  AuthTokenPayload,
+  AuthTokenPayloadDTO,
   UpdateUserDto,
   UserDTO,
   userMapper,
@@ -67,7 +67,7 @@ export class UsersController {
     description: 'User with given ID was not found',
   })
   @AuthedUser()
-  async getMe(@UserToken('id') token: AuthTokenPayload) {
+  async getMe(@UserToken('id') token: AuthTokenPayloadDTO) {
     const user = userMapper(await this.usersService.findUserByUid(token.sub));
     user.gateway = this.configService.pusherConfig.key;
     return user;

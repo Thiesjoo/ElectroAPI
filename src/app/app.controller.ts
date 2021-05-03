@@ -1,12 +1,12 @@
 import { ResponsePrefix } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
 import {
-  AuthTokenPayload,
+  AuthTokenPayloadDTO,
   MasterEnums,
   PaginatedDTO,
   Provider,
   RefreshToken,
-  RefreshTokenPayload,
+  RefreshTokenPayloadDTO,
 } from 'src/models';
 import { allRoutes } from 'src/sockets';
 import { Controller, Get, HttpStatus, Redirect } from '@nestjs/common';
@@ -27,9 +27,9 @@ import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';
   MasterEnums,
 
   // JWT mapping so client can identify it's own JWT's
-  AuthTokenPayload,
+  AuthTokenPayloadDTO,
   RefreshToken,
-  RefreshTokenPayload,
+  RefreshTokenPayloadDTO,
 )
 export class AppController {
   constructor(private configService: ApiConfigService) {}

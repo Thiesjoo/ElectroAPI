@@ -1,5 +1,10 @@
-import { RefreshTokenPayload } from 'src/models';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { AuthRole, RefreshTokenPayloadDTO } from 'src/models';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService, AuthUserService } from '../..';
 
@@ -37,7 +42,7 @@ export class LocalRefreshService {
 
   /** Revoke a specific token */
   async revokeToken(refreshToken: string) {
-    const payload: RefreshTokenPayload = await this.getPayload(refreshToken);
+    const payload: RefreshTokenPayloadDTO = await this.getPayload(refreshToken);
     const user = await this.authService.verifyRefreshToken(payload);
     if (user) {
       await this.authUsersService.revokeUserToken(user._id, payload.jti);
@@ -48,7 +53,22 @@ export class LocalRefreshService {
    * Get the JWT payload of a token
    * @param token Refreshtoken from user
    */
-  private async getPayload(token: string): Promise<RefreshTokenPayload> {
-    return await this.jwtService.verifyAsync(token);
+  private async getPayload(token: string): Promise<RefreshTokenPayloadDTO> {
+    const tokenPayload = (await this.jwtService.verifyAsync(
+      token,
+    )) as RefreshTokenPayloadDTO;
+
+    //FIXME: Use type checking library for this
+    if (
+      tokenPayload.sub &&
+      tokenPayload.rol &&
+      tokenPayload.iat &&
+      tokenPayload.exp &&
+      tokenPayload.jti &&
+      tokenPayload.rol !== AuthRole.Banned
+    ) {
+      return tokenPayload;
+    }
+    throw new UnauthorizedException('Token not valid');
   }
 }

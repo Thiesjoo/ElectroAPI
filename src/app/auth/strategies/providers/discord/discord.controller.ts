@@ -3,7 +3,7 @@ import { AuthNames } from 'src/models';
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtGuard } from '../../jwt.guard';
+import { JwtGuard } from '../../../jwt.guard';
 
 /** The discord controller */
 @Controller('auth/discord')

@@ -1,8 +1,7 @@
 import { Request } from 'express';
 import { JsonWebTokenError } from 'jsonwebtoken';
-import { ExtractJwt } from 'passport-jwt';
 import { Socket } from 'socket.io';
-import { enumValues } from 'src/common';
+import { enumValues, extractToken } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
 import {
   CanActivate,
@@ -16,7 +15,7 @@ import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { WsException } from '@nestjs/websockets';
-import { AuthRole, AuthTokenPayload } from '../../models';
+import { AuthRole, AuthTokenPayloadDTO } from '../../models';
 
 /** Order of roles in our application */
 const roleOrder = enumValues(AuthRole);
@@ -50,6 +49,7 @@ export class JwtGuard implements CanActivate {
           const client: Socket = context.switchToWs().getClient<Socket>();
 
           let wsToken = client.handshake?.auth?.token as string;
+          // Extract token from the cookies
           if (!wsToken) {
             const params = client.handshake?.headers?.cookie
               ?.split(';')
@@ -70,10 +70,7 @@ export class JwtGuard implements CanActivate {
           return true;
 
         case 'http':
-          const httpToken =
-            ExtractJwt.fromUrlQueryParameter('auth')(request) ||
-            ExtractJwt.fromAuthHeaderAsBearerToken()(request) ||
-            request.cookies[this.configService.cookieNames.access];
+          const httpToken = extractToken(request, this.configService, 'access');
 
           const processed = await this.processToken(httpToken, context);
 
@@ -104,7 +101,7 @@ export class JwtGuard implements CanActivate {
   async processToken(
     token: string,
     context: ExecutionContext,
-  ): Promise<AuthTokenPayload> {
+  ): Promise<AuthTokenPayloadDTO> {
     if (!token) {
       throw new UnauthorizedException(
         'No authorization token has been provided',
@@ -112,7 +109,7 @@ export class JwtGuard implements CanActivate {
     }
 
     // Verify token: WITH EXPIRY
-    const payload: AuthTokenPayload = this.jwtService.verify(token);
+    const payload: AuthTokenPayloadDTO = this.jwtService.verify(token);
     if (!payload) {
       throw new UnauthorizedException(
         'No valid authorization token has been provided',

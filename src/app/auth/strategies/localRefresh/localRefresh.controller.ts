@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { AuthedUser } from 'src/common';
+import { AuthedUser, extractToken } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
 import {
   Controller,
@@ -61,7 +61,7 @@ export class LocalRefreshController {
     @Res({ passthrough: false }) res: Response,
   ): Promise<void> {
     const newToken = await this.localRefreshService.getAccessToken(
-      req.cookies[this.configService.cookieNames.refresh],
+      extractToken(req, this.configService, 'refresh'),
     );
     res.cookie(
       this.configService.cookieNames.access,

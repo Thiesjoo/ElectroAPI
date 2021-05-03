@@ -8,7 +8,7 @@ import {
 } from 'src/common';
 import { UserToken } from 'src/common/decorators/user';
 import {
-  AuthTokenPayload,
+  AuthTokenPayloadDTO,
   CreateMessageNotificationDTO,
   DeleteMessageNotificationDTO,
   MessageNotificationDTO,
@@ -46,7 +46,7 @@ export class NotificationController {
   @Get('')
   @ApiPaginatedResponse(MessageNotificationDTO)
   getPaginated(
-    @UserToken() token: AuthTokenPayload,
+    @UserToken() token: AuthTokenPayloadDTO,
     @Query() request: PaginatedRequestDTO,
   ): Observable<PaginatedDTO<MessageNotificationDTO>> {
     return from(this.notificationService.getPaginated(token, request)).pipe(
@@ -74,7 +74,7 @@ export class NotificationController {
     description: 'The new notification',
   })
   createNotification(
-    @UserToken() token: AuthTokenPayload,
+    @UserToken() token: AuthTokenPayloadDTO,
     @Body() notf: CreateMessageNotificationDTO,
   ): Observable<MessageNotificationDTO> {
     return from(this.notificationService.add(token, notf)).pipe(
@@ -91,7 +91,7 @@ export class NotificationController {
   })
   getWithId(
     @Param('id') id: string,
-    @UserToken() token: AuthTokenPayload,
+    @UserToken() token: AuthTokenPayloadDTO,
   ): Observable<MessageNotificationDTO> {
     return from(this.notificationService.getWithID(token, id)).pipe(
       map(messageNotificationMapper),
@@ -110,7 +110,7 @@ export class NotificationController {
     description: 'The new notification',
   })
   updateWithId(
-    @UserToken() token: AuthTokenPayload,
+    @UserToken() token: AuthTokenPayloadDTO,
     @Param('id') id: string,
     @Body() notf: UpdateMessageNotificationDTO,
   ): Observable<MessageNotificationDTO> {
@@ -126,7 +126,7 @@ export class NotificationController {
   })
   removeWithId(
     @Param('id') id: string,
-    @UserToken() token: AuthTokenPayload,
+    @UserToken() token: AuthTokenPayloadDTO,
   ): Observable<DeleteMessageNotificationDTO> {
     return from(this.notificationService.remove(token, id));
   }

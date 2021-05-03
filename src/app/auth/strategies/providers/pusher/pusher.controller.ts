@@ -3,7 +3,7 @@ import Pusher from 'pusher';
 import { JwtGuard } from 'src/app';
 import { AuthedUser, AuthPrefixes, UserToken } from 'src/common';
 import { InjectionTokens } from 'src/common/injection.tokens';
-import { AuthTokenPayload, pusherPrivatePrefix } from 'src/models';
+import { AuthTokenPayloadDTO, pusherPrivatePrefix } from 'src/models';
 import {
   BadRequestException,
   Body,
@@ -50,7 +50,7 @@ export class PusherController {
   })
   async pusherAuth(
     @Body() body: PusherAuthBody,
-    @UserToken() token: AuthTokenPayload,
+    @UserToken() token: AuthTokenPayloadDTO,
   ): Promise<PusherResponse> {
     if (!body.channel_name.startsWith(pusherPrivatePrefix)) {
       throw new BadRequestException('Invalid channel name');

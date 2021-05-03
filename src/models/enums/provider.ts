@@ -9,6 +9,7 @@ export enum AuthProviders {
 /** Extra types that are local and do not have refresh services */
 enum ExtraAuthProviders {
   Local = 'local',
+  ApiKey = 'apikey',
 }
 
 /** Combination of all names */

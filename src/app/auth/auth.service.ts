@@ -2,10 +2,10 @@ import { compare } from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { ApiConfigService } from 'src/config/configuration';
 import {
-  AuthTokenPayload,
+  AuthTokenPayloadDTO,
   IUser,
   Provider,
-  RefreshTokenPayload,
+  RefreshTokenPayloadDTO,
   Tokens,
   User,
 } from 'src/models';
@@ -109,7 +109,7 @@ export class AuthService {
    * Verify the claims of the user and check if the refreshtoken is not revoked. (Also remove all tokens that were revoked)
    * @param payload Refresh token payload
    */
-  async verifyRefreshToken(payload: RefreshTokenPayload): Promise<User> {
+  async verifyRefreshToken(payload: RefreshTokenPayloadDTO): Promise<User> {
     const user = await this.verifyPermissionClaims(payload);
     user.tokens = user.tokens.filter(
       (x) => !x.revoked && x.expires > Date.now(),
@@ -125,7 +125,7 @@ export class AuthService {
     return user;
   }
 
-  /** generate two tokens for a user */
+  /** Generate access and refresh tokens for a user */
   async generateTokens(user: User): Promise<Tokens> {
     return {
       access: await this.createAccessToken(user),
@@ -140,7 +140,6 @@ export class AuthService {
   private createRefreshToken(user: User): Promise<string> {
     if (!user) return null;
     const { id, role } = user;
-    //TODO: Is 20 enough? Maybe saltrounds + 10?
     const token = randomBytes(20).toString('hex');
 
     user.tokens.push({
@@ -150,7 +149,7 @@ export class AuthService {
     });
     user.save();
 
-    const payload: RefreshTokenPayload = {
+    const payload: RefreshTokenPayloadDTO = {
       sub: id,
       rol: role,
       jti: token,
@@ -168,7 +167,7 @@ export class AuthService {
   createAccessToken(user: IUser): Promise<string> {
     if (!user) return null;
     const { id, role } = user;
-    const payload: AuthTokenPayload = {
+    const payload: AuthTokenPayloadDTO = {
       sub: id,
       rol: role,
     };
@@ -179,10 +178,10 @@ export class AuthService {
 
   /**
    * Check if the payload of the token provided matches with the database records
-   * @param {AuthTokenPayload} payload The payload of the token provided by the user
+   * @param {AuthTokenPayloadDTO} payload The payload of the token provided by the user
    */
   private async verifyPermissionClaims(
-    payload: RefreshTokenPayload,
+    payload: RefreshTokenPayloadDTO,
   ): Promise<User> {
     try {
       if (!payload?.sub) return null;

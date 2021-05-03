@@ -1,8 +1,10 @@
 import axios, { AxiosInstance } from 'axios';
 import { Request, Response } from 'express';
+import { ExtractJwt } from 'passport-jwt';
 import { of } from 'rxjs';
+import { ApiConfigService } from 'src/config/configuration';
 import { HttpStatus, NotFoundException } from '@nestjs/common';
-import { AuthTokenPayload } from '../models';
+import { AuthTokenPayloadDTO } from '../models';
 
 /**
  * Extract possible values of an enumeration as a array of strings
@@ -51,10 +53,23 @@ export function checkUndefined(x) {
  * @param req request
  */
 export function extractUid(req: Request): string {
-  return (req?.user as AuthTokenPayload)?.sub;
+  return (req?.user as AuthTokenPayloadDTO)?.sub;
 }
 
 /**
  * Custom axios instance, so all settings can be applied in one place
  */
 export const axiosInst: AxiosInstance = axios.create({});
+
+/** Extract tokens from request */
+export function extractToken(
+  request: Request,
+  configService: ApiConfigService,
+  token: 'access' | 'refresh',
+): string {
+  return (
+    ExtractJwt.fromUrlQueryParameter('auth')(request) ||
+    ExtractJwt.fromAuthHeaderAsBearerToken()(request) ||
+    request.cookies[configService.cookieNames[token]]
+  );
+}

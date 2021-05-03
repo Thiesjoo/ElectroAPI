@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 import { AuthedUser, UserToken } from 'src/common';
 import {
-  AuthTokenPayload,
+  AuthTokenPayloadDTO,
   ListenerType,
   messageNotificationMapper,
   Provider,
@@ -61,7 +61,7 @@ export class NotificationGateway {
   @SubscribeMessage(Rout.AuthSend)
   async authSend(
     @ConnectedSocket() client: Socket,
-    @UserToken() token: AuthTokenPayload,
+    @UserToken() token: AuthTokenPayloadDTO,
     @MessageBody()
     ...[data]: Parameters<Requ[Rout.AuthSend]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.AuthSend]>> {
@@ -118,7 +118,7 @@ export class NotificationGateway {
   @SubscribeMessage(Rout.AuthReceive)
   async authReceive(
     @ConnectedSocket() client: Socket,
-    @UserToken() token: AuthTokenPayload,
+    @UserToken() token: AuthTokenPayloadDTO,
     @MessageBody()
     ...[data]: Parameters<Requ[Rout.AuthReceive]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.AuthReceive]>> {
@@ -161,7 +161,7 @@ export class NotificationGateway {
   @SubscribeMessage(Rout.Ingest)
   async ingestData(
     @ConnectedSocket() client: Socket,
-    @UserToken() token: AuthTokenPayload,
+    @UserToken() token: AuthTokenPayloadDTO,
     @MessageBody()
     ...[data]: Parameters<Requ[Rout.Ingest]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.Ingest]>> {
@@ -185,7 +185,7 @@ export class NotificationGateway {
   @SubscribeMessage(Rout.GetSample)
   async getData(
     @ConnectedSocket() client: Socket,
-    @UserToken() token: AuthTokenPayload,
+    @UserToken() token: AuthTokenPayloadDTO,
     @MessageBody()
     ...[data]: Parameters<Requ[Rout.GetSample]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.GetSample]>> {

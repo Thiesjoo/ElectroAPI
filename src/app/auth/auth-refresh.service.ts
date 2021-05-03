@@ -3,9 +3,9 @@ import { ApiConfigService } from 'src/config/configuration';
 import { AuthProviders, Provider } from 'src/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { DiscordUser } from './';
-import discordMapper from './strategies/discord/discord.mapper';
-import twitchMapper from './strategies/twitch/twitch.mapper';
-import { TwitchUser } from './strategies/twitch/twitch.types';
+import discordMapper from './strategies/providers/discord/discord.mapper';
+import twitchMapper from './strategies/providers/twitch/twitch.mapper';
+import { TwitchUser } from './strategies/providers/twitch/twitch.types';
 
 type UserTypes = {
   [AuthProviders.Discord]: DiscordUser;

@@ -1,7 +1,7 @@
 import { FilterQuery } from 'mongoose';
 import { InjectionTokens } from 'src/common/injection.tokens';
 import {
-  AuthTokenPayload,
+  AuthTokenPayloadDTO,
   DeleteMessageNotificationDTO,
   IMessageNotification,
   MessageNotification,
@@ -37,7 +37,7 @@ export class NotificationService {
    * @param notf Notification to add
    */
   async add(
-    token: AuthTokenPayload,
+    token: AuthTokenPayloadDTO,
     notf: IMessageNotification,
   ): Promise<IMessageNotification> {
     const notification = await this.notfModel.create({
@@ -55,7 +55,7 @@ export class NotificationService {
   }
 
   async update(
-    token: AuthTokenPayload,
+    token: AuthTokenPayloadDTO,
     id: string,
     updated: UpdateMessageNotificationDTO,
   ): Promise<IMessageNotification> {
@@ -76,7 +76,7 @@ export class NotificationService {
 
   /** Remove notification from DB */
   async remove(
-    token: AuthTokenPayload,
+    token: AuthTokenPayloadDTO,
     id: string,
   ): Promise<DeleteMessageNotificationDTO> {
     const notf = await this.notfModel.deleteOne({ user: token.sub, _id: id });
@@ -93,13 +93,13 @@ export class NotificationService {
   }
 
   /** Get all notifications from DB. (Not PUBLIC) */
-  getAll(token: AuthTokenPayload) {
+  getAll(token: AuthTokenPayloadDTO) {
     return this.notfModel.find({ user: token.sub });
   }
 
   /** Get specific notification from DB */
   async getWithID(
-    token: AuthTokenPayload,
+    token: AuthTokenPayloadDTO,
     id: string,
   ): Promise<IMessageNotification> {
     return this.notfModel.findOne({ _id: id, user: token.sub }).exec();
@@ -111,7 +111,7 @@ export class NotificationService {
    * @param options Options for the query
    */
   getPaginated(
-    token: AuthTokenPayload,
+    token: AuthTokenPayloadDTO,
     options: PaginatedRequestDTO,
   ): Promise<PaginateResult<IMessageNotification>> {
     const query: FilterQuery<MessageNotification> = {};

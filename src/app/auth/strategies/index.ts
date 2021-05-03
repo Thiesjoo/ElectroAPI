@@ -1,4 +1,3 @@
-export * from './discord';
+export * from './providers';
 export * from './local';
 export * from './localRefresh';
-export * from './pusher';

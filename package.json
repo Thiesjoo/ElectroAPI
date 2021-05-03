@@ -50,6 +50,7 @@
     "ms": "^2.1.3",
     "passport": "^0.4.1",
     "passport-discord": "^0.1.4",
+    "passport-http-bearer": "^1.0.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pusher": "^5.0.0",
