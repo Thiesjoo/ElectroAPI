@@ -4,7 +4,7 @@ import { ApiConfigService } from 'src/config/configuration';
 import {
   AuthTokenPayloadDTO,
   IUser,
-  Provider,
+  ProviderDTO,
   RefreshTokenPayloadDTO,
   Tokens,
   User,
@@ -54,7 +54,7 @@ export class AuthService {
    * @param userUid User Uid
    */
   async validateProvider(
-    providerData: Provider,
+    providerData: ProviderDTO,
     userUid: string,
   ): Promise<void> {
     const user = await this.authUsersService.findUserByUid(userUid);
@@ -93,8 +93,8 @@ export class AuthService {
    */
   async refreshProvider(
     userUid: string,
-    provider: Provider,
-  ): Promise<Provider> {
+    provider: ProviderDTO,
+  ): Promise<ProviderDTO> {
     const result = await this.refreshService.refreshTokens(provider);
     if (!result) {
       throw new InternalServerErrorException(

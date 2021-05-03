@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 import { enumValues } from 'src/common';
-import { AuthRole, IUser, Provider, RefreshToken } from 'src/models';
+import { AuthRole, IUser, ProviderDTO, RefreshToken } from 'src/models';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema()
@@ -18,8 +18,8 @@ export class User extends Document implements IUser {
   @Prop({ default: false })
   emailVerified: boolean;
 
-  @Prop({ required: true, type: Array<Provider>() })
-  providers: Provider[];
+  @Prop({ required: true, type: Array<ProviderDTO>() })
+  providers: ProviderDTO[];
   @Prop({ required: true, enum: enumValues(AuthRole) })
   role: AuthRole;
   @Prop({ type: Array<RefreshToken>() })

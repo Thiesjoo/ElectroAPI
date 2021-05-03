@@ -49,6 +49,7 @@ export class JwtGuard implements CanActivate {
           const client: Socket = context.switchToWs().getClient<Socket>();
 
           let wsToken = client.handshake?.auth?.token as string;
+          console.log(client.handshake, wsToken);
           // Extract token from the cookies
           if (!wsToken) {
             const params = client.handshake?.headers?.cookie

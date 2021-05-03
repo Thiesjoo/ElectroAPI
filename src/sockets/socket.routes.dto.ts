@@ -1,6 +1,7 @@
-import { MessageNotificationDTO, Provider } from 'src/models';
+import { MessageNotificationDTO, ProviderDTO } from 'src/models';
 import { CreateMessageNotificationDTO } from 'src/models/dto';
 import { IngestClientDTO, NotificationAuthDTO } from './';
+import { NotificationEventsDTO } from './pusher.routes.dto';
 
 /** The routes available to a websocket client */
 export enum NotificationSocketRoutes {
@@ -14,11 +15,13 @@ export enum NotificationSocketRoutes {
 //TODO: Add typing for swagger
 
 /** Map of socket routes and their responses */
-export class NotificationSocketRequestsDTO {
+export class NotificationSocketEventsDTO extends NotificationEventsDTO {
   /**
    * Authenticate to websocket api for sending data
    */
-  [NotificationSocketRoutes.AuthSend]: (data: NotificationAuthDTO) => Provider;
+  [NotificationSocketRoutes.AuthSend]: (
+    data: NotificationAuthDTO,
+  ) => ProviderDTO;
   /**
    * Authenticate to receive data
    */
@@ -28,10 +31,7 @@ export class NotificationSocketRequestsDTO {
   [NotificationSocketRoutes.Ingest]: (
     notf: CreateMessageNotificationDTO,
   ) => MessageNotificationDTO;
-}
 
-export class NotificationSocketEventsDTO {
-  /** Route used for any exceptions */
   exception: {
     response: {
       statusCode: number;

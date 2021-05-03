@@ -5,7 +5,7 @@ import * as yaml from 'js-yaml';
 import * as loadPkg from 'load-pkg';
 import * as ms from 'ms';
 import { isAbsolute as pathAbsolute, join as pathJoin } from 'path';
-import { AuthProviders } from 'src/models';
+import { AuthProviders, LiveServiceTypes } from 'src/models';
 import { Injectable } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ConfigService } from '@nestjs/config';
@@ -64,6 +64,12 @@ export class ApiConfigService {
   /** Boolean if app is in production */
   get production(): boolean {
     return this.configService.get('NODE_ENV') === 'production';
+  }
+
+  get liveGateway(): LiveServiceTypes {
+    return process.env.VERCEL
+      ? LiveServiceTypes.Pusher
+      : LiveServiceTypes.Sockets;
   }
 
   get pusherConfig(): {

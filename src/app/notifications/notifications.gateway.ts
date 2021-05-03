@@ -1,17 +1,16 @@
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { AuthedUser, UserToken } from 'src/common';
 import {
   AuthTokenPayloadDTO,
   ListenerType,
   messageNotificationMapper,
-  Provider,
+  ProviderDTO,
   ReturnTypeOfMethod,
   ServerEventEmitter,
 } from 'src/models';
 import {
   IngestClientDTO,
-  NotificationSocketEventsDTO as Eve,
-  NotificationSocketRequestsDTO as Requ,
+  NotificationSocketEventsDTO as Requ,
   NotificationSocketRoutes as Rout,
 } from 'src/sockets';
 import {
@@ -28,9 +27,11 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
 import { AuthService, AuthUserService, JwtGuard } from '../auth';
+import { LiveService } from '../live/live.service';
 import { NotificationService } from '../notifications/notifications.service';
 
 /** Service to handle WebSockets for notifications. */
@@ -38,9 +39,11 @@ import { NotificationService } from '../notifications/notifications.service';
 @WebSocketGateway()
 @UseGuards(JwtGuard)
 export class NotificationGateway {
+  @WebSocketServer()
+  server: Server;
   /** Map of every client, mapped to the data about client */
   private sendClients: Record<string, IngestClientDTO> = {};
-  private receiveClients: Record<string, ServerEventEmitter<Socket, Eve>> = {};
+  private receiveClients: Record<string, ServerEventEmitter<Socket, Requ>> = {};
   /** Logger of this service */
   private logger: Logger = new Logger(NotificationGateway.name);
 
@@ -49,7 +52,11 @@ export class NotificationGateway {
     private authUserService: AuthUserService,
     private authService: AuthService,
     private notificationService: NotificationService,
-  ) {}
+
+    private liveService: LiveService,
+  ) {
+    liveService.init(this.broadcast);
+  }
 
   /**
    * Check if client can authenticate and act on that
@@ -94,7 +101,7 @@ export class NotificationGateway {
     }
 
     try {
-      const updatedProvider: Provider = await this.authService.refreshProvider(
+      const updatedProvider: ProviderDTO = await this.authService.refreshProvider(
         user._id,
         foundProvider,
       );
@@ -195,10 +202,10 @@ export class NotificationGateway {
     );
   }
 
-  broadcast<T extends keyof Eve>(
+  broadcast<T extends keyof Requ>(
     user: string,
     channel: T,
-    message: ListenerType<Eve[T]>,
+    message: ListenerType<Requ[T]>,
   ) {
     if (!this.receiveClients[user]) {
       throw new WsException(

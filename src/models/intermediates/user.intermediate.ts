@@ -1,4 +1,4 @@
-import { AuthRole, Provider, RefreshToken } from '../';
+import { AuthRole, ProviderDTO, RefreshToken } from '../';
 
 /** Intermediate schema of User */
 export interface IUser {
@@ -17,7 +17,7 @@ export interface IUser {
   /** Role of user */
   role?: AuthRole;
   /** Provider information about User */
-  providers?: Provider[];
+  providers?: ProviderDTO[];
   /** Refreshtokens of user */
   tokens?: RefreshToken[];
 }

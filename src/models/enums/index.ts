@@ -7,8 +7,8 @@ import { AuthProviders } from './provider';
 export * from './authroles';
 export * from './provider';
 export * from './loglevels';
-export * from '../dto/token-payload.dto';
 export * from './query';
+export * from './livetypes';
 
 export class MasterEnums {
   @ApiProperty({ enumName: 'AuthRole', enum: AuthRole })

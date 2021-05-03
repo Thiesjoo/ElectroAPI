@@ -1,5 +1,5 @@
+import { AuthTokenPayloadDTO } from 'src/models';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { AuthTokenPayloadDTO } from '../../models/enums';
 
 /** Get the user AuthTokenPayload from request */
 export const UserToken = createParamDecorator(

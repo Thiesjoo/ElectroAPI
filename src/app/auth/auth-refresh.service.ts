@@ -1,6 +1,6 @@
 import { axiosInst } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
-import { AuthProviders, Provider } from 'src/models';
+import { AuthProviders, ProviderDTO } from 'src/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { DiscordUser } from './';
 import discordMapper from './strategies/providers/discord/discord.mapper';
@@ -24,7 +24,7 @@ const oauthURLMap: {
       refreshToken: string,
       profile: UserTypes[key],
       scopes: string[],
-    ) => Provider;
+    ) => ProviderDTO;
   };
 } = {
   [AuthProviders.Discord]: {
@@ -53,7 +53,7 @@ export class Oauth2RefreshService {
    * Refresh the tokens of a specific user of a specific provider
    * @param provider The provider
    */
-  async refreshTokens(provider: Provider): Promise<Provider> {
+  async refreshTokens(provider: ProviderDTO): Promise<ProviderDTO> {
     const clientName = provider.providerName as AuthProviders;
     const client = oauthURLMap[clientName];
 

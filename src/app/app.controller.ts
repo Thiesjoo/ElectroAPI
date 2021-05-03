@@ -4,7 +4,7 @@ import {
   AuthTokenPayloadDTO,
   MasterEnums,
   PaginatedDTO,
-  Provider,
+  ProviderDTO,
   RefreshToken,
   RefreshTokenPayloadDTO,
 } from 'src/models';
@@ -19,7 +19,7 @@ import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';
   // General paginated request
   PaginatedDTO,
   //Is not mentioned in a controller, but used in websockets and pushser
-  Provider,
+  ProviderDTO,
   // Socket stuff
   ...allRoutes,
 

@@ -9,7 +9,7 @@ import { enumKeys } from './common';
 import filters from './common/errors';
 import interceptors from './common/interceptors';
 import { ApiConfigService, corsSettings } from './config/configuration';
-import { IoAdapter } from './config/gateway.config';
+import { IoAdapter } from './config/custom-gateway';
 import { logLevels } from './models/enums/loglevels';
 
 /** Log levels in order */
