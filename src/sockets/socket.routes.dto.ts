@@ -10,6 +10,7 @@ export enum NotificationSocketRoutes {
   Identity = 'identity',
   GetSample = 'getSampleData',
   Ingest = 'ingest',
+  Test = 'test',
 }
 
 //TODO: Add typing for swagger
@@ -31,6 +32,7 @@ export class NotificationSocketEventsDTO extends NotificationEventsDTO {
   [NotificationSocketRoutes.Ingest]: (
     notf: CreateMessageNotificationDTO,
   ) => MessageNotificationDTO;
+  [NotificationSocketRoutes.Test]: () => string;
 
   exception: {
     response: {

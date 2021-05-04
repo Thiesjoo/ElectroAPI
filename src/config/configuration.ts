@@ -242,7 +242,8 @@ export const corsSettings: CorsOptions = {
     if (
       !org || // This is for non CORS requests
       (org.includes('vercel.app') && org.includes('https://electro-dash')) || // This is semi safe, because the frontend will *always* be here
-      org.includes('http://localhost:') // Localhost is safe because the user owns it
+      ((org.includes('http://localhost:') || org.includes('hoppscotch.io')) &&
+        process.env.NODE_ENV !== 'production') // Localhost is safe because the user owns it
     ) {
       cb(null, org);
     } else {

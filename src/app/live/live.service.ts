@@ -8,7 +8,11 @@ import {
   MyPusher,
   pusherPrivatePrefix,
 } from 'src/models';
-import { NotificationRoutes, NotificationSocketEventsDTO } from 'src/sockets';
+import {
+  NotificationRoutes,
+  NotificationSocketEventsDTO,
+  NotificationSocketRoutes,
+} from 'src/sockets';
 import { Inject } from '@nestjs/common';
 
 type BroadcastArgs = <T extends keyof NotificationSocketEventsDTO>(
@@ -39,5 +43,15 @@ export class LiveService {
     } else if (this.configService.liveGateway === LiveServiceTypes.Sockets) {
       //Testing
     }
+  }
+
+  test(userId: string) {
+    console.log(this.map);
+    this.map.forEach((x) => {
+      x(userId, NotificationSocketRoutes.Test, {
+        this: 'is a object',
+      });
+    });
+    return 'yateet';
   }
 }

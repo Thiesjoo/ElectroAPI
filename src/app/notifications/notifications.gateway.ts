@@ -55,7 +55,17 @@ export class NotificationGateway {
 
     private liveService: LiveService,
   ) {
-    liveService.init(this.broadcast);
+    liveService.init(this.broadcast.bind(this));
+  }
+
+  @SubscribeMessage('test')
+  @AuthedUser()
+  async testing(
+    @ConnectedSocket() socket: Socket,
+    @UserToken() token: AuthTokenPayloadDTO,
+  ) {
+    console.log(socket, token);
+    return this.liveService.test(token?.sub);
   }
 
   /**
@@ -129,6 +139,7 @@ export class NotificationGateway {
     @MessageBody()
     ...[data]: Parameters<Requ[Rout.AuthReceive]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.AuthReceive]>> {
+    console.log(data);
     if (token.sub !== data) {
       throw new WsException(
         new UnauthorizedException('JWT And user ID do not match'),

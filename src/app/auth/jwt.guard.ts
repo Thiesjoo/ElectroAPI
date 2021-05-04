@@ -52,6 +52,9 @@ export class JwtGuard implements CanActivate {
           console.log(client.handshake, wsToken);
           // Extract token from the cookies
           if (!wsToken) {
+            wsToken = client.handshake?.query?.token as string;
+          }
+          if (!wsToken) {
             const params = client.handshake?.headers?.cookie
               ?.split(';')
               ?.reduce((res, c) => {
