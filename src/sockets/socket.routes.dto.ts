@@ -1,13 +1,13 @@
 import { MessageNotificationDTO, ProviderDTO } from 'src/models';
 import { CreateMessageNotificationDTO } from 'src/models/dto';
-import { IngestClientDTO, NotificationAuthDTO } from './';
+import { IngestClientDTO, NotificationAuthSendDTO } from './';
 import { NotificationEventsDTO } from './pusher.routes.dto';
 
 /** The routes available to a websocket client */
 export enum NotificationSocketRoutes {
   AuthSend = 'authenticateSending',
-  AuthReceive = 'autenticateReceiving',
-  Identity = 'identity',
+  AuthReceive = 'authenticateReceiving',
+  SendIdentity = 'identity',
   GetSample = 'getSampleData',
   Ingest = 'ingest',
   Test = 'test',
@@ -21,13 +21,13 @@ export class NotificationSocketEventsDTO extends NotificationEventsDTO {
    * Authenticate to websocket api for sending data
    */
   [NotificationSocketRoutes.AuthSend]: (
-    data: NotificationAuthDTO,
+    data: NotificationAuthSendDTO,
   ) => ProviderDTO;
   /**
    * Authenticate to receive data
    */
   [NotificationSocketRoutes.AuthReceive]: (userUid: string) => boolean;
-  [NotificationSocketRoutes.Identity]: () => IngestClientDTO;
+  [NotificationSocketRoutes.SendIdentity]: () => IngestClientDTO;
   [NotificationSocketRoutes.GetSample]: (id: string) => MessageNotificationDTO;
   [NotificationSocketRoutes.Ingest]: (
     notf: CreateMessageNotificationDTO,

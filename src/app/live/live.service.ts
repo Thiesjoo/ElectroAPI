@@ -46,7 +46,6 @@ export class LiveService {
   }
 
   test(userId: string) {
-    console.log(this.map);
     this.map.forEach((x) => {
       x(userId, NotificationSocketRoutes.Test, {
         this: 'is a object',

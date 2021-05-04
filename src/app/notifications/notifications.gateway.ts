@@ -14,6 +14,7 @@ import {
   NotificationSocketRoutes as Rout,
 } from 'src/sockets';
 import {
+  applyDecorators,
   BadRequestException,
   Logger,
   NotFoundException,
@@ -43,7 +44,10 @@ export class NotificationGateway {
   server: Server;
   /** Map of every client, mapped to the data about client */
   private sendClients: Record<string, IngestClientDTO> = {};
-  private receiveClients: Record<string, ServerEventEmitter<Socket, Requ>> = {};
+  private receiveClients: Record<
+    string,
+    ServerEventEmitter<Socket, Requ>[]
+  > = {};
   /** Logger of this service */
   private logger: Logger = new Logger(NotificationGateway.name);
 
@@ -56,15 +60,15 @@ export class NotificationGateway {
     private liveService: LiveService,
   ) {
     liveService.init(this.broadcast.bind(this));
+    // console.log(this.server);
   }
 
-  @SubscribeMessage('test')
-  @AuthedUser()
+  @SecuritySockets(Rout.Test)
   async testing(
     @ConnectedSocket() socket: Socket,
     @UserToken() token: AuthTokenPayloadDTO,
   ) {
-    console.log(socket, token);
+    // console.log(socket, token);
     return this.liveService.test(token?.sub);
   }
 
@@ -152,22 +156,21 @@ export class NotificationGateway {
       throw new WsException(new NotFoundException('User was not found'));
     }
 
-    this.receiveClients[user._id] = client;
+    this.receiveClients[user._id] ??= [];
+    this.receiveClients[user._id].push(client);
 
     return true;
   }
 
   /** Get the identity of a authed socket */
-  @AuthedUser()
-  @SubscribeMessage(Rout.Identity)
+  @SecuritySockets(Rout.SendIdentity, 'send')
   async identity(
     @ConnectedSocket() client: Socket,
     @MessageBody()
-    ...[]: Parameters<Requ[Rout.Identity]>
-  ): Promise<ReturnTypeOfMethod<Requ[Rout.Identity]>> {
-    if (!this.sendClients[client.id]) {
-      throw new WsException(new UnauthorizedException());
-    }
+    ...[]: Parameters<Requ[Rout.SendIdentity]>
+  ): Promise<ReturnTypeOfMethod<Requ[Rout.SendIdentity]>> {
+    // this.checkSendPermissions(client, 'test');
+    console.log('wooot');
 
     return this.sendClients[client.id];
   }
@@ -175,8 +178,7 @@ export class NotificationGateway {
   /**
    * Simple ingest function
    */
-  @AuthedUser()
-  @SubscribeMessage(Rout.Ingest)
+  @SecuritySockets(Rout.Ingest, 'send')
   async ingestData(
     @ConnectedSocket() client: Socket,
     @UserToken() token: AuthTokenPayloadDTO,
@@ -184,9 +186,6 @@ export class NotificationGateway {
     ...[data]: Parameters<Requ[Rout.Ingest]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.Ingest]>> {
     //FIXME: Move this to a decorator?
-    if (!this.sendClients[client.id]) {
-      throw new WsException(new UnauthorizedException());
-    }
 
     this.logger.debug(`Ingest: received data`);
 
@@ -213,16 +212,50 @@ export class NotificationGateway {
     );
   }
 
+  /** Broadcast a message to a specific user (Over multiple sockets). Also filter the disconnected sockets */
   broadcast<T extends keyof Requ>(
     user: string,
     channel: T,
     message: ListenerType<Requ[T]>,
   ) {
-    if (!this.receiveClients[user]) {
-      throw new WsException(
-        new UnauthorizedException('User has not authenticated with our API'),
-      );
-    }
-    this.receiveClients[user].emit(channel, message);
+    this.receiveClients[user] = (this.receiveClients[user] || []).filter(
+      (x) => !x.disconnected,
+    );
+    this.receiveClients[user].forEach((x) => {
+      x.emit(channel, message);
+    });
   }
+}
+
+/**
+ * Decorator to check if the user has authenticated with the websocket api (Receiving and sending)
+ */
+function SocketPermissions(route: string, send: 'send' | 'receive') {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    const originalMethod = descriptor.value;
+
+    descriptor.value = function () {
+      const firstArg = arguments[0] as Socket; // First arg SHOULD always be socket;
+      if (!this[send + 'Clients'][firstArg.id]) {
+        // console.log('hmmm', this[send + 'Clients'], firstArg.id);
+        throw new WsException(new UnauthorizedException(route));
+      }
+      return originalMethod.apply(this, arguments);
+    };
+  };
+}
+
+function SecuritySockets(
+  route: string,
+  type: 'send' | 'receive' | 'none' = 'none',
+) {
+  const defaultArr = [SubscribeMessage(route), AuthedUser()];
+
+  if (type !== 'none') defaultArr.unshift(SocketPermissions(route, type)); // This one has to be unshifted, because it changes the function
+
+  return applyDecorators(...defaultArr);
 }
