@@ -16,8 +16,6 @@ import { MessageAuthorDTO, messageAuthorMapper } from './message-author.dto';
 export class MessageNotificationDTO {
   /** The unique ID of the notification */
   _id: string;
-  /** The id of the user */
-  user: string;
   /** The image */
   @IsString()
   image: string;
@@ -57,7 +55,7 @@ export class MessageNotificationDTO {
 /** Standard DTO, but without _id and user */
 export class CreateMessageNotificationDTO extends OmitType(
   MessageNotificationDTO,
-  ['_id', 'user'],
+  ['_id'],
 ) {}
 
 /** Create DTO, but every key is optional */
@@ -78,7 +76,6 @@ export function messageNotificationMapper(
   return {
     author: messageAuthorMapper(notf?.author),
     _id: notf?._id,
-    user: notf?.user,
     image: notf?.image,
     time: notf?.time,
     title: notf?.title,

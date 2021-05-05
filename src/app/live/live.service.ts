@@ -30,21 +30,33 @@ export class LiveService {
     this.socketBroadcasts.push(func);
   }
 
-  updateNotification(userId: string, notification: IMessageNotification) {
+  patchNotification(
+    type: 'update' | 'add',
+    userId: string,
+    notification: IMessageNotification,
+  ) {
+    const mappedNotf = messageNotificationMapper(notification);
+    const route =
+      type === 'update' ? NotificationRoutes.Update : NotificationRoutes.Add;
+
+    if (this.configService.liveGateway === LiveServiceTypes.Pusher) {
+      this.pusher.trigger(`${pusherPrivatePrefix}${userId}`, route, mappedNotf);
+    } else if (this.configService.liveGateway === LiveServiceTypes.Sockets) {
+      this.socketBroadcasts.forEach((x) => x(userId, route, mappedNotf));
+    }
+  }
+
+  removeNotification(userId: string, id: string) {
+    const delt = { _id: id };
     if (this.configService.liveGateway === LiveServiceTypes.Pusher) {
       this.pusher.trigger(
         `${pusherPrivatePrefix}${userId}`,
-        NotificationRoutes.Update,
-        messageNotificationMapper(notification),
+        NotificationRoutes.Remove,
+        delt,
       );
     } else if (this.configService.liveGateway === LiveServiceTypes.Sockets) {
-      //Testing
       this.socketBroadcasts.forEach((x) =>
-        x(
-          userId,
-          NotificationRoutes.Update,
-          messageNotificationMapper(notification),
-        ),
+        x(userId, NotificationRoutes.Remove, delt),
       );
     }
   }

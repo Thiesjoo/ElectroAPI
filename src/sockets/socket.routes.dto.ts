@@ -30,6 +30,7 @@ export class NotificationSocketEventsDTO {
   /** Return the provider type of the current socket */
   [NotificationSocketRoutes.SendIdentity]: () => IngestClientDTO;
   [NotificationSocketRoutes.GetSample]: (id: string) => MessageNotificationDTO;
+
   [NotificationSocketRoutes.Ingest]: (
     notf: CreateMessageNotificationDTO,
   ) => MessageNotificationDTO;

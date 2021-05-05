@@ -1,23 +1,19 @@
 import { FilterQuery } from 'mongoose';
-import { InjectionTokens } from 'src/common/injection.tokens';
 import {
   AuthTokenPayloadDTO,
   DeleteMessageNotificationDTO,
   IMessageNotification,
   MessageNotification,
-  messageNotificationMapper,
-  MyPusher,
   PaginatedRequestDTO,
   PaginateModel,
   PaginateOptions,
   PaginateResult,
-  pusherPrivatePrefix,
   UpdateMessageNotificationDTO,
 } from 'src/models';
 import { QueryPlaces } from 'src/models/enums/query';
-import { NotificationRoutes } from 'src/sockets';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { LiveService } from '../live/live.service';
 
 /** Service for notification controller */
 @Injectable()
@@ -26,7 +22,7 @@ export class NotificationService {
   constructor(
     @InjectModel(MessageNotification.name)
     private notfModel: PaginateModel<MessageNotification>,
-    @Inject(InjectionTokens.Pusher) private pusher: MyPusher,
+    private liveService: LiveService,
   ) {}
 
   //Add, dismiss? (Do we want history), get (Paginated. By ID.  All is only for dev?)
@@ -45,11 +41,7 @@ export class NotificationService {
       user: token.sub,
     });
 
-    this.pusher.trigger(
-      `${pusherPrivatePrefix}${token.sub}`,
-      NotificationRoutes.Add,
-      messageNotificationMapper(notification),
-    );
+    this.liveService.patchNotification('add', token.sub, notification);
 
     return notification;
   }
@@ -64,12 +56,7 @@ export class NotificationService {
       { $set: { ...updated, user: token.sub } },
       { useFindAndModify: false, new: true },
     );
-
-    this.pusher.trigger(
-      `${pusherPrivatePrefix}${token.sub}`,
-      NotificationRoutes.Update,
-      messageNotificationMapper(notification),
-    );
+    this.liveService.patchNotification('update', token.sub, notification);
 
     return notification;
   }
@@ -83,11 +70,7 @@ export class NotificationService {
     if (notf.deletedCount !== 1)
       throw new BadRequestException("Notification doesn't exist");
 
-    this.pusher.trigger(
-      `${pusherPrivatePrefix}${token.sub}`,
-      NotificationRoutes.Remove,
-      { _id: id },
-    );
+    this.liveService.removeNotification(token.sub, id);
 
     return { _id: id };
   }

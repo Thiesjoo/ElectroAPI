@@ -8,7 +8,7 @@ import {
 
 /**
  * Catch payload too large errors
- * FIXME: This doesn't catch the error, because body parser errors are currently always error 500. Needs update to nestjs@8.0.0
+// FIXME: This doesn't catch the error, because body parser errors are currently always error 500. Needs update to nestjs@8.0.0
  */
 @Catch(PayloadTooLargeException)
 export class PayloadFilter implements ExceptionFilter {

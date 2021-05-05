@@ -1,7 +1,9 @@
 import { Server, Socket } from 'socket.io';
-import { AuthedUser, UserToken } from 'src/common';
+import { AuthedUser, UserToken, WSExpectionFilter } from 'src/common';
+import { ValidationFilter } from 'src/common/errors/validation.error';
 import {
   AuthTokenPayloadDTO,
+  CreateMessageNotificationDTO,
   ListenerType,
   messageNotificationMapper,
   ProviderDTO,
@@ -20,6 +22,7 @@ import {
   Logger,
   NotFoundException,
   UnauthorizedException,
+  UseFilters,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -37,8 +40,9 @@ import { LiveService } from '../live/live.service';
 import { NotificationService } from '../notifications/notifications.service';
 
 /** Service to handle WebSockets for notifications. */
-@UsePipes(new ValidationPipe())
 @WebSocketGateway()
+@UsePipes(new ValidationPipe())
+@UseFilters(new WSExpectionFilter(), new ValidationFilter())
 @UseGuards(JwtGuard)
 export class NotificationGateway {
   @WebSocketServer()
@@ -180,9 +184,6 @@ export class NotificationGateway {
     @MessageBody()
     ...[]: Parameters<Requ[Rout.SendIdentity]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.SendIdentity]>> {
-    // this.checkSendPermissions(client, 'test');
-    console.log('wooot');
-
     return this.sendClients[client.id];
   }
 
@@ -194,7 +195,8 @@ export class NotificationGateway {
     @ConnectedSocket() client: Socket,
     @UserToken() token: AuthTokenPayloadDTO,
     @MessageBody()
-    ...[data]: Parameters<Requ[Rout.Ingest]>
+    data: //TODO: Workaround for this:     ...[data]: Parameters<Requ[Rout.Ingest]>. The issue is that the validationfilter doesn't recognize the type?
+    CreateMessageNotificationDTO,
   ): Promise<ReturnTypeOfMethod<Requ[Rout.Ingest]>> {
     this.logger.debug(`Ingest: received data`);
 
@@ -249,7 +251,6 @@ function SocketPermissions(route: string, send: 'send' | 'receive') {
     descriptor.value = function () {
       const firstArg = arguments[0] as Socket; // First arg SHOULD always be socket;
       if (!this[send + 'Clients'][firstArg.id]) {
-        // console.log('hmmm', this[send + 'Clients'], firstArg.id);
         throw new WsException(new UnauthorizedException(route));
       }
       return originalMethod.apply(this, arguments);
