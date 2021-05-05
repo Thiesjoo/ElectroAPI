@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { ApiConfigService } from 'src/config/configuration';
-import { AuthNames, Tokens } from 'src/models';
+import { AuthProviders, Tokens } from 'src/models';
 import { UserLoginDTO, UserRegisterDTO } from 'src/models/dto/user.login.dto';
 import {
   Body,
@@ -49,7 +49,7 @@ export class LocalController {
 
   /** Setup cookies for users login request */
   @Post('login')
-  @UseGuards(AuthGuard(AuthNames.Local))
+  @UseGuards(AuthGuard(AuthProviders.Local))
   @ApiBody({ type: UserLoginDTO })
   @ApiResponse({
     description:

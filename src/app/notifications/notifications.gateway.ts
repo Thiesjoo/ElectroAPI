@@ -10,6 +10,7 @@ import {
 } from 'src/models';
 import {
   IngestClientDTO,
+  NotificationRoutes,
   NotificationSocketEventsDTO as Requ,
   NotificationSocketRoutes as Rout,
 } from 'src/sockets';
@@ -63,13 +64,14 @@ export class NotificationGateway {
     // console.log(this.server);
   }
 
-  @SecuritySockets(Rout.Test)
+  /** Ping message, also returns pong on 'pong' channel if authenticated */
+  @SecuritySockets(Rout.Ping)
   async testing(
     @ConnectedSocket() socket: Socket,
     @UserToken() token: AuthTokenPayloadDTO,
   ) {
-    // console.log(socket, token);
-    return this.liveService.test(token?.sub);
+    this.liveService.pong(token?.sub);
+    return 'Ping local response';
   }
 
   /**
@@ -78,8 +80,7 @@ export class NotificationGateway {
    * @param token Client processed token
    * @param data Data from request
    */
-  @AuthedUser()
-  @SubscribeMessage(Rout.AuthSend)
+  @SecuritySockets(Rout.AuthSend)
   async authSend(
     @ConnectedSocket() client: Socket,
     @UserToken() token: AuthTokenPayloadDTO,
@@ -95,48 +96,58 @@ export class NotificationGateway {
     this.logger.log('Received AUTH SEND request on socket gateway');
 
     //FIXME: Check if authorized client application (Maybe a toggle to disable all)
-    //FIXME: Verify origin
 
     const user = await this.authUserService.findUserByUid(data.id);
     if (!user) {
       throw new WsException(new NotFoundException('User was not found'));
     }
 
-    const foundProvider = user.providers.find(
-      (x) => x.providerName === data.provider,
-    );
+    if (data.provider === 'local') {
+      // Local is special, because every user has it. It allows anyone with that users token to submit notifications (Just like the REST api)
+      //TODO: check if user allows live updates
 
-    if (!foundProvider) {
-      throw new WsException(
-        new BadRequestException(
-          'Provider not registered on this users account',
-        ),
+      this.sendClients[client.id] = {
+        userUid: data.id,
+        dataProvider: data.provider,
+      };
+
+      return { ok: true };
+    } else {
+      const foundProvider = user.providers.find(
+        (x) => x.providerName === data.provider,
       );
+
+      if (!foundProvider) {
+        throw new WsException(
+          new BadRequestException(
+            'Provider not registered on this users account',
+          ),
+        );
+      }
+
+      try {
+        const updatedProvider: ProviderDTO = await this.authService.refreshProvider(
+          user._id,
+          foundProvider,
+        );
+        this.logger.debug(
+          `Successfully got provider for user ${updatedProvider.username}`,
+        );
+      } catch (e) {
+        this.logger.error(e);
+        return null;
+      }
+
+      this.sendClients[client.id] = {
+        userUid: data.id,
+        dataProvider: data.provider,
+      };
+
+      return foundProvider;
     }
-
-    try {
-      const updatedProvider: ProviderDTO = await this.authService.refreshProvider(
-        user._id,
-        foundProvider,
-      );
-      this.logger.debug(
-        `Successfully got provider for user ${updatedProvider.username}`,
-      );
-    } catch (e) {
-      this.logger.error(e);
-      return null;
-    }
-
-    this.sendClients[client.id] = {
-      userUid: data.id,
-      dataProvider: data.provider,
-    };
-
-    return foundProvider;
   }
 
-  @AuthedUser()
-  @SubscribeMessage(Rout.AuthReceive)
+  @SecuritySockets(Rout.AuthReceive)
   async authReceive(
     @ConnectedSocket() client: Socket,
     @UserToken() token: AuthTokenPayloadDTO,
@@ -185,8 +196,6 @@ export class NotificationGateway {
     @MessageBody()
     ...[data]: Parameters<Requ[Rout.Ingest]>
   ): Promise<ReturnTypeOfMethod<Requ[Rout.Ingest]>> {
-    //FIXME: Move this to a decorator?
-
     this.logger.debug(`Ingest: received data`);
 
     return messageNotificationMapper(
@@ -198,8 +207,7 @@ export class NotificationGateway {
   }
 
   /** Get data. Client doesn't have to be authed with this.client, because notifications can be accessed via API also */
-  @AuthedUser()
-  @SubscribeMessage(Rout.GetSample)
+  @SecuritySockets(Rout.GetSample)
   async getData(
     @ConnectedSocket() client: Socket,
     @UserToken() token: AuthTokenPayloadDTO,
@@ -250,7 +258,7 @@ function SocketPermissions(route: string, send: 'send' | 'receive') {
 }
 
 function SecuritySockets(
-  route: string,
+  route: NotificationRoutes | Rout,
   type: 'send' | 'receive' | 'none' = 'none',
 ) {
   const defaultArr = [SubscribeMessage(route), AuthedUser()];

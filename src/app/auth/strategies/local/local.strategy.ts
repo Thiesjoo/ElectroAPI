@@ -1,6 +1,6 @@
 import { validate } from 'class-validator';
 import { Strategy } from 'passport-local';
-import { AuthNames } from 'src/models';
+import { AuthProviders } from 'src/models';
 import { UserLoginDTO } from 'src/models/dto/user.login.dto';
 import {
   BadRequestException,
@@ -12,7 +12,10 @@ import { AuthService } from '../../auth.service';
 
 /** The local Strategy */
 @Injectable()
-export class LocalStrategy extends PassportStrategy(Strategy, AuthNames.Local) {
+export class LocalStrategy extends PassportStrategy(
+  Strategy,
+  AuthProviders.Local,
+) {
   /** Edit username field */
   constructor(private authService: AuthService) {
     super({ usernameField: 'email' });

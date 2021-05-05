@@ -12,11 +12,13 @@ type UserTypes = {
   [AuthProviders.Twitch]: TwitchUser;
 };
 
+type RefreshAuthProviders = Exclude<AuthProviders, AuthProviders.Local>;
+
 /**
  * The URL's of the oauth refresh routes
  */
 const oauthURLMap: {
-  [key in AuthProviders]: {
+  [key in RefreshAuthProviders]: {
     userURL: string;
     tokenURL: string;
     mapper: (
@@ -54,7 +56,7 @@ export class Oauth2RefreshService {
    * @param provider The provider
    */
   async refreshTokens(provider: ProviderDTO): Promise<ProviderDTO> {
-    const clientName = provider.providerName as AuthProviders;
+    const clientName = provider.providerName as RefreshAuthProviders;
     const client = oauthURLMap[clientName];
 
     const tokens = this.configService.getProvider(provider.providerName);

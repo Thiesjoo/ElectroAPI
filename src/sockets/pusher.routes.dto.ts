@@ -8,6 +8,7 @@ export enum NotificationRoutes {
   Update = 'update',
   Add = 'add',
   Remove = 'remove',
+  Pong = 'pong',
 }
 
 /** Events to subscribe to */
@@ -22,4 +23,6 @@ export class NotificationEventsDTO {
     type: () => DeleteMessageNotificationDTO,
   })
   [NotificationRoutes.Remove]: DeleteMessageNotificationDTO;
+  /** Returns date of sending */
+  [NotificationRoutes.Pong]: number;
 }

@@ -58,6 +58,10 @@ export class AppController {
     description: 'Returns version of the api',
   })
   getVersion() {
-    return { ok: true, version: this.configService.version };
+    return {
+      ok: true,
+      version: this.configService.version,
+      vercel: this.configService.vercel,
+    };
   }
 }

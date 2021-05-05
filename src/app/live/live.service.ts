@@ -2,27 +2,22 @@ import { InjectionTokens } from 'src/common/injection.tokens';
 import { ApiConfigService } from 'src/config/configuration';
 import {
   IMessageNotification,
-  ListenerType,
   LiveServiceTypes,
   messageNotificationMapper,
   MyPusher,
   pusherPrivatePrefix,
 } from 'src/models';
-import {
-  NotificationRoutes,
-  NotificationSocketEventsDTO,
-  NotificationSocketRoutes,
-} from 'src/sockets';
+import { NotificationEventsDTO, NotificationRoutes } from 'src/sockets';
 import { Inject } from '@nestjs/common';
 
-type BroadcastArgs = <T extends keyof NotificationSocketEventsDTO>(
+type BroadcastArgs = <T extends keyof NotificationEventsDTO>(
   user: string,
   channel: T,
-  message: ListenerType<NotificationSocketEventsDTO[T]>,
+  message: NotificationEventsDTO[T],
 ) => void;
 
 export class LiveService {
-  map: BroadcastArgs[] = [];
+  socketBroadcasts: BroadcastArgs[] = [];
 
   constructor(
     @Inject(InjectionTokens.Pusher) private pusher: MyPusher,
@@ -30,7 +25,9 @@ export class LiveService {
   ) {}
 
   init(func: BroadcastArgs) {
-    this.map.push(func);
+    if (this.socketBroadcasts.length > 0)
+      console.error('There are multiple socket services');
+    this.socketBroadcasts.push(func);
   }
 
   updateNotification(userId: string, notification: IMessageNotification) {
@@ -42,15 +39,19 @@ export class LiveService {
       );
     } else if (this.configService.liveGateway === LiveServiceTypes.Sockets) {
       //Testing
+      this.socketBroadcasts.forEach((x) =>
+        x(
+          userId,
+          NotificationRoutes.Update,
+          messageNotificationMapper(notification),
+        ),
+      );
     }
   }
 
-  test(userId: string) {
-    this.map.forEach((x) => {
-      x(userId, NotificationSocketRoutes.Test, {
-        this: 'is a object',
-      });
+  pong(userId: string) {
+    this.socketBroadcasts.forEach((x) => {
+      x(userId, NotificationRoutes.Pong, Date.now());
     });
-    return 'yateet';
   }
 }

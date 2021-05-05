@@ -3,7 +3,7 @@ import { Strategy } from 'passport-discord';
 import { AuthService } from 'src/app/auth/auth.service';
 import { extractUid } from 'src/common';
 import { ApiConfigService } from 'src/config/configuration';
-import { AuthNames, AuthProviders } from 'src/models';
+import { AuthProviders } from 'src/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import discordMapper from './discord.mapper';
@@ -16,7 +16,7 @@ const dcScopes = ['identify', 'connections', 'rpc', 'rpc.notifications.read'];
 @Injectable()
 export class DiscordStrategy extends PassportStrategy(
   Strategy,
-  AuthNames.Discord,
+  AuthProviders.Discord,
 ) {
   /** Logger for this service */
   private logger: Logger = new Logger(DiscordStrategy.name);

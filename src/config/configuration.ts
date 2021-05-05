@@ -61,15 +61,16 @@ export class ApiConfigService {
     return this.configService.get(val);
   }
 
+  get vercel(): boolean {
+    return process.env.VERCEL === '1';
+  }
   /** Boolean if app is in production */
   get production(): boolean {
     return this.configService.get('NODE_ENV') === 'production';
   }
 
   get liveGateway(): LiveServiceTypes {
-    return process.env.VERCEL
-      ? LiveServiceTypes.Pusher
-      : LiveServiceTypes.Sockets;
+    return this.vercel ? LiveServiceTypes.Pusher : LiveServiceTypes.Sockets;
   }
 
   get pusherConfig(): {

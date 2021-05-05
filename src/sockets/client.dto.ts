@@ -1,4 +1,4 @@
-import { AuthProviders } from '../models/enums/provider';
+import { AuthProviders } from 'src/models';
 
 /** Information to identify a socket with a user */
 export class IngestClientDTO {
