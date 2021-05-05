@@ -8,7 +8,7 @@ import {
   RefreshToken,
   RefreshTokenPayloadDTO,
 } from 'src/models';
-import { allRoutes } from 'src/sockets';
+import { allDtos } from 'src/sockets';
 import { Controller, Get, HttpStatus, Redirect } from '@nestjs/common';
 import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';
 
@@ -21,7 +21,7 @@ import { ApiExtraModels, ApiResponse } from '@nestjs/swagger';
   //Is not mentioned in a controller, but used in websockets and pushser
   ProviderDTO,
   // Socket stuff
-  ...allRoutes,
+  ...allDtos,
 
   // A lot of extra enums
   MasterEnums,

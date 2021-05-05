@@ -1,5 +1,6 @@
 import { AuthProviders, MessageNotificationDTO, ProviderDTO } from 'src/models';
 import { CreateMessageNotificationDTO } from 'src/models/dto';
+
 import { IngestClientDTO, NotificationAuthSendDTO } from './';
 
 /** The routes available to a websocket client (Sending only, all the receiving stuff is in pusher)*/
@@ -26,6 +27,7 @@ export class NotificationSocketEventsDTO {
   /**)
    * Authenticate to receive data
    */
+
   [NotificationSocketRoutes.AuthReceive]: (userUid: string) => boolean;
   /** Return the provider type of the current socket */
   [NotificationSocketRoutes.SendIdentity]: () => IngestClientDTO;

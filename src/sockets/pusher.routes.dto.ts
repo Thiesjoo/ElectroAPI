@@ -24,5 +24,6 @@ export class NotificationEventsDTO {
   })
   [NotificationRoutes.Remove]: DeleteMessageNotificationDTO;
   /** Returns date of sending */
+  @ApiProperty({ type: Number })
   [NotificationRoutes.Pong]: number;
 }
