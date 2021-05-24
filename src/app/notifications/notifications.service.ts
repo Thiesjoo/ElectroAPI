@@ -139,7 +139,7 @@ export class NotificationService {
     const paginateOptions: PaginateOptions<MessageNotification> = {
       limit: options.limit ? (options.limit > 100 ? 100 : options.limit) : 25,
       page: options.page || 1,
-      sort: { time: -1 },
+      sort: { time: options.sort ? 1 : -1 },
       query,
     };
     if (options.startingAfter) {

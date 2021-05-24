@@ -68,20 +68,18 @@ export class AuthService {
     );
 
     if (prov > -1) {
-      console.log('Found existing provider: ', prov, providerData);
       user.providers[prov] = providerData;
-      user.providers[prov].username = 'cringe';
     } else {
       user.providers.push(providerData);
     }
     user.markModified('providers');
     console.log(
-      'User pre: ',
-      await this.authUsersService.findUserByUid(user._id),
+      'User pre refresh: ',
+      (await this.authUsersService.findUserByUid(user._id)).providers,
     );
     await user.save();
 
-    console.log('User post: ', user);
+    console.log('User post refresh: ', user.providers);
     //TODO: Emit user update event(To get extra data from provider)
 
     return;
@@ -101,7 +99,7 @@ export class AuthService {
         'Something went wrong with refreshing user tokens',
       );
     }
-    await this.validateProvider(provider, userUid);
+    await this.validateProvider(result, userUid);
     return result;
   }
 

@@ -19,6 +19,9 @@ export class PaginatedRequestDTO {
   limit?: number;
   page?: number;
 
+  /** true (== 1) is desc, false (== -1) is asc*/
+  sort?: boolean = false;
+
   @ApiProperty({
     required: false,
     enum: QueryPlaces,

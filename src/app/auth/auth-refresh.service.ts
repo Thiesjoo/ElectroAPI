@@ -56,18 +56,10 @@ export class Oauth2RefreshService {
    * @param provider The provider
    */
   async refreshTokens(provider: ProviderDTO): Promise<ProviderDTO> {
+    // console.log("Going to")
+    this.logger.log(`Refreshing for provider:  ${provider.providerName}`);
     const clientName = provider.providerName as RefreshAuthProviders;
     const client = oauthURLMap[clientName];
-
-    const tokens = this.configService.getProvider(provider.providerName);
-    const val = {
-      client_id: tokens.clientID,
-      client_secret: tokens.clientSecret,
-      grant_type: 'refresh_token',
-      refresh_token: provider.refreshToken,
-      redirect_uri: tokens.callbackURL,
-      scope: provider.scopes.join(' '),
-    };
 
     try {
       const resp: {
@@ -91,16 +83,26 @@ export class Oauth2RefreshService {
         provider.scopes,
       );
 
-      Logger.log('Updated user data.');
+      this.logger.log('Successfully updated user data.');
       return newProvider;
     } catch (e) {
       if (e?.response?.status !== 401) {
-        Logger.error(e);
+        this.logger.error(e);
         return null;
       }
     }
 
     try {
+      const tokens = this.configService.getProvider(provider.providerName);
+      const val = {
+        client_id: tokens.clientID,
+        client_secret: tokens.clientSecret,
+        grant_type: 'refresh_token',
+        refresh_token: provider.refreshToken,
+        redirect_uri: tokens.callbackURL,
+        scope: provider.scopes.join(' '),
+      };
+
       const resp: {
         data: {
           access_token: string;
@@ -127,7 +129,7 @@ export class Oauth2RefreshService {
 
       return provider;
     } catch (e) {
-      Logger.error(e);
+      this.logger.error(e);
       return null;
     }
   }

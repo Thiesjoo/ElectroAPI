@@ -161,7 +161,7 @@ export class ApiConfigService {
     refreshExpiry: number;
   } {
     return {
-      accessExpiry: this.production ? ms('15m') : ms('1d'), //15 min for production, 1 day for dev
+      accessExpiry: this.production ? ms('15m') : ms('10d'), //15 min for production, 1 day for dev
       refreshExpiry: ms('7d'), // A week
     };
   }

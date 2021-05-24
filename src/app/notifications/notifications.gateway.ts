@@ -117,7 +117,7 @@ export class NotificationGateway {
 
       return { ok: true };
     } else {
-      const foundProvider = user.providers.find(
+      let foundProvider = user.providers.find(
         (x) => x.providerName === data.provider,
       );
 
@@ -137,6 +137,7 @@ export class NotificationGateway {
         this.logger.debug(
           `Successfully got provider for user ${updatedProvider.username}`,
         );
+        foundProvider = updatedProvider;
       } catch (e) {
         this.logger.error(e);
         return null;
