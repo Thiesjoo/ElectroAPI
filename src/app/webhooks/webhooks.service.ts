@@ -4,8 +4,8 @@ import {
   CreateMessageNotificationDTO,
   Webhook,
 } from 'src/models';
-import { uuidv4 as uuid } from 'uuid';
-import { Injectable } from '@nestjs/common';
+import { v4 as uuid } from 'uuid';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { NotificationService } from '../notifications/notifications.service';
 import { CreateWebhookDto } from './dto/create-webhook.dto';
@@ -48,6 +48,10 @@ export class WebhooksService {
 
   async trigger(slug: string, notification: CreateMessageNotificationDTO) {
     console.log('Tring to trigger:L ', slug, notification);
-    console.log(await this.webhookModel.findOne({ slug }));
+    const foundWebhook = await this.webhookModel.findOne({ slug });
+    if (!foundWebhook) {
+      return new NotFoundException('Webhook not found');
+    }
+    return this.notfService.add({ sub: foundWebhook.user }, notification);
   }
 }

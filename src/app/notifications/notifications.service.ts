@@ -32,7 +32,7 @@ export class NotificationService {
    * @param notf Notification to add
    */
   async add(
-    token: AuthTokenPayloadDTO,
+    token: { sub: string },
     notf: IMessageNotification,
   ): Promise<IMessageNotification> {
     const notification = await this.notfModel.create({
