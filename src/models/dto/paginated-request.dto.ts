@@ -1,5 +1,7 @@
+import { IsAlphanumeric, IsOptional, MaxLength } from 'class-validator';
+import { ToBoolean } from 'src/common/decorators/transformers';
+import { applyDecorators } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { QueryPlaces } from '../enums/query';
 
 /** DTO for paginated requests */
 export class PaginatedRequestDTO {
@@ -19,15 +21,21 @@ export class PaginatedRequestDTO {
   limit?: number;
   page?: number;
 
-  /** true (== 1) is desc, false (== -1) is asc*/
-  sort?: boolean = false;
+  /** true (== -1 in mongo) is desc, false (== 1 in mongo) is asc*/
+  @ToBoolean()
+  sort?: boolean = true;
 
-  @ApiProperty({
-    required: false,
-    enum: QueryPlaces,
-    default: QueryPlaces.All,
-  })
-  queryPlace?: QueryPlaces;
-  /** Query string to search for */
-  queryString?: string;
+  /** For all query's: Either specify queryAll or 1 of [author, message, title] */
+  @QueryDecorator()
+  queryAuthor?: string;
+  @QueryDecorator()
+  queryMessage?: string;
+  @QueryDecorator()
+  queryTitle?: string;
+  @QueryDecorator()
+  queryAll?: string;
+}
+
+function QueryDecorator() {
+  return applyDecorators(IsAlphanumeric(), IsOptional(), MaxLength(20));
 }

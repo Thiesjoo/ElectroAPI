@@ -27,6 +27,8 @@ import {
   Patch,
   Post,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiBody, ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth';
@@ -45,6 +47,7 @@ export class NotificationController {
   /** Get notifications paginated */
   @Get('')
   @ApiPaginatedResponse(MessageNotificationDTO)
+  @UsePipes(new ValidationPipe({ transform: true }))
   getPaginated(
     @UserToken() token: AuthTokenPayloadDTO,
     @Query() request: PaginatedRequestDTO,
