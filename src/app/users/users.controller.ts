@@ -39,20 +39,19 @@ export class UsersController {
   ) {}
 
   /**
+   * Get all users
+   */
+  @Get()
+  async findAll() {
+    return (await this.usersService.findAllUsers()).map(userMapper);
+  }
+  /**
    * Create a new user
    * @param createUserDto A new user
    */
   @Post()
   async create(@Body() createUserDto: UserDTO) {
     return userMapper(await this.usersService.createUser(createUserDto));
-  }
-
-  /**
-   * Get all users
-   */
-  @Get()
-  async findAll() {
-    return (await this.usersService.findAllUsers()).map(userMapper);
   }
 
   /** Get yourself as a user */
