@@ -81,7 +81,7 @@ export class WebhooksService {
   async triggerGithub<K extends GithubHandledEventsEnum>(
     slug: string,
     github: EventsMap[K],
-    type: K,
+    type: K, //TODO: This type is not working correctly yet. It is not auto inferring in the switch statement
   ) {
     const foundWebhook = await this.parseSlug(slug);
     const notf = new CreateMessageNotificationDTO();
@@ -107,10 +107,18 @@ export class WebhooksService {
         break;
       }
       case GithubHandledEventsEnum.Push: {
-        notf.title = `${(github as PushEvent).pusher.name} pushed to ${
-          github.repository.full_name
-        }`;
-        notf.message = (github as PushEvent).compare;
+        const local = github as PushEvent;
+        notf.title = `${local.pusher.name} pushed to ${local.repository.full_name}`;
+        notf.message =
+          (local.commits.length > 0 &&
+            `Commit message: "${local.commits[0].message}"`) +
+          `\n Compare url:
+          ${local.compare}`;
+      }
+      case GithubHandledEventsEnum.Release: {
+        const local = github as ReleaseEvent;
+        notf.title = `${local.release.author.name} pushed to ${local.repository.full_name}`;
+        notf.message = `New release: "${local.release.name}", with tag: ${local.release.tag_name}. URL: ${local.release.html_url}`;
       }
     }
 
