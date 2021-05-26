@@ -12,7 +12,10 @@ type UserTypes = {
   [AuthProviders.Twitch]: TwitchUser;
 };
 
-type RefreshAuthProviders = Exclude<AuthProviders, AuthProviders.Local>;
+type RefreshAuthProviders = Exclude<
+  Exclude<AuthProviders, AuthProviders.Local>,
+  AuthProviders.Github
+>;
 
 /**
  * The URL's of the oauth refresh routes

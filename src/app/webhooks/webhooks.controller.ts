@@ -5,11 +5,29 @@ import {
   UserToken,
 } from 'src/common';
 import { AuthTokenPayloadDTO, CreateMessageNotificationDTO } from 'src/models';
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  GithubGuard,
+  GithubWebhookEvents,
+} from '@dev-thought/nestjs-github-webhooks';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../';
 import { CreateWebhookDto } from './dto/create-webhook.dto';
-import { WebhooksService } from './webhooks.service';
+import {
+  EventsMap,
+  GithubHandledEvents,
+  GithubHandledEventsEnum,
+  WebhooksService,
+} from './webhooks.service';
 
 @Controller('api/webhooks')
 @ResponsePrefix()
@@ -59,6 +77,18 @@ export class WebhooksController {
     @Body() notification: CreateMessageNotificationDTO,
   ) {
     console.log(id, notification);
-    return this.webhooksService.trigger(id, notification);
+    return this.webhooksService.triggerGeneric(id, notification);
+  }
+
+  @Post('impl/:id/github')
+  @UseGuards(GithubGuard)
+  @GithubWebhookEvents(GithubHandledEvents)
+  async triggerGithubWebhook<K extends GithubHandledEventsEnum>(
+    @Param('id') id: string,
+    @Headers('X-GitHub-Event') type: K,
+    @Body() notification: EventsMap[K],
+  ) {
+    await this.webhooksService.triggerGithub(id, notification, type);
+    return true;
   }
 }
