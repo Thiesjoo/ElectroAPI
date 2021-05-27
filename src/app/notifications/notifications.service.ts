@@ -4,6 +4,7 @@ import {
   DeleteMessageNotificationDTO,
   IMessageNotification,
   MessageNotification,
+  PaginatedFilter,
   PaginatedRequestDTO,
   PaginateModel,
   PaginateOptions,
@@ -97,7 +98,39 @@ export class NotificationService {
     token: AuthTokenPayloadDTO,
     options: PaginatedRequestDTO,
   ): Promise<PaginateResult<IMessageNotification>> {
-    const query: FilterQuery<MessageNotification> = {};
+    const query = this.generateQuery(token.sub, options);
+
+    const paginateOptions: PaginateOptions<MessageNotification> = {
+      limit: options.limit ? (options.limit > 100 ? 100 : options.limit) : 25,
+      page: options.page || 1,
+      sort: { time: options.sort === undefined ? -1 : options.sort ? -1 : 1 },
+      query,
+    };
+    if (options.startingAfter) {
+      paginateOptions.startingAfter = options.startingAfter;
+    }
+    if (options.endingBefore) {
+      paginateOptions.endingBefore = options.endingBefore;
+    }
+
+    return this.notfModel.paginate(paginateOptions);
+  }
+
+  async getWithIDFiltered(
+    token: AuthTokenPayloadDTO,
+    id: string,
+    filter: PaginatedFilter,
+  ): Promise<boolean> {
+    return !!(await this.notfModel
+      .findOne({ _id: id, ...this.generateQuery(token.sub, filter) })
+      .exec());
+  }
+
+  private generateQuery(
+    userID: string,
+    options: PaginatedFilter,
+  ): FilterQuery<MessageNotification> {
+    const query: FilterQuery<MessageNotification> = { user: userID };
 
     if (options.queryAll) {
       const val = new RegExp(options.queryAll, 'gi');
@@ -120,23 +153,6 @@ export class NotificationService {
       query.time ??= {};
       query.time['$lte'] = new Date(options.tillTime).toISOString();
     }
-
-    console.log(query.time, options.sort, typeof options.sort);
-    query.user = token.sub;
-
-    const paginateOptions: PaginateOptions<MessageNotification> = {
-      limit: options.limit ? (options.limit > 100 ? 100 : options.limit) : 25,
-      page: options.page || 1,
-      sort: { time: options.sort === undefined ? -1 : options.sort ? -1 : 1 },
-      query,
-    };
-    if (options.startingAfter) {
-      paginateOptions.startingAfter = options.startingAfter;
-    }
-    if (options.endingBefore) {
-      paginateOptions.endingBefore = options.endingBefore;
-    }
-
-    return this.notfModel.paginate(paginateOptions);
+    return query;
   }
 }

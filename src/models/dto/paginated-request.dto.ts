@@ -3,25 +3,14 @@ import { ToBoolean } from 'src/common/decorators/transformers';
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 
-/** DTO for paginated requests */
-export class PaginatedRequestDTO {
+/** All the filter options for the paginated request. Used in DTO and in seperate filter request */
+export class PaginatedFilter {
   /** Filter based on the time the notification was sent */
   fromTime?: string;
   /** Filter based on the time the notification was sent */
   tillTime?: string;
 
-  startingAfter?: string;
-  endingBefore?: string;
-
-  @ApiProperty({
-    required: false,
-    maximum: 100,
-    minimum: 1,
-  })
-  limit?: number;
-  page?: number;
-
-  /** true (== -1 in mongo) is desc, false (== 1 in mongo) is asc*/
+  /** true (== -1 in mongo) is desc, false (== 1 in mongo) is asc. Default is true */
   @ToBoolean()
   sort?: boolean = true;
 
@@ -34,6 +23,20 @@ export class PaginatedRequestDTO {
   queryTitle?: string;
   @QueryDecorator()
   queryAll?: string;
+}
+
+/** DTO for paginated requests */
+export class PaginatedRequestDTO extends PaginatedFilter {
+  startingAfter?: string;
+  endingBefore?: string;
+
+  @ApiProperty({
+    required: false,
+    maximum: 100,
+    minimum: 1,
+  })
+  limit?: number;
+  page?: number;
 }
 
 function QueryDecorator() {

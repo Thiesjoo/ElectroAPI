@@ -49,10 +49,8 @@ export class NotificationGateway {
   server: Server;
   /** Map of every client, mapped to the data about client */
   private sendClients: Record<string, IngestClientDTO> = {};
-  private receiveClients: Record<
-    string,
-    ServerEventEmitter<Socket, Requ>[]
-  > = {};
+  private receiveClients: Record<string, ServerEventEmitter<Socket, Requ>[]> =
+    {};
   /** Logger of this service */
   private logger: Logger = new Logger(NotificationGateway.name);
 
@@ -65,7 +63,6 @@ export class NotificationGateway {
     private liveService: LiveService,
   ) {
     liveService.init(this.broadcast.bind(this));
-    // console.log(this.server);
   }
 
   /** Ping message, also returns pong on 'pong' channel if authenticated */
@@ -130,10 +127,8 @@ export class NotificationGateway {
       }
 
       try {
-        const updatedProvider: ProviderDTO = await this.authService.refreshProvider(
-          user._id,
-          foundProvider,
-        );
+        const updatedProvider: ProviderDTO =
+          await this.authService.refreshProvider(user._id, foundProvider);
         this.logger.debug(
           `Successfully got provider for user ${updatedProvider.username}`,
         );

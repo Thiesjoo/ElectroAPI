@@ -30,9 +30,20 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiBody, ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiExtraModels,
+  ApiProperty,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtGuard } from '../auth';
 import { NotificationService } from './notifications.service';
+
+class SimpleOK {
+  @ApiProperty({ type: Boolean })
+  ok: boolean;
+}
 
 /** Service to handle REST for notifications */
 @Controller('api/notifications')
@@ -92,13 +103,30 @@ export class NotificationController {
     type: MessageNotificationDTO,
     description: 'The requested notification',
   })
-  getWithId(
+  getWithID(
     @Param('id') id: string,
     @UserToken() token: AuthTokenPayloadDTO,
   ): Observable<MessageNotificationDTO> {
     return from(this.notificationService.getWithID(token, id)).pipe(
       map(messageNotificationMapper),
     );
+  }
+
+  @Get(':id/filtered')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SimpleOK,
+    description: 'The requested notification',
+  })
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async getWithIDFiltered(
+    @Param('id') id: string,
+    @UserToken() token: AuthTokenPayloadDTO,
+    @Query() request: PaginatedRequestDTO,
+  ): Promise<{ ok: boolean }> {
+    return {
+      ok: await this.notificationService.getWithIDFiltered(token, id, request),
+    };
   }
 
   /** Add a notification to the database */

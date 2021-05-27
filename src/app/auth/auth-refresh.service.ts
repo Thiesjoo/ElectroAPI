@@ -59,7 +59,6 @@ export class Oauth2RefreshService {
    * @param provider The provider
    */
   async refreshTokens(provider: ProviderDTO): Promise<ProviderDTO> {
-    // console.log("Going to")
     this.logger.log(`Refreshing for provider:  ${provider.providerName}`);
     const clientName = provider.providerName as RefreshAuthProviders;
     const client = oauthURLMap[clientName];

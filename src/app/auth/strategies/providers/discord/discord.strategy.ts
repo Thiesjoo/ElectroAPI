@@ -46,7 +46,6 @@ export class DiscordStrategy extends PassportStrategy(
       this.logger.debug(`Discord login from user: ${profile.username}`);
 
       const prov = discordMapper(accessToken, refreshToken, profile, dcScopes);
-      console.log('Login: ', prov);
       await this.authService.validateProvider(prov, extractUid(req));
       done(null, {});
     } catch (e) {
