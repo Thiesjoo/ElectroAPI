@@ -36,6 +36,8 @@ async function bootstrap() {
 
   const config = app.get(ApiConfigService);
 
+  config.vercel && console.log('RUNNING INSIDE VERCEL: ', 'pusher api');
+
   app.useWebSocketAdapter(new IoAdapter(app));
   app.enableCors(corsSettings);
 

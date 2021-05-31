@@ -185,7 +185,6 @@ export class ApiConfigService {
         httpOnly: true, // JS Cannot access this cookie
         sameSite: 'none', // Cookie can be used from different domains (CORS)
         secure: true, // HTTPS only
-        // domain: 'localhost',
       },
       refresh: {
         expires: new Date(Date.now() + this.expiry.refreshExpiry),
@@ -193,7 +192,6 @@ export class ApiConfigService {
         sameSite: 'none',
         path: '/auth',
         secure: true, // HTTPS only
-        // domain: 'localhost',
       },
     };
   }
@@ -204,9 +202,11 @@ export function loadConfig() {
   let data = '';
 
   if (process.env.CONFIG) {
+    //Entire env config
     data = process.env.CONFIG;
     console.log('Loading custom env config. Length: ', data.length);
   } else {
+    // Config loaded from file
     let cfgPath = process.env.CONFIG_PATH || '../env.yml';
     if (!cfgPath) {
       throw new Error('Config path not found in env: CONFIG_PATH');
@@ -242,7 +242,7 @@ export const corsSettings: CorsOptions = {
     // This solution is more security through obscurity, because anyone can register a domain on vercel
     if (
       !org || // This is for non CORS requests
-      (org.includes('vercel.app') && org.includes('https://electro-dash')) || // This is semi safe, because the frontend will *always* be here
+      org.endsWith('thies.dev') || // This is semi safe, because the frontend will *always* be here
       ((org.includes('http://localhost:') || org.includes('hoppscotch.io')) &&
         process.env.NODE_ENV !== 'production') // Localhost is safe because the user owns it
     ) {

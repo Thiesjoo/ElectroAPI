@@ -9,6 +9,7 @@ import {
 import { ApiConfigService } from 'src/config/configuration';
 import {
   AuthTokenPayloadDTO,
+  LiveServiceTypes,
   UpdateUserDto,
   UserDTO,
   userMapper,
@@ -68,7 +69,16 @@ export class UsersController {
   @AuthedUser()
   async getMe(@UserToken('id') token: AuthTokenPayloadDTO) {
     const user = userMapper(await this.usersService.findUserByUid(token.sub));
-    user.gateway = this.configService.pusherConfig.key;
+    if (this.configService.liveGateway === LiveServiceTypes.Pusher) {
+      user.socket = {
+        type: LiveServiceTypes.Pusher,
+        data: this.configService.pusherConfig.key,
+      };
+    } else {
+      user.socket = {
+        type: LiveServiceTypes.Sockets,
+      };
+    }
     return user;
   }
 

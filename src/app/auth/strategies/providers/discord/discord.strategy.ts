@@ -10,7 +10,13 @@ import discordMapper from './discord.mapper';
 import { DiscordUser } from './discord.types';
 
 /** Scopes needed for discord API */
-const dcScopes = ['identify', 'connections', 'rpc', 'rpc.notifications.read'];
+const dcScopes = [
+  'identify',
+  'connections',
+  'rpc',
+  'rpc.notifications.read',
+  'rpc.activities.write',
+];
 
 /** The discord strategy */
 @Injectable()
