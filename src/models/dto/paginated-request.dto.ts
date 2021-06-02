@@ -1,4 +1,4 @@
-import { IsAlphanumeric, IsOptional, MaxLength } from 'class-validator';
+import { IsOptional, Matches, MaxLength } from 'class-validator';
 import { ToBoolean } from 'src/common/decorators/transformers';
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
@@ -40,5 +40,9 @@ export class PaginatedRequestDTO extends PaginatedFilter {
 }
 
 function QueryDecorator() {
-  return applyDecorators(IsAlphanumeric(), IsOptional(), MaxLength(20));
+  return applyDecorators(
+    Matches(/^[a-zA-Z0-9!]*$/),
+    IsOptional(),
+    MaxLength(20),
+  );
 }

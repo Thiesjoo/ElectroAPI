@@ -133,13 +133,25 @@ export class NotificationService {
     const query: FilterQuery<MessageNotification> = { user: userID };
 
     if (options.queryAll) {
-      const val = new RegExp(options.queryAll, 'gi');
+      let val: RegExp | { $not: RegExp };
+      if (options.queryAll[0] === '!') {
+        val = { $not: new RegExp(options.queryAll.substr(1), 'gi') };
+      } else {
+        val = new RegExp(options.queryAll, 'gi');
+      }
+
       query.$or = [{ message: val }, { 'author.name': val }, { title: val }];
     } else {
       ['Author', 'Message', 'Title'].forEach((x) => {
         const opt = options['query' + x];
         if (opt) {
-          const val = new RegExp(opt, 'gi');
+          let val: RegExp | { $not: RegExp };
+          if (opt[0] === '!') {
+            val = { $not: new RegExp(opt.substr(1), 'gi') };
+          } else {
+            val = new RegExp(opt, 'gi');
+          }
+
           query[x === 'Author' ? 'author.name' : x.toLowerCase()] = val;
         }
       });
