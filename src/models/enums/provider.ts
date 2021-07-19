@@ -4,4 +4,5 @@ export enum AuthProviders {
   Twitch = 'twitch',
   Local = 'local',
   Github = 'github',
+  Android = 'android',
 }

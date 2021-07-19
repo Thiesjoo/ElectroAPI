@@ -1,7 +1,9 @@
 import { Model } from 'mongoose';
 import {
+  androidToNotification,
   AuthProviders,
   AuthTokenPayloadDTO,
+  CreateAndroidNotification,
   CreateMessageNotificationDTO,
   Webhook,
 } from 'src/models';
@@ -73,9 +75,14 @@ export class WebhooksService {
     slug: string,
     notification: CreateMessageNotificationDTO,
   ) {
-    console.log('Tring to trigger:L ', slug, notification);
+    console.log('Trying to trigger: ', slug, notification);
     const foundWebhook = await this.parseSlug(slug);
     return this.sendNotification(foundWebhook, notification);
+  }
+
+  async triggerAndroid(slug: string, event: CreateAndroidNotification) {
+    const foundWebhook = await this.parseSlug(slug);
+    return this.sendNotification(foundWebhook, androidToNotification(event));
   }
 
   async triggerGithub<K extends GithubHandledEventsEnum>(
@@ -133,6 +140,7 @@ export class WebhooksService {
   ) {
     return this.notfService.add({ sub: webhook.user }, content);
   }
+
   private async parseSlug(slug: string): Promise<Webhook> {
     const foundWebhook = await this.webhookModel.findOne({ slug });
     if (!foundWebhook) {

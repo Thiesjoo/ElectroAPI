@@ -49,7 +49,7 @@ export class MessageNotificationDTO {
 
   /** Extra information */
   @IsObject()
-  extra: any;
+  extra: {};
 }
 
 /** Standard DTO, but without _id and user */
@@ -57,6 +57,19 @@ export class CreateMessageNotificationDTO extends OmitType(
   MessageNotificationDTO,
   ['_id'],
 ) {}
+
+export class CreateAndroidNotification {
+  title: string;
+  package: string;
+  text: string;
+  textLines: string;
+
+  @IsDateString()
+  time: Date;
+
+  img?: string;
+  error?: string;
+}
 
 /** Create DTO, but every key is optional */
 export class UpdateMessageNotificationDTO extends PartialType(
@@ -85,5 +98,22 @@ export function messageNotificationMapper(
     message: notf?.message,
     pinned: notf?.pinned,
     action: notf?.action,
+  };
+}
+
+export function androidToNotification(
+  notf: CreateAndroidNotification,
+): CreateMessageNotificationDTO {
+  return {
+    author: messageAuthorMapper({ name: notf?.package, image: notf?.img }),
+    image: notf?.img,
+    time: notf?.time,
+    title: notf?.title,
+    providerType: AuthProviders.Android,
+    color: '#AAAAA',
+    message: notf?.text + ' | ' + notf?.textLines,
+    action: true,
+    extra: {},
+    pinned: -1,
   };
 }

@@ -4,7 +4,11 @@ import {
   ResponsePrefix,
   UserToken,
 } from 'src/common';
-import { AuthTokenPayloadDTO, CreateMessageNotificationDTO } from 'src/models';
+import {
+  AuthTokenPayloadDTO,
+  CreateAndroidNotification,
+  CreateMessageNotificationDTO,
+} from 'src/models';
 import {
   GithubGuard,
   GithubWebhookEvents,
@@ -71,7 +75,7 @@ export class WebhooksController {
     return this.webhooksService.remove(token, id);
   }
 
-  @Post('impl/:id')
+  @Post(':id')
   triggerWebhook(
     @Param('id') id: string,
     @Body() notification: CreateMessageNotificationDTO,
@@ -80,7 +84,16 @@ export class WebhooksController {
     return this.webhooksService.triggerGeneric(id, notification);
   }
 
-  @Post('impl/:id/github')
+  @Post(':id/android')
+  triggerAndroidWebhook(
+    @Param('id') id: string,
+    @Body() notification: CreateAndroidNotification,
+  ) {
+    console.log(id, notification);
+    return this.webhooksService.triggerAndroid(id, notification);
+  }
+
+  @Post(':id/github')
   @UseGuards(GithubGuard)
   @GithubWebhookEvents(GithubHandledEvents)
   async triggerGithubWebhook<K extends GithubHandledEventsEnum>(

@@ -241,10 +241,9 @@ export const corsSettings: CorsOptions = {
     // 1 easy way to fix it would be to host API and Frontend on same domain.
     // This solution is more security through obscurity, because anyone can register a domain on vercel
     if (
+      process.env.NODE_ENV !== 'production' ||
       !org || // This is for non CORS requests
-      org.endsWith('thies.dev') || // This is semi safe, because the frontend will *always* be here
-      ((org.includes('http://localhost:') || org.includes('hoppscotch.io')) &&
-        process.env.NODE_ENV !== 'production') // Localhost is safe because the user owns it
+      org.endsWith('thies.dev') // This is semi safe, because the frontend will *always* be here
     ) {
       cb(null, org);
     } else {

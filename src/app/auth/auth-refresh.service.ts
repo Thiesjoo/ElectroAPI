@@ -13,8 +13,8 @@ type UserTypes = {
 };
 
 type RefreshAuthProviders = Exclude<
-  Exclude<AuthProviders, AuthProviders.Local>,
-  AuthProviders.Github
+  Exclude<Exclude<AuthProviders, AuthProviders.Local>, AuthProviders.Github>,
+  AuthProviders.Android
 >;
 
 /**
